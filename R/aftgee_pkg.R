@@ -37,11 +37,11 @@
 #' @importFrom BB BBsolve dfsane
 #' @importFrom survival Surv survfit basehaz coxph
 #' @importFrom geepack geese geese.fit
-#' @importFrom parallel makeCluster clusterExport stopCluster detectCores parSapply
+#' @importFrom parallel makeCluster clusterExport stopCluster detectCores parSapply parLapply
 #' @importFrom methods getClass
 #' @importFrom graphics boxplot
 #' @importFrom stats approx coef complete.cases lm model.extract model.matrix pnorm printCoefmat
-#' @importFrom stats rexp rnorm var vcov weights
+#' @importFrom stats rexp rnorm var vcov weights as.formula
 #' @importFrom utils vi
 #'
 #' @useDynLib aftgee, .registration = TRUE

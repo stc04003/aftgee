@@ -20,6 +20,8 @@ Description: A collection of methods for both the rank-based estimates and least
 	      Chiou et al. (2014) <doi:10.1007/s10985-014-9292-x>.
 Depends: R (>= 3.4.4)
 License: GPL (>= 3)
+URL: http://github.com/stc04003/aftgee
+BugReports: http://github.com/stc04003/aftgee/issues
 Encoding: UTF-8
 LazyData: true
 LazyLoad: yes
@@ -32,5 +34,3 @@ Author: Sy Han Chiou [aut, cre],
   Sangwook Kang [aut],
   Jun Yan [aut]
 Maintainer: Sy Han Chiou <schiou@utdallas.edu>
-URL: http://github.com/stc04003/aftgee
-BugReports: http://github.com/stc04003/aftgee/issues

@@ -1,4 +1,4 @@
-#' Least-Squares Approach for Accelerated Failure Time with Generalized Estimating Euqation
+#' Least-Squares Approach for Accelerated Failure Time with Generalized Estimating Equation
 #'
 #' Fits a semiparametric accelerated failure time (AFT) model with least-squares approach.
 #' Generalized estimating equation is generalized to multivariate AFT modeling to account
@@ -36,7 +36,7 @@
 #'     \item When \code{binit} is a vector, its length should be the same as the
 #' dimension of covariates.
 #'     \item When \code{binit} is a character string, it should be either \code{lm} for simple linear
-#' regression, or \code{srrgehan} for smoothed gehan weight estimator.
+#' regression, or \code{srrgehan} for smoothed Gehan weight estimator.
 #' } The default value is "srrgehan".
 #' @param B a numeric value specifies the resampling number.
 #'     When B = 0, only the beta estimate will be displayed.

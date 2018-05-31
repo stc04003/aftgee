@@ -1172,9 +1172,9 @@ setMethod("rankFit", signature(engine = "Engine", stdErr = "ISMB"), rankFit.Engi
 #'   \item{\code{ZLMB}}{Zeng and Lin's approach with empirical Si.}
 #'   \item{\code{sHCF}}{Huang's approach with closed form Si.}
 #'   \item{\code{sHMB}}{Huang's approach with empirical Si.}
-#'   \item{\code{ISCF}}{Johnson and Strwderman's sandwich variance estimates with closed form Si.}
-#'   \item{\code{ISMB}}{Johnson and Strwderman's sandwich variance estimates with empirical Si.}
-#'   \item{\code{js}}{Johnson and Strwderman's iterating approach.}
+#'   \item{\code{ISCF}}{Johnson and Strawderman's sandwich variance estimates with closed form Si.}
+#'   \item{\code{ISMB}}{Johnson and Strawderman's sandwich variance estimates with empirical Si.}
+#'   \item{\code{js}}{Johnson and Strawderman's iterating approach.}
 #' }
 #' @param control controls maxiter, tolerance, and resampling variance estimation.
 #'

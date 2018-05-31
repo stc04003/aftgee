@@ -2,7 +2,7 @@
 % Please edit documentation in R/aftgee.R
 \name{aftgee}
 \alias{aftgee}
-\title{Least-Squares Approach for Accelerated Failure Time with Generalized Estimating Euqation}
+\title{Least-Squares Approach for Accelerated Failure Time with Generalized Estimating Equation}
 \usage{
 aftgee(formula, data, subset, id = NULL, contrasts = NULL, weights = NULL,
   margin = NULL, corstr = "independence", binit = "srrgehan", B = 100,
@@ -49,7 +49,7 @@ The length of \code{id} should be the same as the number of observations.}
     \item When \code{binit} is a vector, its length should be the same as the
 dimension of covariates.
     \item When \code{binit} is a character string, it should be either \code{lm} for simple linear
-regression, or \code{srrgehan} for smoothed gehan weight estimator.
+regression, or \code{srrgehan} for smoothed Gehan weight estimator.
 } The default value is "srrgehan".}
 
 \item{B}{a numeric value specifies the resampling number.

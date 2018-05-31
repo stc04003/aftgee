@@ -46,6 +46,14 @@ Zeng, D. and Lin, D. Y. (2008)
 Efficient Resampling Methods for Nonsmooth Estimating Functions.
 \emph{Biostatistics}, \bold{9}, 355--363
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{http://github.com/stc04003/aftgee}
+  \item Report bugs at \url{http://github.com/stc04003/aftgee/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Sy Han Chiou \email{schiou@utdallas.edu}
 
