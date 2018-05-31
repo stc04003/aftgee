@@ -28,15 +28,15 @@ summary(fit.rk)
 #> 
 #> Variance Estimator: ISMB
 #>     Estimate StdErr z.value p.value    
-#> age   -0.001  0.015  -0.082   0.935    
-#> sex    1.522  0.376   4.050  <2e-16 ***
+#> age   -0.001  0.014  -0.092   0.927    
+#> sex    1.522  0.392   3.886  <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
 #> Variance Estimator: ZLMB
 #>     Estimate StdErr z.value p.value    
-#> age   -0.001  0.017  -0.073   0.942    
-#> sex    1.522  0.445   3.419   0.001 ***
+#> age   -0.001  0.018  -0.069   0.945    
+#> sex    1.522  0.467   3.260   0.001 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 fit.ge <- aftgee(Surv(time, status) ~ age + sex, id = id, data = kidney)
@@ -47,9 +47,9 @@ summary(fit.ge)
 #> 
 #> AFTGEE Estimator
 #>             Estimate StdErr z.value p.value    
-#> (Intercept)    2.071  0.690   2.999   0.003 ** 
-#> age           -0.005  0.008  -0.663   0.507    
-#> sex            1.374  0.371   3.708  <2e-16 ***
+#> (Intercept)    2.071  0.633   3.269   0.001 ***
+#> age           -0.005  0.009  -0.604   0.546    
+#> sex            1.374  0.336   4.091  <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
