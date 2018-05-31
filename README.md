@@ -1,3 +1,13 @@
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+
+------------------------------------------------------------------------
+
+[![minimal R version](https://img.shields.io/badge/R%3E%3D-3.4.4-6666ff.svg)](https://cran.r-project.org/) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/aftgee)](https://cran.r-project.org/package=aftgee) [![packageversion](https://img.shields.io/badge/Package%20version-1.1.3-orange.svg?style=flat-square)](commits/master)
+
+------------------------------------------------------------------------
+
+[![Last-changedate](https://img.shields.io/badge/last%20change-2018--05--30-yellowgreen.svg)](/commits/master)
+
 aftgee: Accerated Failure Time with Generalized Estimating Equation
 -------------------------------------------------------------------
 
@@ -18,15 +28,15 @@ summary(fit.rk)
 #> 
 #> Variance Estimator: ISMB
 #>     Estimate StdErr z.value p.value    
-#> age   -0.001  0.014  -0.085   0.932    
-#> sex    1.522  0.410   3.709  <2e-16 ***
+#> age   -0.001  0.015  -0.082   0.935    
+#> sex    1.522  0.376   4.050  <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
 #> Variance Estimator: ZLMB
 #>     Estimate StdErr z.value p.value    
-#> age   -0.001  0.016   -0.08   0.937    
-#> sex    1.522  0.479    3.18   0.001 ***
+#> age   -0.001  0.017  -0.073   0.942    
+#> sex    1.522  0.445   3.419   0.001 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 fit.ge <- aftgee(Surv(time, status) ~ age + sex, id = id, data = kidney)
@@ -37,9 +47,9 @@ summary(fit.ge)
 #> 
 #> AFTGEE Estimator
 #>             Estimate StdErr z.value p.value    
-#> (Intercept)    2.071  0.726   2.852   0.004 ** 
-#> age           -0.005  0.009  -0.594   0.552    
-#> sex            1.374  0.396   3.473   0.001 ***
+#> (Intercept)    2.071  0.690   2.999   0.003 ** 
+#> age           -0.005  0.008  -0.663   0.507    
+#> sex            1.374  0.371   3.708  <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
