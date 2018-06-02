@@ -1415,7 +1415,7 @@ abargehanfun <- function(beta, Y, X, delta, clsize, sigma, weights, gw = rep(1, 
     N <- nrow(X)
     n <- length(clsize)
     a <- vector("double", p * p)
-    matrix(.C("abargehanfun", as.double(beta), as.double(Y), as.double(X), as.double(delta),
+    matrix(.C("abargehanfunC", as.double(beta), as.double(Y), as.double(X), as.double(delta),
               as.integer(clsize), as.double(sigma), as.integer(n), as.integer(p),
               as.integer(N), as.double(weights), as.double(gw),
               as.double(a), PACKAGE = "aftgee")[[12]], nrow = p)
@@ -1427,7 +1427,7 @@ abarlogfun <- function(beta, Y, X, delta, clsize, sigma, weights, pw = rep(1, nr
     N <- nrow(X)
     n <- length(clsize)
     a <- vector("double", p * p)
-    matrix(.C("abarlogfun", as.double(beta), as.double(Y), as.double(X), as.double(delta),
+    matrix(.C("abarlogfunC", as.double(beta), as.double(Y), as.double(X), as.double(delta),
               as.integer(clsize), as.double(pw), as.double(sigma), as.integer(n),
               as.integer(p), as.integer(N), as.double(weights),
               as.double(a), PACKAGE = "aftgee")[[12]], nrow = p)
@@ -1438,7 +1438,7 @@ abarpwfun <- function(beta, Y, X, delta, clsize, sigma, weights, pw) {
     N <- nrow(X)
     n <- length(clsize)
     a <- vector("double", p * p)
-    pt1 <- matrix(.C("abarpwfun", as.double(beta), as.double(Y), as.double(X),
+    pt1 <- matrix(.C("abarpwfunC", as.double(beta), as.double(Y), as.double(X),
                      as.double(delta), as.integer(clsize), as.double(pw$fhat),
                      as.double(sigma), as.integer(n), as.integer(p), as.integer(N),
                      as.double(weights), as.double(a), PACKAGE = "aftgee")[[11]], p)

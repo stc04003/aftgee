@@ -306,7 +306,7 @@ void gehan_s_wt(double *beta, double *Y, double *X, int *clsize,
 // March 15
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void abargehanfun(double *beta, double *Y, double *X, 
+void abargehanfunC(double *beta, double *Y, double *X, 
 		  double *delta, int *clsize, double *sigma,
 		  int *n, int *p, int *N,
 		  double *weights,
@@ -377,7 +377,7 @@ void abargehanfun(double *beta, double *Y, double *X,
 }
 
 
-void abarlogfun(double *beta, double *Y, double *X, double *delta, int *clsize, double *pw,
+void abarlogfunC(double *beta, double *Y, double *X, double *delta, int *clsize, double *pw,
 	     double *sigma,
 	     int *n,
 	     int *p,
@@ -558,7 +558,7 @@ void omegafun(double *beta,
 
 
 
-void abarpwfun(double *beta, double *Y, double *X, double *delta, 
+void abarpwfunC(double *beta, double *Y, double *X, double *delta, 
 	       int *clsize, double *pw, double *sigma,
 	       int *n, int *p, int *N,
 	       double *weights,
