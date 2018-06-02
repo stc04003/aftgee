@@ -34,7 +34,23 @@ accountered for with working covariance structures.
 Additional sampling weights are incorporated to handle missing data
 needed as in case-cohort studies or general sampling schemes.
 
-Here are some sample examples to get started:
+## Installation
+
+Install and load the package from CRAN using 
+
+```{r install, eval = FALSE}
+install.packages("aftgee")
+library(aftgee)
+```
+ 
+Install and load the package from GitHub using 
+```{r github, eval = FALSE}
+devtools::install_github("stc04003/aftgee")
+library(aftgee)
+```
+
+## Examples
+Here are some examples to get started:
 ```{r example}
 library(survival)
 data(kidney)
