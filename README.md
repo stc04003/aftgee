@@ -1,7 +1,9 @@
 **aftgee**
 ----------
 
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.4.4-6666ff.svg)](https://cran.r-project.org/) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/aftgee)](https://cran.r-project.org/package=aftgee) [![packageversion](https://img.shields.io/badge/Package%20version-1.1.3-orange.svg?style=flat-square)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2018--06--07-yellowgreen.svg)](/commits/master) ---
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.4.4-6666ff.svg)](https://cran.r-project.org/) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/aftgee)](https://cran.r-project.org/package=aftgee) [![packageversion](https://img.shields.io/badge/Package%20version-1.1.3-orange.svg?style=flat-square)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2018--06--07-yellowgreen.svg)](/commits/master)
+
+------------------------------------------------------------------------
 
 aftgee: Accerated Failure Time with Generalized Estimating Equation
 -------------------------------------------------------------------
@@ -43,15 +45,15 @@ summary(fit.rk)
 #> 
 #> Variance Estimator: ISMB
 #>     Estimate StdErr z.value p.value    
-#> age   -0.001  0.012  -0.103   0.918    
-#> sex    1.522  0.411   3.708  <2e-16 ***
+#> age   -0.001  0.014  -0.089   0.929    
+#> sex    1.522  0.470   3.235   0.001 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
 #> Variance Estimator: ZLMB
 #>     Estimate StdErr z.value p.value    
-#> age   -0.001  0.017  -0.071   0.943    
-#> sex    1.522  0.478   3.182   0.001 ***
+#> age   -0.001  0.020  -0.061   0.951    
+#> sex    1.522  0.457   3.330   0.001 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 fit.ge <- aftgee(Surv(time, status) ~ age + sex, id = id, data = kidney)
@@ -62,9 +64,9 @@ summary(fit.ge)
 #> 
 #> AFTGEE Estimator
 #>             Estimate StdErr z.value p.value    
-#> (Intercept)    2.071  0.692   2.993   0.003 ** 
-#> age           -0.005  0.009  -0.614   0.539    
-#> sex            1.374  0.346   3.973  <2e-16 ***
+#> (Intercept)    2.071  0.700   2.959   0.003 ** 
+#> age           -0.005  0.010  -0.542   0.588    
+#> sex            1.374  0.343   4.001  <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
