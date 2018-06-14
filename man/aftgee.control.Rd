@@ -19,8 +19,8 @@ for each resampling sample in variance estimation.}
 
 \item{parallel}{an logical value indicating whether parallel computing is used for resampling and bootstrap.}
 
-\item{parCl}{an integer value indicating the number of CPU cores used for parallel computing.
-This is only needed if \code{parallel == TRUE}.}
+\item{parCl}{an integer value indicating the number of CPU cores used when \code{parallel = TRUE}.
+The default value is half the CPU cores on the current host.}
 }
 \value{
 A list with the arguments as components.
