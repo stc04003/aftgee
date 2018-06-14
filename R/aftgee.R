@@ -84,7 +84,7 @@
 #'     cstime <- runif(n, 0, cen)
 #'     delta <- (T < cstime) * 1
 #'     Y <- pmin(T, cstime)
-#'     out <- data.frame(T = T, Y = Y, delta = delta, x1 = x1, x2 = x2, id = rep(1:dim, n))
+#'     out <- data.frame(T = T, Y = Y, delta = delta, x1 = x1, x2 = x2, id = rep(1:n, each = dim))
 #'     out
 #' }
 #' set.seed(1)
