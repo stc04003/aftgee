@@ -33,24 +33,25 @@ rankFit.gehan.is <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver,list(par = engine@b0, fn = gehan.est,
-                                           quiet = TRUE, control = list(trace = FALSE))),
+                                           quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
                 error = function(e)
                     do.call(engine@solver,list(par = double(p), fn = gehan.est,
-                                               quiet = TRUE, control = list(trace = FALSE)))))
+                                               quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
         end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver, list(par = engine@b0, fn = gehan.obj,
-                                               quiet = TRUE, control = list(trace = FALSE))))
+                                               quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     if (engine@solver == "optim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver,
-                           list(par = engine@b0, fn = gehan.obj, control = list(trace = FALSE))))
+                           list(par = engine@b0, fn = gehan.obj,
+                                control = list(abstol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     list(beta = fit$par, conv = fit$convergence, pe.time = end.time - start.time,
@@ -83,18 +84,18 @@ rankFit.gehan.ns <- function(DF, engine, stdErr, gw = NULL) {
     if (engine@solver %in% c("BBsolve", "dfsane")) {
         start.time <- Sys.time()
         suppressWarnings(
-            fit <- tryCatch(do.call(engine@solver, list(par = engine@b0, fn = gehan.est,
-                                                        quiet = TRUE, control = list(trace = FALSE))),
+            fit <- tryCatch(do.call(engine@solver, list(par = engine@b0, fn = gehan.est, quiet = TRUE,
+                                                        control = list(tol = engine@tol, trace = FALSE))),
                             error = function(e)
-                                do.call(engine@solver, list(par = double(p), fn = gehan.est,
-                                                        quiet = TRUE, control = list(trace = FALSE)))))
+                                do.call(engine@solver, list(par = double(p), fn = gehan.est, quiet = TRUE,
+                                                            control = list(tol = engine@tol, trace = FALSE)))))
         end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
         start.time <- Sys.time()
         suppressWarnings(
-            fit <- do.call(engine@solver, list(par = engine@b0, fn = gehan.obj,
-                                               quiet = TRUE, control = list(trace = FALSE))))
+            fit <- do.call(engine@solver, list(par = engine@b0, fn = gehan.obj, quiet = TRUE,
+                                               control = list(tol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     if (engine@solver == "optim") {
@@ -136,24 +137,25 @@ rankFit.logrank.is <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver, list(par = engine@b0, fn = log.est,
-                                            quiet = TRUE, control = list(trace = FALSE))),
+                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
                 error = function(e)
                     do.call(engine@solver, list(par = double(p), fn = log.est,
-                                                quiet = TRUE, control = list(trace = FALSE)))))
+                                                quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
         end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver, list(par = engine@b0, fn = log.obj,
-                                               quiet = TRUE, control = list(trace = FALSE))))
+                                               quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     if (engine@solver == "optim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver,
-                           list(par = engine@b0, fn = log.obj, control = list(trace = FALSE))))
+                           list(par = engine@b0, fn = log.obj,
+                                control = list(abstol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     list(beta = fit$par, conv = fit$convergence, pe.time = end.time - start.time,
@@ -188,24 +190,25 @@ rankFit.logrank.ns <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver, list(par = engine@b0, fn = log.est,
-                                            quiet = TRUE, control = list(trace = FALSE))),
+                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
                 error = function(e)
                     do.call(engine@solver, list(par = double(p), fn = log.est,
-                                                quiet = TRUE, control = list(trace = FALSE)))))
+                                                quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
         end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver, list(par = engine@b0, fn = log.obj,
-                                               quiet = TRUE, control = list(trace = FALSE))))
+                                               quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     if (engine@solver == "optim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver,
-                           list(par = engine@b0, fn = log.obj, control = list(trace = FALSE))))
+                           list(par = engine@b0, fn = log.obj,
+                                control = list(abstol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     list(beta = fit$par, conv = fit$convergence, pe.time = end.time - start.time,
@@ -315,24 +318,24 @@ rankFit.pw.is <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver, list(par = engine@b0, fn = pw.est,
-                                            quiet = TRUE, control = list(trace = FALSE))),
+                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
                 error = function(e)
                 do.call(engine@solver, list(par = double(p), fn = pw.est,
-                                            quiet = TRUE, control = list(trace = FALSE)))))
+                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
         end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver, list(par = engine@b0, fn = pw.obj,
-                                               quiet = TRUE, control = list(trace = FALSE))))
+                                               quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     if (engine@solver == "optim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver,
-                           list(par = engine@b0, fn = pw.obj, control = list(trace = FALSE))))
+                           list(par = engine@b0, fn = pw.obj, control = list(abstol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     list(beta = fit$par, conv = fit$convergence, pe.time = end.time - start.time,
@@ -373,24 +376,24 @@ rankFit.pw.ns <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver, list(par = engine@b0, fn = pw.est,
-                                            quiet = TRUE, control = list(trace = FALSE))),
+                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
                 error = function(e)
                     do.call(engine@solver, list(par = double(p), fn = pw.est,
-                                                quiet = TRUE, control = list(trace = FALSE)))))
+                                                quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
                 end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver, list(par = engine@b0, fn = pw.obj,
-                                               quiet = TRUE, control = list(trace = FALSE))))
+                                               quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     if (engine@solver == "optim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver,
-                           list(par = engine@b0, fn = pw.obj, control = list(trace = FALSE))))
+                           list(par = engine@b0, fn = pw.obj, control = list(abstol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     list(beta = fit$par, conv = fit$convergence, pe.time = end.time - start.time,
@@ -510,24 +513,24 @@ rankFit.gp.is <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver, list(par = engine@b0, fn = gp.est,
-                                            quiet = TRUE, control = list(trace = FALSE))),
+                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
                 error = function(e)
                     do.call(engine@solver, list(par = double(p), fn = gp.est,
-                                                quiet = TRUE, control = list(trace = FALSE)))))
+                                                quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
         end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver, list(par = engine@b0, fn = gp.obj,
-                                               quiet = TRUE, control = list(trace = FALSE))))
+                                               quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     if (engine@solver == "optim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver,
-                           list(par = engine@b0, fn = gp.obj, control = list(trace = FALSE))))
+                           list(par = engine@b0, fn = gp.obj, control = list(abstol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     list(beta = fit$par, conv = fit$convergence, pe.time = end.time - start.time,
@@ -574,24 +577,24 @@ rankFit.gp.ns <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver, list(par = engine@b0, fn = gp.est,
-                                            quiet = TRUE, control = list(trace = FALSE))),
+                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
                 error = function(e)
                 do.call(engine@solver, list(par = double(p), fn = gp.est,
-                                            quiet = TRUE, control = list(trace = FALSE)))))
+                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
         end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver, list(par = engine@b0, fn = gp.obj,
-                                               quiet = TRUE, control = list(trace = FALSE))))
+                                               quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     if (engine@solver == "optim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver,
-                           list(par = engine@b0, fn = gp.obj, control = list(trace = FALSE))))
+                           list(par = engine@b0, fn = gp.obj, control = list(abstol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     list(beta = fit$par, conv = fit$convergence, pe.time = end.time - start.time,
@@ -707,24 +710,25 @@ rankFit.user.is <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver, list(par = engine@b0, fn = user.est,
-                                            quiet = TRUE, control = list(trace = FALSE))),
+                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
                 error = function(e)
                 do.call(engine@solver, list(par = double(p), fn = user.est,
-                                            quiet = TRUE, control = list(trace = FALSE)))))
+                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
                 end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver, list(par = engine@b0, fn = user.obj,
-                                               quiet = TRUE, control = list(trace = FALSE))))
+                                               quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     if (engine@solver == "optim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver,
-                           list(par = engine@b0, fn = user.obj, control = list(trace = FALSE))))
+                           list(par = engine@b0, fn = user.obj,
+                                control = list(abstol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     list(beta = fit$par, conv = fit$convergence, pe.time = end.time - start.time,
@@ -761,24 +765,25 @@ rankFit.user.ns <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver, list(par = engine@b0, fn = user.est,
-                                            quiet = TRUE, control = list(trace = FALSE))),
+                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
                 error = function(e)
                 do.call(engine@solver, list(par = double(p), fn = user.est,
-                                            quiet = TRUE, control = list(trace = FALSE)))))
+                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
                 end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver, list(par = engine@b0, fn = user.obj,
-                                               quiet = TRUE, control = list(trace = FALSE))))
+                                               quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     if (engine@solver == "optim") {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- do.call(engine@solver,
-                           list(par = engine@b0, fn = user.obj, control = list(trace = FALSE))))
+                           list(par = engine@b0, fn = user.obj,
+                                control = list(abstol = engine@tol, trace = FALSE))))
         end.time <- Sys.time()
     }
     list(beta = fit$par, conv = fit$convergence, pe.time = end.time - start.time,
@@ -1294,7 +1299,7 @@ aftsrr <- function(formula, data, subset, id = NULL, contrasts = NULL,
     engine <- do.call("new", c(list(Class = method), engine.control))
     if (engine@b0 == 0) {
         lm.formula <- paste("log(time)", paste(formula, collapse = ""))
-        engine@b0 <- as.numeric(coef(lm(lm.formula, data = DF)))[-1]
+        engine@b0 <- as.numeric(coef(lm(lm.formula, data = DF[,-(2:4)])))[-1]
     }
     if (length(engine@b0) != ncol(DF) - 4) 
         stop ("Initial value length does not match with the numbers of covariates", call. = FALSE)
