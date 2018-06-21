@@ -68,7 +68,10 @@ induced-smoothing estimating equations.}
   \item{\code{js}}{Johnson and Strawderman's iterating approach.}
 }}
 
-\item{control}{controls maxiter, tolerance, and resampling variance estimation.}
+\item{control}{controls equation solver, maxiter, tolerance, and resampling variance estimation.
+The available equation solvers are \code{BBsolve} and \code{dfsane} of the \pkg{BB} package.
+Instead of searching for the zero crossing, options including \code{BBoptim} and \code{optim}
+will return solution from maximizing the corresponding objective function.}
 }
 \value{
 \code{aftsrr} returns an object of class "\code{aftsrr}" representing the fit.
