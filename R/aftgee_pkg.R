@@ -20,7 +20,7 @@
 #' @references Chiou, S., Kang, S. and Yan, J. (2014) Fast Accelerated Failure Time Modeling
 #' for Case-Cohort Data. \emph{Statistics and Computing}, \bold{24}(4): 559--568.
 #' @references Chiou, S., Kang, S. and Yan, J. (2014) Fitting Accelerated Failure Time Model
-#' in Routine Survival Analysis with {R} Package \pkg{Aftgee}.
+#' in Routine Survival Analysis with {R} Package \pkg{aftgee}.
 #' \emph{Journal of Statistical Software}, \bold{61}(11): 1--23.
 #' @references Huang, Y. (2002) Calibration Regression of Censored Lifetime Medical Cost.
 #' \emph{Journal of American Statistical Association}, \bold{97}, 318--327.
