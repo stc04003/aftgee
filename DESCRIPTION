@@ -18,7 +18,7 @@ Description: A collection of methods for both the rank-based estimates and least
 	      can be specified in GEE's setting.
 	      Details on the least-squares estimation can be found in
 	      Chiou et al. (2014) <doi:10.1007/s10985-014-9292-x>.
-Depends: R (>= 3.4.4)
+Depends: R (>= 3.4.0)
 License: GPL (>= 3)
 URL: http://github.com/stc04003/aftgee
 BugReports: http://github.com/stc04003/aftgee/issues
