@@ -1,7 +1,7 @@
 **aftgee**
 ----------
 
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.4.4-6666ff.svg)](https://cran.r-project.org/) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/aftgee)](https://cran.r-project.org/package=aftgee) [![packageversion](https://img.shields.io/badge/Package%20version-1.1.3-orange.svg?style=flat-square)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2018--06--07-yellowgreen.svg)](/commits/master)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.4.0-6666ff.svg)](https://cran.r-project.org/) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/aftgee)](https://cran.r-project.org/package=aftgee) [![packageversion](https://img.shields.io/badge/Package%20version-1.1.3-orange.svg?style=flat-square)](commits/master) [![Last-changedate](https://img.shields.io/badge/last%20change-2018--06--30-yellowgreen.svg)](/commits/master)
 
 ------------------------------------------------------------------------
 
@@ -44,16 +44,16 @@ summary(fit.rk)
 #>     id = id, se = c("ISMB", "ZLMB"))
 #> 
 #> Variance Estimator: ISMB
-#>     Estimate StdErr z.value p.value    
-#> age   -0.001  0.014  -0.089   0.929    
-#> sex    1.522  0.470   3.235   0.001 ***
+#>     Estimate StdErr z.value p.value   
+#> age   -0.001  0.016  -0.076   0.939   
+#> sex    1.522  0.521   2.920   0.003 **
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
 #> Variance Estimator: ZLMB
-#>     Estimate StdErr z.value p.value    
-#> age   -0.001  0.020  -0.061   0.951    
-#> sex    1.522  0.457   3.330   0.001 ***
+#>     Estimate StdErr z.value p.value   
+#> age   -0.001  0.017  -0.074   0.941   
+#> sex    1.522  0.538   2.828   0.005 **
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 fit.ge <- aftgee(Surv(time, status) ~ age + sex, id = id, data = kidney)
@@ -64,9 +64,9 @@ summary(fit.ge)
 #> 
 #> AFTGEE Estimator
 #>             Estimate StdErr z.value p.value    
-#> (Intercept)    2.071  0.700   2.959   0.003 ** 
-#> age           -0.005  0.010  -0.542   0.588    
-#> sex            1.374  0.343   4.001  <2e-16 ***
+#> (Intercept)    2.071  0.757   2.734   0.006 ** 
+#> age           -0.005  0.007  -0.702   0.482    
+#> sex            1.374  0.366   3.751  <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
