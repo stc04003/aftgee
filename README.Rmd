@@ -60,3 +60,17 @@ summary(fit.rk)
 fit.ge <- aftgee(Surv(time, status) ~ age + sex, id = id, data = kidney)
 summary(fit.ge)
 ```
+
+## Reference 
+
+Chiou, S., Kang, S., and Yan, J. (2015). Rank-based estimating equations with general weight for accelerated failure time models: An induced smoothing approach. 
+*Statistics in Medicine*, **34**(9): 1495--1510.
+
+Chiou, S., Kang, S., and Yan, J. (2014).  Fitting accelerated failure time model in routine survival analysis with R package aftgee. 
+*Journal of Statistical Software*, **61**(11): 1--23. 
+
+Chiou, S., Kang, S., and Yan, J. (2014). Fast accelerated failure time modeling for case-cohort data. 
+*Statistics and Computing*, **24**(4): 559--568.
+
+Chiou, S., Kang, S., Kim, J., and Yan, J. (2014). Marginal semiparametric multivariate accelerated failure time model with generalized estimating equations. 
+*Lifetime Data Analysis*, **20**(4): 599--618.
