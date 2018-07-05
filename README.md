@@ -37,6 +37,7 @@ library(survival)
 data(kidney)
 
 library(aftgee)
+set.seed(123)
 fit.rk <- aftsrr(Surv(time, status) ~ age + sex, id = id, data = kidney, se = c("ISMB", "ZLMB"))
 summary(fit.rk)
 #> Call:
@@ -45,15 +46,15 @@ summary(fit.rk)
 #> 
 #> Variance Estimator: ISMB
 #>     Estimate StdErr z.value p.value    
-#> age   -0.001  0.014  -0.085   0.932    
-#> sex    1.522  0.452   3.368   0.001 ***
+#> age   -0.001  0.015  -0.085   0.932    
+#> sex    1.522  0.419   3.631  <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
 #> Variance Estimator: ZLMB
-#>     Estimate StdErr z.value p.value   
-#> age   -0.001  0.019  -0.066   0.948   
-#> sex    1.522  0.516   2.950   0.003 **
+#>     Estimate StdErr z.value p.value    
+#> age   -0.001  0.019  -0.066   0.947    
+#> sex    1.522  0.458   3.320   0.001 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 fit.ge <- aftgee(Surv(time, status) ~ age + sex, id = id, data = kidney)
@@ -64,9 +65,9 @@ summary(fit.ge)
 #> 
 #> AFTGEE Estimator
 #>             Estimate StdErr z.value p.value    
-#> (Intercept)    2.071  0.690   2.999   0.003 ** 
-#> age           -0.005  0.009  -0.615   0.539    
-#> sex            1.374  0.374   3.676  <2e-16 ***
+#> (Intercept)    2.071  0.659   3.141   0.002 ** 
+#> age           -0.005  0.010  -0.528   0.597    
+#> sex            1.374  0.405   3.393   0.001 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```

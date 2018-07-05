@@ -55,6 +55,7 @@ library(survival)
 data(kidney)
 
 library(aftgee)
+set.seed(123)
 fit.rk <- aftsrr(Surv(time, status) ~ age + sex, id = id, data = kidney, se = c("ISMB", "ZLMB"))
 summary(fit.rk)
 fit.ge <- aftgee(Surv(time, status) ~ age + sex, id = id, data = kidney)
