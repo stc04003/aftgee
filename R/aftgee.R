@@ -90,9 +90,9 @@
 #' set.seed(1)
 #' mydata <- datgen(n = 50, dim = 2)
 #' summary(aftgee(Surv(Y, delta) ~ x1 + x2, data = mydata,
-#'                id = id, corstr = "ind", B = 10))
+#'                id = id, corstr = "ind", B = 8))
 #' summary(aftgee(Surv(Y, delta) ~ x1 + x2, data = mydata,
-#'                id = id, corstr = "ex", B = 10))
+#'                id = id, corstr = "ex", B = 8))
 aftgee <- function(formula, data, subset, id = NULL, contrasts = NULL,
                    weights = NULL, margin = NULL, 
                    corstr="independence",

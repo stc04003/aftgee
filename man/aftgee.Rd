@@ -102,9 +102,9 @@ datgen <- function(n = 100, tau = 0.3, cen = 75.4, dim = 2) {
 set.seed(1)
 mydata <- datgen(n = 50, dim = 2)
 summary(aftgee(Surv(Y, delta) ~ x1 + x2, data = mydata,
-               id = id, corstr = "ind", B = 10))
+               id = id, corstr = "ind", B = 8))
 summary(aftgee(Surv(Y, delta) ~ x1 + x2, data = mydata,
-               id = id, corstr = "ex", B = 10))
+               id = id, corstr = "ex", B = 8))
 }
 \references{
 Chiou, S., Kim, J. and Yan, J. (2014) Marginal Semiparametric Multivariate
