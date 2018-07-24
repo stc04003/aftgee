@@ -29,7 +29,7 @@ Suggests: copula
 Imports: methods, parallel, geepack, survival, BB, MASS
 RoxygenNote: 6.0.1
 NeedsCompilation: yes
-Packaged: 2018-05-30 07:08:12 UTC; schiou
+Packaged: 2018-07-23 07:08:12 UTC; schiou
 Author: Sy Han Chiou [aut, cre],
   Sangwook Kang [aut],
   Jun Yan [aut]
