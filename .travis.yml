@@ -8,5 +8,5 @@ r:
   - oldrel
   - release
   - devel
-before_install:
-  - Rscript -e 'install.packages("copula", lib="/home/travis/R-bin/lib/R/library/")'
+r_github_packages:
+  - cran/survival
