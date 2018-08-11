@@ -8,3 +8,5 @@ r:
   - oldrel
   - release
   - devel
+before_install:
+  - Rscript -e 'install.packages("copula")'
