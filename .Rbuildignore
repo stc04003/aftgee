@@ -3,3 +3,8 @@
 ^README-.*\.png$
 .Rprofile
 ^\.travis\.yml$
+^docs$
+^test$
+\.Rproj$
+^\.Rproj\.user$
+^\.Rhistory$

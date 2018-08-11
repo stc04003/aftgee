@@ -71,15 +71,12 @@
 #'
 #' @examples
 #' library(survival)
-#' library(copula)
-#' datgen <- function(n = 100, tau = 0.3, cen = 75.4, dim = 2) {
-#'     kt <- iTau(claytonCopula(1), tau)
-#'     copula <- claytonCopula(kt, dim = dim)
+#' library(MASS)
+#' datgen <- function(n = 100, tau = 0.3, cen = 100, dim = 2) {
 #'     id <- rep(1:n, rep(dim, n))
 #'     x1 <- rbinom(dim * n, 1, 0.5)
 #'     x2 <- rnorm(dim * n)
-#'     ed <- mvdc(copula, rep("weibull", dim), rep(list(list(shape = 1)), dim))
-#'     e <- c(t(rMvdc(n, ed)))
+#'     e <- c(t(exp(mvrnorm(n = n, mu = rep(0, dim), Sigma = tau + (1 - tau) * diag(dim)))))
 #'     T <- exp(2 + x1 + x2 + e)
 #'     cstime <- runif(n, 0, cen)
 #'     delta <- (T < cstime) * 1

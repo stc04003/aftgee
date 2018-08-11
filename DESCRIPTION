@@ -25,7 +25,6 @@ BugReports: http://github.com/stc04003/aftgee/issues
 Encoding: UTF-8
 LazyData: true
 LazyLoad: yes
-Suggests: copula
 Imports: methods, parallel, geepack, survival, BB, MASS
 RoxygenNote: 6.0.1
 NeedsCompilation: yes
