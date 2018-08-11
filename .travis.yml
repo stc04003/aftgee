@@ -9,4 +9,4 @@ r:
   - release
   - devel
 r_github_packages:
-  - cran/survival
+  - cran/copula
