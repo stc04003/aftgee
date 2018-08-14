@@ -49,3 +49,6 @@ skip_commits:
     - tests/*
     - NEWS.md
     - .travis.yml
+ignore:
+    - tests/*
+    - NEWS.md
