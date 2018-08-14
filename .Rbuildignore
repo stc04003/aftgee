@@ -11,3 +11,4 @@
 ^appveyor\.yml$
 ^\.git$
 ^vignettes$
+tests/JSS-codes*
