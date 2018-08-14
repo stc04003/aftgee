@@ -48,6 +48,6 @@ artifacts:
 
 skip_commits:
   files:
-    - tests/*
     - NEWS.md
     - .travis.yml
+    - tests/*
