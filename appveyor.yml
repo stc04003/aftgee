@@ -43,3 +43,9 @@ artifacts:
 
   - path: '\*_*.zip'
     name: Bits
+
+skip_commits:
+  files:
+    - tests/*
+    - NEWS.md
+    - .travis.yml
