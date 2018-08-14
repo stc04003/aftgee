@@ -9,3 +9,5 @@
 ^\.Rproj\.user$
 ^\.Rhistory$
 ^appveyor\.yml$
+^\.git$
+^vignettes$
