@@ -268,8 +268,7 @@ rankFit.logrank.mis <- function(DF, engine, stdErr, gw = NULL) {
                      as.integer(p), as.integer(n), as.double(W),
                      out = double(n), PACKAGE = "aftgee")$out
         gw <- ifelse(gw == Inf, 0, gw)
-        b2 <- rankFit.gehan.is(DF, engine, stdErr, gw)$beta
-        engine@b0 <- b2
+        engine@b0 <- b2 <- rankFit.gehan.is(DF, engine, stdErr, gw)$beta
         iter <- iter + 1
         if (engine@trace) print(b2)
         if (max(abs(b1 - b2)) < engine@tol) {
@@ -421,7 +420,7 @@ rankFit.pw.mns <- function(DF, engine, stdErr, gw = NULL) {
                       as.integer(length(clsize)), as.integer(p), as.integer(n), as.double(W),
                       out = double(n), PACKAGE = "aftgee")$out
         gw <- ifelse(gw == Inf, 0, gw)
-        b2 <- rankFit.gehan.ns(DF, engine, stdErr, gw)$beta
+        engine@b0 <- b2 <- rankFit.gehan.ns(DF, engine, stdErr, gw)$beta
         iter <- iter + 1
         if (engine@trace) print(b2)
         if (max(abs(b1 - b2)) < engine@tol) {
@@ -457,8 +456,8 @@ rankFit.pw.mis <- function(DF, engine, stdErr, gw = NULL) {
                       as.double(engine@sigma0), as.integer(length(clsize)),
                       as.integer(p), as.integer(n), as.double(W),
                       out = double(n), PACKAGE = "aftgee")$out
-        gw <- ifelse(gw == Inf, min(gw), gw)
-        b2 <- rankFit.gehan.is(DF, engine, stdErr, gw)$beta
+        gw <- ifelse(gw == Inf, 0, gw)
+        engine@b0 <- b2 <- rankFit.gehan.is(DF, engine, stdErr, gw)$beta
         iter <- iter + 1
         if (engine@trace) print(b2)
         if (max(abs(b1 - b2)) < engine@tol) {
@@ -483,8 +482,7 @@ rankFit.gp.is <- function(DF, engine, stdErr, gw = NULL) {
     if (is.null(gw)) gw <- rep(1, n)
     p <- ncol(X)
     clsize <- as.numeric(unlist(lapply(split(id, id), length)))
-    pwr <- ifelse(is.null(engine@gp.pwr), 1 / ncol(X), engine@gp.pwr)
-    if (pwr < 0) stop("Invalid GP class power.", call. = FALSE)
+    pwr <- ifelse(engine@gp.pwr < 0, 1 / ncol(X), engine@gp.pwr)
     gp.obj <- function(b) {
         er <- Y - X %*% b
         tmp <- survfit(Surv(er, delta) ~ 1, weights = W)
@@ -547,8 +545,7 @@ rankFit.gp.ns <- function(DF, engine, stdErr, gw = NULL) {
     if (is.null(gw)) gw <- rep(1, n)
     p <- ncol(X)
     clsize <- as.numeric(unlist(lapply(split(id, id), length)))
-    pwr <- ifelse(is.null(engine@gp.pwr), 1 / ncol(X), engine@gp.pwr)
-    if (pwr < 0) stop("Invalid GP class power.", call. = FALSE)
+    pwr <- ifelse(engine@gp.pwr < 0, 1 / ncol(X), engine@gp.pwr)
     gp.obj <- function(b) {
         er <- Y - X %*% b
         tmp <- survfit(Surv(er, delta) ~ 1, weights = W)
@@ -612,20 +609,19 @@ rankFit.gp.mns <- function(DF, engine, stdErr, gw = NULL) {
     p <- ncol(X)
     clsize <- as.numeric(unlist(lapply(split(id, id), length)))
     b1 <- rankFit.gehan.ns(DF, engine, stdErr)$beta
-    pwr <- ifelse(is.null(engine@gp.pwr), 1 / ncol(X), engine@gp.pwr)
-    if (pwr < 0) stop("Invalid GP class power.", call. = FALSE)
+    pwr <- ifelse(engine@gp.pwr < 0, 1 / ncol(X), engine@gp.pwr)
     iter <- 1
     start.time <- Sys.time()
     for (i in 1:engine@maxIter) {
         er <- Y - X %*% b1
         tmp <- survfit(Surv(er, delta) ~ 1, weights = W)
         s0 <- approx(tmp$time, tmp$surv, er, "constant", yleft = 1, yright = min(tmp$surv))$y
+        s0 <- s0^pwr
         gw <- s0 / .C("gehan_ns_wt", as.double(b1), as.double(Y), as.double(X), as.integer(clsize),
                       as.integer(length(clsize)), as.integer(p), as.integer(n), as.double(W),
                       out = double(n), PACKAGE = "aftgee")$out
-        gw <- gw^pwr
         gw <- ifelse(gw == Inf, 0, gw)
-        b2 <- rankFit.gehan.ns(DF, engine, stdErr, gw)$beta
+        engine@b0 <- b2 <- rankFit.gehan.ns(DF, engine, stdErr, gw)$beta
         iter <- iter + 1
         if (engine@trace) print(b2)
         if (max(abs(b1 - b2)) < engine@tol) {
@@ -650,8 +646,7 @@ rankFit.gp.mis <- function(DF, engine, stdErr, gw = NULL) {
     gw <- rep(1, n)
     p <- ncol(X)
     clsize <- as.numeric(unlist(lapply(split(id, id), length)))
-    pwr <- ifelse(is.null(engine@gp.pwr), 1 / ncol(X), engine@gp.pwr)
-    if (pwr < 0) stop("Invalid GP class power.", call. = FALSE)
+    pwr <- ifelse(engine@gp.pwr < 0, 1 / ncol(X), engine@gp.pwr)
     b1 <- rankFit.gehan.is(DF, engine, stdErr)$beta
     iter <- 1
     start.time <- Sys.time()
@@ -659,13 +654,13 @@ rankFit.gp.mis <- function(DF, engine, stdErr, gw = NULL) {
         er <- Y - X %*% b1
         tmp <- survfit(Surv(er, delta) ~ 1, weights = W)
         s0 <- approx(tmp$time, tmp$surv, er, "constant", yleft = 1, yright = min(tmp$surv))$y
+        s0 <- s0^pwr
         gw <- s0 / .C("gehan_s_wt", as.double(b1), as.double(Y), as.double(X), as.integer(clsize),
                       as.double(engine@sigma0), as.integer(length(clsize)),
                       as.integer(p), as.integer(n), as.double(W),
                       out = double(n), PACKAGE = "aftgee")$out
-        gw <- gw^pwr
         gw <- ifelse(gw == Inf, 0, gw)
-        b2 <- rankFit.gehan.is(DF, engine, stdErr, gw)$beta
+        engine@b0 <- b2 <- rankFit.gehan.is(DF, engine, stdErr, gw)$beta
         iter <- iter + 1
         if (engine@trace) print(b2)
         if (max(abs(b1 - b2)) < engine@tol) {
@@ -805,7 +800,7 @@ rankFit.user.mns <- function(DF, engine, stdErr, gw = NULL) {
     start.time <- Sys.time()
     for (i in 1:engine@maxIter) {
         gw <- engine@userRk
-        b2 <- rankFit.gehan.ns(DF, engine, stdErr, gw)$beta
+        engine@b0 <- b2 <- rankFit.gehan.ns(DF, engine, stdErr, gw)$beta
         iter <- iter + 1
         if (engine@trace) print(b2)
         if (max(abs(b1 - b2)) < engine@tol) {
@@ -835,7 +830,7 @@ rankFit.user.mis <- function(DF, engine, stdErr, gw = NULL) {
     start.time <- Sys.time()
     for (i in 1:engine@maxIter) {
         gw <- engine@userRk
-        b2 <- rankFit.gehan.is(DF, engine, stdErr, gw)$beta
+        engine@b0 <- b2 <- rankFit.gehan.is(DF, engine, stdErr, gw)$beta
         iter <- iter + 1
         if (engine@trace) print(b2)
         if (max(abs(b1 - b2)) < engine@tol) {
@@ -1041,6 +1036,11 @@ setClass("PW.ns", contains = "Engine")
 setClass("PW.mis", contains = "Engine")
 setClass("PW.mns", contains = "Engine")
 
+setClass("GP.is", contains = "Engine")
+setClass("GP.ns", contains = "Engine")
+setClass("GP.mis", contains = "Engine")
+setClass("GP.mns", contains = "Engine")
+
 setClass("user.is", contains = "Engine")
 setClass("user.ns", contains = "Engine")
 setClass("user.mis", contains = "Engine")
@@ -1048,19 +1048,19 @@ setClass("user.mns", contains = "Engine")
 
 setClass("GP.ns",
          representation(gp.pwr = "numeric"),
-         prototype(gp.pwr = NULL),
+         prototype(gp.pwr = -999),
          contains = "Engine")
 setClass("GP.is",
          representation(gp.pwr = "numeric"),
-         prototype(gp.pwr = NULL),
+         prototype(gp.pwr = -999),
          contains = "Engine")
 setClass("GP.mis",
          representation(gp.pwr = "numeric"),
-         prototype(gp.pwr = NULL),
+         prototype(gp.pwr = -999),
          contains = "Engine")
 setClass("GP.mns",
          representation(gp.pwr = "numeric"),
-         prototype(gp.pwr = NULL),
+         prototype(gp.pwr = -999),
          contains = "Engine")
 
 ## Variance
