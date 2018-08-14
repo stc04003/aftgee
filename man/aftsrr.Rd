@@ -4,10 +4,11 @@
 \alias{aftsrr}
 \title{Accelerated Failure Time with Smooth Rank Regression}
 \usage{
-aftsrr(formula, data, subset, id = NULL, contrasts = NULL, weights = NULL,
-  B = 100, rankWeights = c("gehan", "logrank", "PW", "GP", "userdefined"),
-  eqType = c("is", "ns", "mns", "mis"), se = c("NULL", "bootstrap", "MB",
-  "ZLCF", "ZLMB", "sHCF", "sHMB", "ISCF", "ISMB"), control = list())
+aftsrr(formula, data, subset, id = NULL, contrasts = NULL,
+  weights = NULL, B = 100, rankWeights = c("gehan", "logrank", "PW",
+  "GP", "userdefined"), eqType = c("is", "ns", "mns", "mis"),
+  se = c("NULL", "bootstrap", "MB", "ZLCF", "ZLMB", "sHCF", "sHMB",
+  "ISCF", "ISMB"), control = list())
 }
 \arguments{
 \item{formula}{a formula expression, of the form \code{response ~ predictors}.

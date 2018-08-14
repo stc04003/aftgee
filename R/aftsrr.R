@@ -1642,26 +1642,19 @@ viEmp <- function(beta, Y, delta, X, id, weights = rep(1, nrow(X)), B = 500,
   N <- length(weights)
   UnV <- zmat <- matrix(0, ncol = B, nrow = p)
   for (i in 1:B) {
-    if ( mb == TRUE) {
-      Z <- rep(rexp(length(clsize)), clsize)
-    }
-    if ( mb != TRUE) {
-      Z <- rep(1, N)
-    }
-    if (zbeta == TRUE) {
+    if (mb) Z <- rep(rexp(length(clsize)), clsize)
+    else Z <- rep(1, N)
+    if (zbeta) {
       zb <- rnorm(p)
       newbeta <- beta + n ^ (-0.5) * zb
       zmat[,i] <- zb
     }
-    if (zbeta != TRUE) {
+    if (!zbeta) {
       newbeta <- beta
     }
     sn <- vector("double", p)
-    ## if (rankWeights %in% c("nsPW", "nsGP")) {
-    ##     smooth <- FALSE
-    ## }
     gpweight <- ifelse(rankWeights %in% c("nsGP", "GP"), gpweight, 1)
-    if (smooth == TRUE) {
+    if (smooth) {
         if (rankWeights == "gehan") {
             UnV[,i] <- as.vector(.C("gehan_s_est", as.double(newbeta), as.double(Y),
                                     as.double(X), as.double(delta),
@@ -1712,7 +1705,7 @@ viEmp <- function(beta, Y, delta, X, id, weights = rep(1, nrow(X)), B = 500,
                                 rankWeights = rankWeights) # / n
         }
     }
-    if (smooth == FALSE) {
+    if (!smooth) {
         if (rankWeights == "gehan") {
             UnV[,i] <- as.vector(.C("gehan_ns_est", as.double(newbeta), as.double(Y),
                                     as.double(X), as.double(delta),

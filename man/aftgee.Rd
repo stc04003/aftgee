@@ -4,9 +4,9 @@
 \alias{aftgee}
 \title{Least-Squares Approach for Accelerated Failure Time with Generalized Estimating Equation}
 \usage{
-aftgee(formula, data, subset, id = NULL, contrasts = NULL, weights = NULL,
-  margin = NULL, corstr = "independence", binit = "srrgehan", B = 100,
-  control = aftgee.control())
+aftgee(formula, data, subset, id = NULL, contrasts = NULL,
+  weights = NULL, margin = NULL, corstr = "independence",
+  binit = "srrgehan", B = 100, control = aftgee.control())
 }
 \arguments{
 \item{formula}{a formula expression, of the form \code{response ~ predictors}.
