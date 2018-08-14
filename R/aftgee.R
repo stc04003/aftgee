@@ -275,6 +275,7 @@ aftgee.fit <- function(DF, corstr="independence",
 #' for each resampling sample in variance estimation.
 #' @param parallel an logical value indicating whether parallel computing is used for resampling and bootstrap.
 #' @param parCl an integer value indicating the number of CPU cores used when \code{parallel = TRUE}.
+#' @param gp.pwr an numerical value indicating the GP parameter when \code{rankWeights = GP}.
 #' The default value is half the CPU cores on the current host.
 #'
 #' @export
