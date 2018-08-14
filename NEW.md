@@ -1,5 +1,6 @@
 # aftgee_1.1.4
-  * Fixed PW and GP weights
+  * Fixed `PW` and `GP` weights
+  * Added `gp.pwr` for `rankWeights = GP` so that `PW` and `logrank` can be called with `rankWeights = GP` with `gp.pwr = 1` and `gp.pwr = 0`, respectively.
 
 # aftgee_1.1.3
   * rebuild with oxygen2
