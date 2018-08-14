@@ -1,9 +1,8 @@
 ## R codes in JSS aftgee; http://www.jstatsoft.org/v61/i11/}
+## Codes with pkg(lss) and pkg(rms) are ignored
 
 library(aftgee)
 library(survival)
-library(lss)
-library(rms)
 
 datgen <- function(n = 500, tau = 327) {
     x1 <- rbinom(n, 1, 0.5)
@@ -19,8 +18,6 @@ datgen <- function(n = 500, tau = 327) {
 set.seed(1)
 mydata <- datgen()
 
-system.time(rk.lss <- lss(Surv(log(Y), delta) ~ x1 + x2, data = mydata,
-                          gehanonly = TRUE, mcsize = 100))
 ## V1.0.0
 ## system.time(rk.srrMB <- aftsrr(Surv(Y, delta) ~ x1 + x2, data = mydata, variance = "MB"))
 ## system.time(rk.srrISMB <- aftsrr(Surv(Y, delta) ~ x1 + x2, data = mydata, variance = "ISMB"))
@@ -29,24 +26,8 @@ system.time(rk.lss <- lss(Surv(log(Y), delta) ~ x1 + x2, data = mydata,
 system.time(rk.srrMB <- aftsrr(Surv(Y, delta) ~ x1 + x2, data = mydata, se = "MB"))
 system.time(rk.srrISMB <- aftsrr(Surv(Y, delta) ~ x1 + x2, data = mydata, se = "ISMB"))
 
-rbind(rk.lss = c(rk.lss$betag), srrMB = coef(rk.srrMB),
-      srrISMB = coef(rk.srrISMB), deparse.level = 2)
-
-rbind(rk.lss = rk.lss$gehansd, srrMB = sqrt(diag(vcov(rk.srrMB)$MB)),
-      srrISMB = sqrt(diag(vcov(rk.srrISMB)$ISMB)), deparse.level = 2)
-
-
-system.time(ls.bj <- bj(Surv(Y, delta) ~ x1 + x2, data = mydata))
-system.time(ls.lss <- lss(Surv(log(Y), delta) ~ x1 + x2, data = mydata, mcsize = 100))
 system.time(ls.sur <- survreg(Surv(Y, delta) ~ x1 + x2, data = mydata, dist = "lognormal"))
 system.time(ls.gee <- aftgee(Surv(Y, delta) ~ x1 + x2, data = mydata))
-
-rbind(bj = coef(ls.bj), lss = c(NA, ls.lss$lse), gee = coef(ls.gee),
-      sur = coef(ls.sur), deparse.level = 2)
-
-rbind(bj = sqrt(diag(vcov(ls.bj))), lss = c(NA, ls.lss$sd),
-      gee = sqrt(diag(vcov(ls.gee))), sur = sqrt(diag(vcov(ls.sur)))[1:3],
-      deparse.level = 2)
 
 ##################################################################################
 ## National Wilms' tumor study
