@@ -20,13 +20,13 @@ rankFit.gehan.is <- function(DF, engine, stdErr, gw = NULL) {
         .C("gehan_s_obj", as.double(b), as.double(Y), as.double(X), as.double(delta),
            as.integer(clsize), as.double(engine@sigma0), as.integer(length(clsize)),
            as.integer(p), as.integer(n), as.double(W), as.double(gw),
-           double(1), PACKAGE = "aftgee")[[12]]
+           out = double(1), PACKAGE = "aftgee")$out
     }
     gehan.est <- function(b) {
         .C("gehan_s_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
            as.integer(clsize), as.double(engine@sigma0), as.integer(length(clsize)),
            as.integer(p), as.integer(n), as.double(W), as.double(gw),
-           double(p), PACKAGE = "aftgee")[[12]]
+           out = double(p), PACKAGE = "aftgee")$out
     }
     if (engine@solver %in% c("BBsolve", "dfsane")) {
         start.time <- Sys.time()
@@ -72,14 +72,14 @@ rankFit.gehan.ns <- function(DF, engine, stdErr, gw = NULL) {
         ans <- .C("gehan_ns_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
                   as.integer(clsize), as.integer(length(clsize)), as.integer(p),
                   as.integer(n), as.double(W), as.double(gw),
-                  double(p), PACKAGE = "aftgee")[[11]]
+                  out = double(p), PACKAGE = "aftgee")$out
         return(sum(ans^2))
     }
     gehan.est <- function(b) {
         .C("gehan_ns_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
            as.integer(clsize), as.integer(length(clsize)), as.integer(p),
            as.integer(n), as.double(W), as.double(gw),
-           double(p), PACKAGE = "aftgee")[[11]]
+           out = double(p), PACKAGE = "aftgee")$out
     }
     if (engine@solver %in% c("BBsolve", "dfsane")) {
         start.time <- Sys.time()
@@ -123,14 +123,14 @@ rankFit.logrank.is <- function(DF, engine, stdErr, gw = NULL) {
         ans <- .C("log_s_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
                   as.integer(clsize), as.double(engine@sigma0), as.integer(length(clsize)),
                   as.integer(p), as.integer(n), as.double(W), as.double(gw),
-                  double(p), PACKAGE = "aftgee")[[12]]
+                  out = double(p), PACKAGE = "aftgee")$out
         return(sum(ans^2))
     }
     log.est <- function(b) {
         .C("log_s_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
            as.integer(clsize), as.double(engine@sigma0), as.integer(length(clsize)),
            as.integer(p), as.integer(n), as.double(W), as.double(gw),
-           double(p), PACKAGE = "aftgee")[[12]]
+           out = double(p), PACKAGE = "aftgee")$out
     }
     if (engine@solver %in% c("BBsolve", "dfsane")) {
         start.time <- Sys.time()
@@ -176,14 +176,14 @@ rankFit.logrank.ns <- function(DF, engine, stdErr, gw = NULL) {
         ans <- .C("log_ns_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
                   as.integer(clsize), as.integer(length(clsize)),
                   as.integer(p), as.integer(n), as.double(W), as.double(gw),
-                  double(p), PACKAGE = "aftgee")[[11]]
+                  out = double(p), PACKAGE = "aftgee")$out
         return(sum(ans^2))
     }
     log.est <- function(b) {
         .C("log_ns_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
            as.integer(clsize), as.integer(length(clsize)),
            as.integer(p), as.integer(n), as.double(W), as.double(gw),
-           double(p), PACKAGE = "aftgee")[[11]]
+           out = double(p), PACKAGE = "aftgee")$out
     }
     if (engine@solver %in% c("BBsolve", "dfsane")) {
         start.time <- Sys.time()
@@ -231,7 +231,7 @@ rankFit.logrank.mns <- function(DF, engine, stdErr, gw = NULL) {
     for (i in 1:engine@maxIter) {
         gw <- 1 / .C("gehan_ns_wt", as.double(b1), as.double(Y), as.double(X), as.integer(clsize),
                      as.integer(length(clsize)), as.integer(p), as.integer(n), as.double(W),
-                     double(n), PACKAGE = "aftgee")[[9]]
+                     out = double(n), PACKAGE = "aftgee")$out
         gw <- ifelse(gw == Inf, 0, gw)
         b2 <- rankFit.gehan.ns(DF, engine, stdErr, gw)$beta
         engine@b0 <- b2
@@ -266,7 +266,7 @@ rankFit.logrank.mis <- function(DF, engine, stdErr, gw = NULL) {
         gw <- 1 / .C("gehan_s_wt", as.double(b1), as.double(Y), as.double(X), as.integer(clsize),
                      as.double(engine@sigma0), as.integer(length(clsize)), 
                      as.integer(p), as.integer(n), as.double(W),
-                     double(n), PACKAGE = "aftgee")[[10]]
+                     out = double(n), PACKAGE = "aftgee")$out
         gw <- ifelse(gw == Inf, 0, gw)
         b2 <- rankFit.gehan.is(DF, engine, stdErr, gw)$beta
         engine@b0 <- b2
@@ -301,7 +301,7 @@ rankFit.pw.is <- function(DF, engine, stdErr, gw = NULL) {
         ans <- .C("log_s_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
                   as.integer(clsize), as.double(engine@sigma0), as.integer(length(clsize)),
                   as.integer(p), as.integer(n), as.double(W), as.double(gw),
-                  double(p), PACKAGE = "aftgee")[[12]]
+                  out = double(p), PACKAGE = "aftgee")$out
         return(sum(ans^2))
     }
     pw.est <- function(b) {
@@ -311,7 +311,7 @@ rankFit.pw.is <- function(DF, engine, stdErr, gw = NULL) {
         .C("log_s_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
            as.integer(clsize), as.double(engine@sigma0), as.integer(length(clsize)),
            as.integer(p), as.integer(n), as.double(W), as.double(gw),
-           double(p), PACKAGE = "aftgee")[[12]]
+           out = double(p), PACKAGE = "aftgee")$out
     }
     if (engine@solver %in% c("BBsolve", "dfsane")) {
         start.time <- Sys.time()
@@ -359,7 +359,7 @@ rankFit.pw.ns <- function(DF, engine, stdErr, gw = NULL) {
         ans <- .C("log_ns_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
                   as.integer(clsize), as.integer(length(clsize)),
                   as.integer(p), as.integer(n), as.double(W), as.double(gw),
-                  double(p), PACKAGE = "aftgee")[[11]]
+                  out = double(p), PACKAGE = "aftgee")$out
         return(sum(ans^2))
     }
     pw.est <- function(b) {
@@ -369,7 +369,7 @@ rankFit.pw.ns <- function(DF, engine, stdErr, gw = NULL) {
         .C("log_ns_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
            as.integer(clsize), as.integer(length(clsize)),
            as.integer(p), as.integer(n), as.double(W), as.double(gw),
-           double(p), PACKAGE = "aftgee")[[11]]
+           out = double(p), PACKAGE = "aftgee")$out
     }
       if (engine@solver %in% c("BBsolve", "dfsane")) {
         start.time <- Sys.time()
@@ -419,7 +419,7 @@ rankFit.pw.mns <- function(DF, engine, stdErr, gw = NULL) {
         s0 <- approx(tmp$time, tmp$surv, er, "constant", yleft = 1, yright = min(tmp$surv))$y
         gw <- s0 / .C("gehan_ns_wt", as.double(b1), as.double(Y), as.double(X), as.integer(clsize),
                       as.integer(length(clsize)), as.integer(p), as.integer(n), as.double(W),
-                      double(n), PACKAGE = "aftgee")[[9]]
+                      out = double(n), PACKAGE = "aftgee")$out
         gw <- ifelse(gw == Inf, 0, gw)
         b2 <- rankFit.gehan.ns(DF, engine, stdErr, gw)$beta
         iter <- iter + 1
@@ -456,8 +456,8 @@ rankFit.pw.mis <- function(DF, engine, stdErr, gw = NULL) {
         gw <- s0 / .C("gehan_s_wt", as.double(b1), as.double(Y), as.double(X), as.integer(clsize),
                       as.double(engine@sigma0), as.integer(length(clsize)),
                       as.integer(p), as.integer(n), as.double(W),
-                      double(n), PACKAGE = "aftgee")[[10]]
-        gw <- ifelse(gw == Inf, 0, gw)
+                      out = double(n), PACKAGE = "aftgee")$out
+        gw <- ifelse(gw == Inf, min(gw), gw)
         b2 <- rankFit.gehan.is(DF, engine, stdErr, gw)$beta
         iter <- iter + 1
         if (engine@trace) print(b2)
@@ -494,7 +494,7 @@ rankFit.gp.is <- function(DF, engine, stdErr, gw = NULL) {
         ans <- .C("log_s_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
                   as.integer(clsize), as.double(engine@sigma0), as.integer(length(clsize)),
                   as.integer(p), as.integer(n), as.double(W), as.double(gw),
-                  double(p), PACKAGE = "aftgee")[[12]]
+                  out = double(p), PACKAGE = "aftgee")$out
         return(sum(ans^2))
     }
     gp.est <- function(b) {
@@ -506,7 +506,7 @@ rankFit.gp.is <- function(DF, engine, stdErr, gw = NULL) {
         .C("log_s_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
            as.integer(clsize), as.double(engine@sigma0), as.integer(length(clsize)),
            as.integer(p), as.integer(n), as.double(W), as.double(gw),
-           double(p), PACKAGE = "aftgee")[[12]]
+           out = double(p), PACKAGE = "aftgee")$out
     }
       if (engine@solver %in% c("BBsolve", "dfsane")) {
         start.time <- Sys.time()
@@ -558,7 +558,7 @@ rankFit.gp.ns <- function(DF, engine, stdErr, gw = NULL) {
         ans <- .C("log_ns_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
                   as.integer(clsize), as.integer(length(clsize)),
                   as.integer(p), as.integer(n), as.double(W), as.double(gw),
-                  double(p), PACKAGE = "aftgee")[[11]]
+                  out = double(p), PACKAGE = "aftgee")$out
         return(sum(ans^2))
     }
     gp.est <- function(b) {
@@ -570,7 +570,7 @@ rankFit.gp.ns <- function(DF, engine, stdErr, gw = NULL) {
         .C("log_ns_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
            as.integer(clsize), as.integer(length(clsize)),
            as.integer(p), as.integer(n), as.double(W), as.double(gw),
-           double(p), PACKAGE = "aftgee")[[11]]
+           out = double(p), PACKAGE = "aftgee")$out
     }
       if (engine@solver %in% c("BBsolve", "dfsane")) {
         start.time <- Sys.time()
@@ -622,7 +622,7 @@ rankFit.gp.mns <- function(DF, engine, stdErr, gw = NULL) {
         s0 <- approx(tmp$time, tmp$surv, er, "constant", yleft = 1, yright = min(tmp$surv))$y
         gw <- s0 / .C("gehan_ns_wt", as.double(b1), as.double(Y), as.double(X), as.integer(clsize),
                       as.integer(length(clsize)), as.integer(p), as.integer(n), as.double(W),
-                      double(n), PACKAGE = "aftgee")[[9]]
+                      out = double(n), PACKAGE = "aftgee")$out
         gw <- gw^pwr
         gw <- ifelse(gw == Inf, 0, gw)
         b2 <- rankFit.gehan.ns(DF, engine, stdErr, gw)$beta
@@ -662,7 +662,7 @@ rankFit.gp.mis <- function(DF, engine, stdErr, gw = NULL) {
         gw <- s0 / .C("gehan_s_wt", as.double(b1), as.double(Y), as.double(X), as.integer(clsize),
                       as.double(engine@sigma0), as.integer(length(clsize)),
                       as.integer(p), as.integer(n), as.double(W),
-                      double(n), PACKAGE = "aftgee")[[10]]
+                      out = double(n), PACKAGE = "aftgee")$out
         gw <- gw^pwr
         gw <- ifelse(gw == Inf, 0, gw)
         b2 <- rankFit.gehan.is(DF, engine, stdErr, gw)$beta
@@ -695,7 +695,7 @@ rankFit.user.is <- function(DF, engine, stdErr, gw = NULL) {
         ans <- .C("log_s_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
                   as.integer(clsize), as.double(engine@sigma0), as.integer(length(clsize)),
                   as.integer(p), as.integer(n), as.double(W), as.double(gw),
-                  double(p), PACKAGE = "aftgee")[[12]]
+                  out = double(p), PACKAGE = "aftgee")$out
         return(sum(ans^2))
     }
     user.est <- function(b) {
@@ -703,7 +703,7 @@ rankFit.user.is <- function(DF, engine, stdErr, gw = NULL) {
         .C("log_s_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
            as.integer(clsize), as.double(engine@sigma0), as.integer(length(clsize)),
            as.integer(p), as.integer(n), as.double(W), as.double(gw),
-           double(p), PACKAGE = "aftgee")[[12]]
+           out = double(p), PACKAGE = "aftgee")$out
     }
     if (engine@solver %in% c("BBsolve", "dfsane")) {
         start.time <- Sys.time()
@@ -750,7 +750,7 @@ rankFit.user.ns <- function(DF, engine, stdErr, gw = NULL) {
         ans <- .C("log_ns_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
                   as.integer(clsize), as.integer(length(clsize)),
                   as.integer(p), as.integer(n), as.double(W), as.double(gw),
-                  double(p), PACKAGE = "aftgee")[[11]]
+                  out = double(p), PACKAGE = "aftgee")$out
         return(sum(ans^2))
     }
     user.est <- function(b) {
@@ -758,7 +758,7 @@ rankFit.user.ns <- function(DF, engine, stdErr, gw = NULL) {
         .C("log_ns_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
            as.integer(clsize), as.integer(length(clsize)),
            as.integer(p), as.integer(n), as.double(W), as.double(gw),
-           double(p), PACKAGE = "aftgee")[[11]]
+           out = double(p), PACKAGE = "aftgee")$out
     }
       if (engine@solver %in% c("BBsolve", "dfsane")) {
         start.time <- Sys.time()
@@ -1036,29 +1036,29 @@ setClass("logrank.ns", contains = "Engine")
 setClass("logrank.mis", contains = "Engine")
 setClass("logrank.mns", contains = "Engine")
 
-setClass("pw.is", contains = "Engine")
-setClass("pw.ns", contains = "Engine")
-setClass("pw.mis", contains = "Engine")
-setClass("pw.mns", contains = "Engine")
+setClass("PW.is", contains = "Engine")
+setClass("PW.ns", contains = "Engine")
+setClass("PW.mis", contains = "Engine")
+setClass("PW.mns", contains = "Engine")
 
 setClass("user.is", contains = "Engine")
 setClass("user.ns", contains = "Engine")
 setClass("user.mis", contains = "Engine")
 setClass("user.mns", contains = "Engine")
 
-setClass("gp.ns",
+setClass("GP.ns",
          representation(gp.pwr = "numeric"),
          prototype(gp.pwr = NULL),
          contains = "Engine")
-setClass("gp.is",
+setClass("GP.is",
          representation(gp.pwr = "numeric"),
          prototype(gp.pwr = NULL),
          contains = "Engine")
-setClass("gp.mis",
+setClass("GP.mis",
          representation(gp.pwr = "numeric"),
          prototype(gp.pwr = NULL),
          contains = "Engine")
-setClass("gp.mns",
+setClass("GP.mns",
          representation(gp.pwr = "numeric"),
          prototype(gp.pwr = NULL),
          contains = "Engine")
@@ -1096,15 +1096,15 @@ setMethod("rankFit", signature(engine = "logrank.ns", stdErr = "NULL"), rankFit.
 setMethod("rankFit", signature(engine = "logrank.mns", stdErr = "NULL"), rankFit.logrank.mns)
 setMethod("rankFit", signature(engine = "logrank.mis", stdErr = "NULL"), rankFit.logrank.mis)
 
-setMethod("rankFit", signature(engine = "pw.is", stdErr = "NULL"), rankFit.pw.is)
-setMethod("rankFit", signature(engine = "pw.ns", stdErr = "NULL"), rankFit.pw.ns)
-setMethod("rankFit", signature(engine = "pw.mns", stdErr = "NULL"), rankFit.pw.mns)
-setMethod("rankFit", signature(engine = "pw.mis", stdErr = "NULL"), rankFit.pw.mis)
+setMethod("rankFit", signature(engine = "PW.is", stdErr = "NULL"), rankFit.pw.is)
+setMethod("rankFit", signature(engine = "PW.ns", stdErr = "NULL"), rankFit.pw.ns)
+setMethod("rankFit", signature(engine = "PW.mns", stdErr = "NULL"), rankFit.pw.mns)
+setMethod("rankFit", signature(engine = "PW.mis", stdErr = "NULL"), rankFit.pw.mis)
 
-setMethod("rankFit", signature(engine = "gp.is", stdErr = "NULL"), rankFit.gp.is)
-setMethod("rankFit", signature(engine = "gp.ns", stdErr = "NULL"), rankFit.gp.ns)
-setMethod("rankFit", signature(engine = "gp.mns", stdErr = "NULL"), rankFit.gp.mns)
-setMethod("rankFit", signature(engine = "gp.mis", stdErr = "NULL"), rankFit.gp.mis)
+setMethod("rankFit", signature(engine = "GP.is", stdErr = "NULL"), rankFit.gp.is)
+setMethod("rankFit", signature(engine = "GP.ns", stdErr = "NULL"), rankFit.gp.ns)
+setMethod("rankFit", signature(engine = "GP.mns", stdErr = "NULL"), rankFit.gp.mns)
+setMethod("rankFit", signature(engine = "GP.mis", stdErr = "NULL"), rankFit.gp.mis)
 
 setMethod("rankFit", signature(engine = "user.is", stdErr = "NULL"), rankFit.user.is)
 setMethod("rankFit", signature(engine = "user.ns", stdErr = "NULL"), rankFit.user.ns)
@@ -1251,7 +1251,7 @@ setMethod("rankFit", signature(engine = "Engine", stdErr = "ISMB"), rankFit.Engi
 #' summary(fit)
 aftsrr <- function(formula, data, subset, id = NULL, contrasts = NULL, 
                    weights = NULL, B = 100, 
-                   rankWeights = c("gehan", "logrank", "pw", "gp", "userdefined"),
+                   rankWeights = c("gehan", "logrank", "PW", "GP", "userdefined"),
                    eqType = c("is", "ns", "mns", "mis"),
                    se = c("NULL", "bootstrap", "MB", "ZLCF", "ZLMB",
                           "sHCF", "sHMB", "ISCF", "ISMB"),
@@ -1426,7 +1426,7 @@ abargehanfun <- function(beta, Y, X, delta, clsize, sigma, weights, gw = rep(1, 
     matrix(.C("abargehanfunC", as.double(beta), as.double(Y), as.double(X), as.double(delta),
               as.integer(clsize), as.double(sigma), as.integer(n), as.integer(p),
               as.integer(N), as.double(weights), as.double(gw),
-              as.double(a), PACKAGE = "aftgee")[[12]], nrow = p)
+              out = as.double(a), PACKAGE = "aftgee")$out, nrow = p)
 }
 
 
@@ -1438,7 +1438,7 @@ abarlogfun <- function(beta, Y, X, delta, clsize, sigma, weights, pw = rep(1, nr
     matrix(.C("abarlogfunC", as.double(beta), as.double(Y), as.double(X), as.double(delta),
               as.integer(clsize), as.double(pw), as.double(sigma), as.integer(n),
               as.integer(p), as.integer(N), as.double(weights),
-              as.double(a), PACKAGE = "aftgee")[[12]], nrow = p)
+              out = as.double(a), PACKAGE = "aftgee")$out, nrow = p)
 }
 
 abarpwfun <- function(beta, Y, X, delta, clsize, sigma, weights, pw) {
@@ -1449,8 +1449,9 @@ abarpwfun <- function(beta, Y, X, delta, clsize, sigma, weights, pw) {
     pt1 <- matrix(.C("abarpwfunC", as.double(beta), as.double(Y), as.double(X),
                      as.double(delta), as.integer(clsize), as.double(pw$fhat),
                      as.double(sigma), as.integer(n), as.integer(p), as.integer(N),
-                     as.double(weights), as.double(a), PACKAGE = "aftgee")[[11]], p)
-    ## pt1 <- uilogFun(beta, Y, X, delta, clsize, sigma, n, Z = rep(1, nrow(X)), weights, smooth = TRUE, constant = 0, s = 0, pw = pw$fhat)
+                     as.double(weights), out = as.double(a), PACKAGE = "aftgee")$out, p)
+    ## pt1 <- uilogFun(beta, Y, X, delta, clsize, sigma, n,
+    ## Z = rep(1, nrow(X)), weights, smooth = TRUE, constant = 0, s = 0, pw = pw$fhat)
     pt2 <- abarlogfun(beta, Y, X, delta, clsize, sigma, weights, pw$Shat)
     ## rep(1, p) %o% pt1 + pt2
     ## diag(pt1) + pt2
@@ -1465,7 +1466,7 @@ omegaFun <- function(beta, Y, X, delta, clsize, weights) {
   matrix(.C("omegafun", as.double(beta), as.double(Y), as.double(X),
             as.double(delta), as.integer(clsize), as.integer(n), as.integer(p),
             as.integer(N), as.double(weights),
-            as.double(omega), PACKAGE = "aftgee")[[10]], nrow = p)
+            out = as.double(omega), PACKAGE = "aftgee")$out, nrow = p)
 }
 
 getRankName <- function(rankWeights, method) {
@@ -1542,13 +1543,15 @@ getGehan <- function(Y, X, beta, N, delta, clsize, sigma, weights, smooth = FALS
     a <- vector("double", N)
     if (smooth == TRUE) {
         out <- matrix(.C("gehan_s_wt", as.double(beta), as.double(Y), as.double(X), as.integer(clsize),
-                         as.double(sigma), as.integer(n), as.integer(p), as.integer(N), as.double(weights),
-                         as.double(a), PACKAGE = "aftgee")[[10]], ncol = 1)
+                         as.double(sigma), as.integer(n), as.integer(p),
+                         as.integer(N), as.double(weights),
+                         out = as.double(a), PACKAGE = "aftgee")$out, ncol = 1)
     }
     if (smooth == FALSE) {
-        out <- matrix(.C("gehan_ns_wt", as.double(beta), as.double(Y), as.double(X), as.integer(clsize),
+        out <- matrix(.C("gehan_ns_wt", as.double(beta), as.double(Y),
+                         as.double(X), as.integer(clsize),
                          as.integer(n), as.integer(p), as.integer(N), as.double(weights),
-                         as.double(a), PACKAGE = "aftgee")[[9]], ncol = 1) 
+                         out = as.double(a), PACKAGE = "aftgee")$out, ncol = 1) 
     }
 
     out
@@ -1595,8 +1598,10 @@ getGw <- function(Y, X, beta, N, delta, clsize, sigma, weights, rankWeights, pw 
     gw
 }
 
-getSmoothSuv <- function(Y, X, beta, N, delta, weights) {
+getSmoothSuv <- function(Y, X, beta, delta, weights) {
+    ## function(Y, X, beta, N, delta, weights) {
     en <- Y - X %*% beta
+    N <- length(Y)
     ik <- rep(1:N, each=N)
     jl <- rep(1:N, N)
     Shat <- fhat <- NULL
@@ -1664,7 +1669,7 @@ viEmp <- function(beta, Y, delta, X, id, weights = rep(1, nrow(X)), B = 500,
                                     as.integer(length(clsize)), as.integer(p),
                                     as.integer(sum(clsize)),
                                     as.double(weights * Z), as.double(gw),
-                                    as.double(sn), PACKAGE = "aftgee")[[12]]) # / n
+                                    out = as.double(sn), PACKAGE = "aftgee")$out) # / n
         }
         if (rankWeights %in% c("nslogrank", "logrank")) {
             UnV[,i] <- uilogFun(beta = newbeta, Y = Y, X = X, delta = delta,
@@ -1695,14 +1700,14 @@ viEmp <- function(beta, Y, delta, X, id, weights = rep(1, nrow(X)), B = 500,
                                     as.integer(length(clsize)), as.integer(p),
                                     as.integer(sum(clsize)),
                                     as.double(weights * Z), as.double(gw),
-                                    as.double(sn), PACKAGE = "aftgee")[[12]]) # / n
+                                    out = as.double(sn), PACKAGE = "aftgee")$out) # / n
         }
         if (rankWeights %in% c("PW", "GP", "eGP")) {
             pw <- getPw(Y = Y, X = X, beta = newbeta, N = nrow(X),
                          delta = delta, weights = weights, rankWeights)
             UnV[,i] <- uilogFun(beta = newbeta, Y = Y, X = X, delta = delta,
                                 clsize = clsize, sigma = sigma,
-                                n = nrow(X), Z = Z, pw =pw,
+                                n = nrow(X), Z = Z, pw = pw,
                                 weights = weights, constant = 0, rkmethod = "sm",
                                 rankWeights = rankWeights) # / n
         }
@@ -1715,7 +1720,7 @@ viEmp <- function(beta, Y, delta, X, id, weights = rep(1, nrow(X)), B = 500,
                                     as.integer(length(clsize)), as.integer(p),
                                     as.integer(sum(clsize)), 
                                     as.double(weights * Z), as.double(gw),
-                                    as.double(sn), PACKAGE = "aftgee")[[11]]) # / n ## n and N?
+                                    out = as.double(sn), PACKAGE = "aftgee")$out) # / n ## n and N?
         }
         if (rankWeights %in% c("logrank", "nslogrank")) {
             UnV[,i] <- uilogFun(beta = newbeta, Y = Y, X = X, delta = delta,
@@ -1867,10 +1872,10 @@ huangFun <- function(beta, Y, delta, X, id, weights = rep(1, nrow(X)), B = 500,
   ## N <- sum(clsize)
   betaTemp <- NULL
   UnMatV <- NULL
-  if (vClose == TRUE) {
+  if (vClose) {
       vi <- viClo(beta, Y, delta, X, id, weights, B, rankWeights, stratify = TRUE)$vi * n
   }
-  if (vClose != TRUE) {
+  if (!vClose) {
       vi <- viEmp(beta, Y, delta, X, id, weights, B, mb = TRUE, zbeta = FALSE,
                   smooth = FALSE, rankWeights = rankWeights, gw = gw)$vi
   }
@@ -1883,30 +1888,31 @@ huangFun <- function(beta, Y, delta, X, id, weights = rep(1, nrow(X)), B = 500,
       if (rankWeights == "gehan") {
           bb <- BBsolve(beta, uiFun, Y = Y, X = X, delta = delta, clsize = clsize,
                         sigma = sigma, n = length(clsize), Z = Z, gw = gw,
-                        weights = weights, smooth = TRUE, constant = qq[,i] * n ^ -0.5,
+                        weights = weights, rkmethod = "sm", constant = qq[,i] * n ^ -0.5,
                         quiet = TRUE)
           newBeta[, i] <- bb$par
       }
       if (rankWeights == "logrank") {
           bb <- BBsolve(beta, uilogFun, Y = Y, X = X, delta = delta, clsize = clsize,
                         sigma = sigma, n = length(clsize), Z = Z,
-                        weights = weights, smooth = TRUE, constant = qq[,i] * n ^ -0.5,
-                        gpweight = 0, pw = rep(1, sum(clsize)),
-                        rankWeights = rankWeights, quiet = TRUE)
+                        weights = weights, constant = qq[,i] * n ^ -0.5,
+                        pw = rep(1, sum(clsize)),
+                        rankWeights = "logrank", rkmethod = "sm", quiet = TRUE)
           newBeta[, i] <- bb$par
       }
       if (rankWeights %in% c("PW", "Prentice-Wilcoxon", "GP")) {
-          gpweight <- ifelse(rankWeights %in% c("GP", "nsGP"), gpweight, 1)
+          pw <- getPw(Y = Y, X = X, beta = beta, N = nrow(X),
+                      delta = delta, weights = weights, rankWeights)
           bb <- BBsolve(beta, uilogFun, Y = Y, X = X, delta = delta, clsize = clsize,
                         sigma = sigma, n = length(clsize), Z = Z,
-                        weights = weights, smooth = TRUE, constant = qq[,i] * n ^ -0.5,
-                        gpweight = gpweight, pw = rep(1, sum(clsize)),
-                        rankWeights = rankWeights, quiet = TRUE)
+                        weights = weights, constant = qq[,i] * n ^ -0.5,
+                        pw = pw, rankWeights = rankWeights, rkmethod = "sm", quiet = TRUE)
           newBeta[, i] <- bb$par
       }
   }
   dd <- newBeta - beta
-  covmat <- n * t(dd) %*% dd
+  ## covmat <- n * t(dd) %*% dd
+  covmat <- t(dd) %*% dd
   list(covmat = covmat)
 }
 
@@ -1965,16 +1971,16 @@ isFun <- function(beta, Y, delta, X, id, weights = rep(1, nrow(X)), sigma, B = 5
     ## n <- length(clsize)
     UnMat <- zmat <- ahat <- NULL
     An.inv <- 1
-    if (omega == TRUE && rankWeights == "gehan") {
+    if (omega && rankWeights == "gehan") {
         vi <- omegaFun(beta, Y, X, delta, clsize, weights) * n## / n ^ 2
     }
-    if (omega != TRUE && vClose == TRUE && rankWeights == "gehan") {
+    if (!omega && vClose && rankWeights == "gehan") {
         vi <- viClo(beta, Y, delta, X, id, weights, B, gw = gw, stratify = TRUE)$vi * n
     }
-    if (omega != TRUE && vClose == TRUE && rankWeights == "logrank") {
+    if (!omega && vClose && rankWeights != "gehan") {## == "logrank") {
         vi <- viClo(beta, Y, delta, X, id, weights, B, "logrank", stratify = TRUE)$vi * n
     }
-    if (omega != TRUE && vClose != TRUE) {
+    if (!omega && !vClose) {
         vi <- viEmp(beta, Y, delta, X, id, weights, B, mb = TRUE, zbeta = FALSE,
                     gw = gw, rankWeights = rankWeights)$vi
     }
@@ -1985,7 +1991,7 @@ isFun <- function(beta, Y, delta, X, id, weights = rep(1, nrow(X)), sigma, B = 5
         An <- abarlogfun(beta, Y, X, delta, clsize, sigma, weights)
     }
     if (rankWeights %in% c("PW", "GP", "Prentice-Wilcoxon")) {
-        pw <- getSmoothSuv(Y, X, beta, n, delta, weights)
+        pw <- getSmoothSuv(Y, X, beta, delta, weights)
         An <- abarpwfun(beta, Y, X, delta, clsize, sigma, weights, pw)
     }
 
@@ -2015,7 +2021,7 @@ uilogFun <- function(beta, Y, X, delta, clsize, sigma, n, Z,
                   as.double(delta), as.integer(clsize),
                   as.double(sigma), as.integer(n), as.integer(p),
                   as.integer(N), as.double(Z * weights),
-                  as.double(pw), as.double(sn), PACKAGE = "aftgee")[[12]]
+                  as.double(pw), out = as.double(sn), PACKAGE = "aftgee")$out
     }
     if (rkmethod == "nonsm") {
         pw <- getPw(Y = Y, X = X, beta = beta, N = N, delta = delta,
@@ -2024,7 +2030,7 @@ uilogFun <- function(beta, Y, X, delta, clsize, sigma, n, Z,
                   as.double(delta), as.integer(clsize),
                   as.integer(n), as.integer(p),
                   as.integer(N), as.double(Z * weights),
-                  as.double(pw), as.double(sn), PACKAGE = "aftgee")[[11]]
+                  as.double(pw), out = as.double(sn), PACKAGE = "aftgee")$out
     }
     ans - constant
 }
@@ -2037,7 +2043,7 @@ uiFun <- function(beta, Y, X, delta, clsize, sigma, n, Z, weights, smooth = TRUE
   ans <- .C("gehan_s_est", as.double(beta), as.double(Y), as.double(X), as.double(delta),
             as.integer(clsize), as.double(sigma), as.integer(n), as.integer(p),
             as.integer(N), as.double(Z * weights), as.double(gw),
-            as.double(sn), PACKAGE = "aftgee")[[12]]
+            out = as.double(sn), PACKAGE = "aftgee")$out
   ans <- ans - constant
 }
 

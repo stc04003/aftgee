@@ -282,7 +282,8 @@ aftgee.fit <- function(DF, corstr="independence",
 #' @seealso \code{\link{aftgee}}
 aftgee.control <- function(maxiter = 50, reltol = 0.001, trace = FALSE,
                            seIni = FALSE, parallel = FALSE, parCl = parallel::detectCores() / 2) {
-    list(maxiter = maxiter, reltol = reltol, trace = trace, seIni = seIni, parallel = parallel, parCl = parCl)
+    list(maxiter = maxiter, reltol = reltol, trace = trace, seIni = seIni,
+         parallel = parallel, parCl = parCl)
 }
 
 aftgee.est <- function(y, x, delta, beta, id, corstr = "independence", Z = rep(1, length(y)),
