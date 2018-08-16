@@ -113,7 +113,7 @@ When \code{se = "bootstrap"} or \code{se = "MB"}, the variance-covariance matrix
 is estimated through a bootstrap fashion.
 Bootstrap samples that failed to converge are removed when computing the empirical variance matrix.
 When bootstrap is not called, we assume the variance-covariance matrix has a sandwich form
-\deqn{\Sigma = A^{-1}VA^{_1}^\top,}
+\deqn{\Sigma = A^{-1}VA^{-1}^\top,}
 where \eqn{V} is the asymptotic variance of the estimating function and
 \eqn{A} is the slope matrix.
 In this package, we provide seveal methods to estimate the variance-covariance
