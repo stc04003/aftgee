@@ -878,7 +878,7 @@ rankFit.Engine.bootstrap <- function(DF, engine, stdErr, gw) {
             rankFit(DF = DF2, engine = engine, stdErr = NULL, gw = NULL)$beta})
         stopCluster(cl)
         betaVar <- t(out)
-        return(c(fit, list(betaVar = varOut(betaVar))))
+        return(c(fit, list(betaVar = varOut(betaVar), bhist = rmOut(betaVar))))
     }
     for (i in 1:B) {
         sampled.id <- sample(unique(id), n, TRUE)
@@ -887,7 +887,7 @@ rankFit.Engine.bootstrap <- function(DF, engine, stdErr, gw) {
         DF2$id <- rep(1:n, clsz[sampled.id])
         betaVar[i,] <- rankFit(DF = DF2, engine = engine, stdErr = NULL, gw = NULL)$beta
     }
-    return(c(fit, list(betaVar = varOut(betaVar))))
+    return(c(fit, list(betaVar = varOut(betaVar), bhist = rmOut(betaVar))))
 }
 
 rankFit.Engine.mb <- function(DF, engine, stdErr, gw) {
@@ -917,7 +917,7 @@ rankFit.Engine.mb <- function(DF, engine, stdErr, gw) {
             rankFit(DF = DF2, engine = engine, stdErr = NULL, gw = NULL)$beta}))
         stopCluster(cl)
         betaVar <- t(matrix(out, p))
-        return(c(fit, list(betaVar = varOut(betaVar))))
+        return(c(fit, list(betaVar = varOut(betaVar), bhist = rmOut(betaVar))))
     }
     for (i in 1:B) {
         DF2 <- DF
@@ -925,7 +925,7 @@ rankFit.Engine.mb <- function(DF, engine, stdErr, gw) {
         DF2$weights <- DF2$weights * Z
         betaVar[i,] <- rankFit(DF = DF2, engine = engine, stdErr = NULL, gw = NULL)$beta
     }
-    return(c(fit, list(betaVar = varOut(betaVar))))
+    return(c(fit, list(betaVar = varOut(betaVar), bhist = rmOut(betaVar))))
 }
 
 ## rankFit.logrank.zl <- function(DF, engine, stdErr, gw) {
@@ -1066,7 +1066,7 @@ setClass("GP.mns",
 ## Variance
 setClass("stdErr",
          representation(tol = "numeric", B = "numeric", parallel = "logical", parCl = "numeric"),
-         prototype(tol = 1e-3, B = 100, parallel = FALSE, parCl = parallel::detectCores() / 2),
+         prototype(tol = 1e-3, B = 100, parallel = FALSE, parCl = round(parallel::detectCores() / 2)),
          contains = "VIRTUAL")
 
 setClass("bootstrap", contains = "stdErr")
@@ -1133,6 +1133,21 @@ setMethod("rankFit", signature(engine = "Engine", stdErr = "ISMB"), rankFit.Engi
 #' Estimating equations are solved with Barzilar-Borwein spectral method implemented as
 #' \code{BBsolve} in package \pkg{BB}.
 #'
+#' When \code{se = "bootstrap"} or \code{se = "MB"}, the variance-covariance matrix
+#' is estimated through a bootstrap fashion.
+#' Bootstrap samples that failed to converge are removed when computing the empirical variance matrix.
+#' When bootstrap is not called, we assume the variance-covariance matrix has a sandwich form
+#' \deqn{\Sigma = A^{-1}VA^{_1}^\top,}
+#' where \eqn{V} is the asymptotic variance of the estimating function and
+#' \eqn{A} is the slope matrix.
+#' In this package, we provide seveal methods to estimate the variance-covariance
+#' matrix via this sandwich form, depending on how \eqn{V} and \eqn{A} are estimated.
+#' Specifically, the asymptotic variance, \eqn{V}, can be estimated by either a
+#' closed-form formulation (\code{CF}) or through bootstrap the estimating equations (\code{MB}).
+#' On the other hand, the methods to estimate the slope matrix \eqn{A} are
+#' the inducing smoothing approach (\code{IS}), Zeng and Lin's approach (\code{ZL}),
+#' and the smoothed Huang's approach (\code{sH}).
+#'
 #' @param formula a formula expression, of the form \code{response ~ predictors}.
 #'     The \code{response} is a \code{Surv} object object with right censoring.
 #'     See the documentation of \code{lm}, \code{coxph} and \code{formula} for details.
@@ -1160,31 +1175,41 @@ setMethod("rankFit", signature(engine = "Engine", stdErr = "ISMB"), rankFit.Engi
 #'     estimating equation used to obtain the regression parameters.
 #'     The following are permitted:
 #' \describe{
-#'   \item{\code{nonsm}}{Regression parameters are estimated by directly solving the nonsmooth
+#'   \item{\code{is}}{Regression parameters are estimated by directly solving the
+#' induced-smoothing estimating equations. This is the default and recommended method.}
+#'   \item{\code{ns}}{Regression parameters are estimated by directly solving the nonsmooth
 #' estimating equations.}
-#'   \item{\code{sm}}{Regression parameters are estimated by directly solving the
-#' induced-smoothing estimating equations.}
-#'   \item{\code{monosm}}{Regression parameters are estimated by iterating the
-#'   monotonic smoothed estimating equations. This is typical when
+#'   \item{\code{mis}}{Regression parameters are estimated by iterating the
+#' monotonic smoothed Gehan-based estimating equations. This is typical when
+#'   \code{rankWeights = "PW"} and \code{rankWeights = "GP"}.}
+#'   \item{\code{mns}}{Regression parameters are estimated by iterating the
+#' monotonic non-smoothed Gehan-based estimating equations. This is typical when
 #'   \code{rankWeights = "PW"} and \code{rankWeights = "GP"}.}
 #' }
 #' @param se a character string specifying the estimating method for the variance-covariance matrix.
 #'   The following are permitted:
 #' \describe{
-#'   \item{\code{bootstrap}}{nonparametric bootstrap,}
+#'   \item{\code{NULL}}{if \code{se} is specified as \code{NULL},
+#' the variance-covariance matrix will not be computed.}
+#'   \item{\code{bootstrap}}{nonparametric bootstrap.}
 #'   \item{\code{MB}}{multiplier resampling.}
-#'   \item{\code{ZLCF}}{Zeng and Lin's approach with closed form Si.}
-#'   \item{\code{ZLMB}}{Zeng and Lin's approach with empirical Si.}
-#'   \item{\code{sHCF}}{Huang's approach with closed form Si.}
-#'   \item{\code{sHMB}}{Huang's approach with empirical Si.}
-#'   \item{\code{ISCF}}{Johnson and Strawderman's sandwich variance estimates with closed form Si.}
-#'   \item{\code{ISMB}}{Johnson and Strawderman's sandwich variance estimates with empirical Si.}
-#'   \item{\code{js}}{Johnson and Strawderman's iterating approach.}
+#'   \item{\code{ZLCF}}{Zeng and Lin's approach with closed form \eqn{V}, see \bold{Details}.}
+#'   \item{\code{ZLMB}}{Zeng and Lin's approach with empirical \eqn{V}, see \bold{Details}.}
+#'   \item{\code{sHCF}}{Huang's approach with closed form \eqn{V}, see \bold{Details}.}
+#'   \item{\code{sHMB}}{Huang's approach with empirical \eqn{V}, see \bold{Details}.}
+#'   \item{\code{ISCF}}{Johnson and Strawderman's sandwich variance estimates with closed form \eqn{V}, see \bold{Details}.}
+#'   \item{\code{ISMB}}{Johnson and Strawderman's sandwich variance estimates with empirical \eqn{V}, see \bold{Details}.}
+##   \item{\code{js}}{Johnson and Strawderman's iterating approach.}
 #' }
 #' @param control controls equation solver, maxiter, tolerance, and resampling variance estimation.
 #' The available equation solvers are \code{BBsolve} and \code{dfsane} of the \pkg{BB} package.
 #' Instead of searching for the zero crossing, options including \code{BBoptim} and \code{optim}
 #' will return solution from maximizing the corresponding objective function.
+#' When \code{se = "bootstrap"} or \code{se = "MB"},
+#' an additional argument \code{parallel = TRUE} can be specified to
+#' enable parallel computation.
+#' The number of CPU cores can be specified with \code{parCl},
+#' the default number of CPU cores is the integer value of \code{detectCores() / 2}.
 #'
 #' @export
 #'
@@ -1252,7 +1277,7 @@ setMethod("rankFit", signature(engine = "Engine", stdErr = "ISMB"), rankFit.Engi
 aftsrr <- function(formula, data, subset, id = NULL, contrasts = NULL, 
                    weights = NULL, B = 100, 
                    rankWeights = c("gehan", "logrank", "PW", "GP", "userdefined"),
-                   eqType = c("is", "ns", "mns", "mis"),
+                   eqType = c("is", "ns", "mis", "mns"),
                    se = c("NULL", "bootstrap", "MB", "ZLCF", "ZLMB",
                           "sHCF", "sHMB", "ISCF", "ISMB"),
                    control = list()) {
@@ -1274,8 +1299,6 @@ aftsrr <- function(formula, data, subset, id = NULL, contrasts = NULL,
     id <- model.extract(m, id)
     mterms <- attr(m, "terms")
     weights <- model.extract(m, weights) 
-    ## if (missing(data)) obj <- eval(formula[[2]], parent.frame())
-    ## if (!missing(data)) obj <- eval(formula[[2]], data)
     obj <- unclass(m[,1]) 
     if (class(m[[1]]) != "Surv" || ncol(obj) > 2)
         stop("aftsrr only supports Surv object with right censoring.", call. = FALSE)
@@ -1286,9 +1309,6 @@ aftsrr <- function(formula, data, subset, id = NULL, contrasts = NULL,
     if (formula == ~1) DF <- cbind(obj, zero = 0)
     else {
         DF <- cbind(obj, id, weights, model.matrix(mterms, m, contrasts))
-        ## remove intercept
-        ## if (sum(colnames(DF) == "(Intercept)") > 0)
-        ## print("Rank-based estimation assumes no-intercept model.")
         if (sum(colnames(DF) == "(Intercept)") > 0)
             DF <- DF[,-which(colnames(DF) == "(Intercept)")]
     }
@@ -1306,7 +1326,6 @@ aftsrr <- function(formula, data, subset, id = NULL, contrasts = NULL,
     if (engine@sigma0 == 0) engine@sigma0 <- diag(length(engine@b0))
     if (rkWeights == "userdefined" & length(engine@userRk) != nrow(DF))
         stop("Invalid userdefined rank weight values.", call. = FALSE)
-    ## #####################################################################################
     ## Easy patch for now (3/15/2018);
     stdErr.control <- control[names(control) %in% names(attr(getClass(se[1]), "slots"))]
     stdErr <- do.call("new", c(list(Class = se[1]), stdErr.control))
@@ -1324,15 +1343,18 @@ aftsrr <- function(formula, data, subset, id = NULL, contrasts = NULL,
         covmat <- matrix(NA, p, p)
     } else {
         fit <- rankFit(DF = DF, engine = engine, stdErr = NULL, gw = NULL)
+        bhist <- NULL 
         ZLMB.An.inv <- ZLCF.An.inv <- ISMB.An.inv <- ISCF.An.inv <- js.An.inv <- 1
         vBoot <- vMB <- vZLCF <- vZLMB <- vsHCF <- vsHMB <- vISCF <- vISMB <- bstep <- NaN
         if (sum(se %in% "bootstrap") > 0) {        
             fit <- rankFit(DF = DF, engine = engine, stdErr = stdErr, gw = NULL)
             vBoot <- fit$betaVar
+            bhist <- fit$bhist
         }
         if (sum(se %in% "MB") > 0) {
             fit <- rankFit(DF = DF, engine = engine, stdErr = stdErr, gw = NULL)
             vMB <- fit$betaVar
+            bhist <- fit$bhist
         }
         if (sum(se %in% c("ISMB", "ISCF", "ZLMB", "ZLCF", "sZLCF", "sHMB", "sHCF")) > 0) {
             gw <- getGw(Y = Y, X = X, beta = fit$beta, N = nrow(DF), delta = delta,
@@ -1360,7 +1382,6 @@ aftsrr <- function(formula, data, subset, id = NULL, contrasts = NULL,
         }
         if (sum(se %in% "ISCF") > 0) {
             if (B > 0) {
-                ## ISCF only for gehan
                 vISCF <- isFun(beta = fit$beta, Y = Y, delta = delta, X = X, id = id,
                                weights = W, sigma = engine@sigma0, B = B, vClose = TRUE,
                                gw = gw, rankWeights = rkWeights, stratify = TRUE)
@@ -1396,8 +1417,7 @@ aftsrr <- function(formula, data, subset, id = NULL, contrasts = NULL,
                        sHCF = vsHCF, sHMB = vsHMB,
                        ISCF = vISCF, ISMB = vISMB)        
     }
-    out <- list(beta = fit$beta, covmat = covmat, convergence = fit$conv, bstep = fit$iter,
-                var.meth = se, bhist = NULL)
+    out <- list(beta = fit$beta, covmat = covmat, convergence = fit$conv, bstep = fit$iter, var.meth = se, bhist = bhist)
     class(out) <- "aftsrr"
     out$call <- scall
     out$vari.name <- colnames(X)
@@ -1414,6 +1434,11 @@ varOut <- function(dat, na.rm = TRUE) {
     dat[which(dat %in% boxplot(dat, plot = FALSE)$out)] <- NA
     dat <- dat[complete.cases(dat),]
     var(dat, na.rm = na.rm)
+}
+
+rmOut <- function(dat, na.rm = TRUE) {
+    dat[which(dat %in% boxplot(dat, plot = FALSE)$out)] <- NA
+    dat <- dat[complete.cases(dat),]
 }
 
 ##############################################################################

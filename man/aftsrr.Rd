@@ -6,7 +6,7 @@
 \usage{
 aftsrr(formula, data, subset, id = NULL, contrasts = NULL,
   weights = NULL, B = 100, rankWeights = c("gehan", "logrank", "PW",
-  "GP", "userdefined"), eqType = c("is", "ns", "mns", "mis"),
+  "GP", "userdefined"), eqType = c("is", "ns", "mis", "mns"),
   se = c("NULL", "bootstrap", "MB", "ZLCF", "ZLMB", "sHCF", "sHMB",
   "ISCF", "ISMB"), control = list())
 }
@@ -46,33 +46,42 @@ When B = 0, only the beta estimate will be displayed.}
     estimating equation used to obtain the regression parameters.
     The following are permitted:
 \describe{
-  \item{\code{nonsm}}{Regression parameters are estimated by directly solving the nonsmooth
+  \item{\code{is}}{Regression parameters are estimated by directly solving the
+induced-smoothing estimating equations. This is the default and recommended method.}
+  \item{\code{ns}}{Regression parameters are estimated by directly solving the nonsmooth
 estimating equations.}
-  \item{\code{sm}}{Regression parameters are estimated by directly solving the
-induced-smoothing estimating equations.}
-  \item{\code{monosm}}{Regression parameters are estimated by iterating the
-  monotonic smoothed estimating equations. This is typical when
+  \item{\code{mis}}{Regression parameters are estimated by iterating the
+monotonic smoothed Gehan-based estimating equations. This is typical when
+  \code{rankWeights = "PW"} and \code{rankWeights = "GP"}.}
+  \item{\code{mns}}{Regression parameters are estimated by iterating the
+monotonic non-smoothed Gehan-based estimating equations. This is typical when
   \code{rankWeights = "PW"} and \code{rankWeights = "GP"}.}
 }}
 
 \item{se}{a character string specifying the estimating method for the variance-covariance matrix.
   The following are permitted:
 \describe{
-  \item{\code{bootstrap}}{nonparametric bootstrap,}
+  \item{\code{NULL}}{if \code{se} is specified as \code{NULL},
+the variance-covariance matrix will not be computed.}
+  \item{\code{bootstrap}}{nonparametric bootstrap.}
   \item{\code{MB}}{multiplier resampling.}
-  \item{\code{ZLCF}}{Zeng and Lin's approach with closed form Si.}
-  \item{\code{ZLMB}}{Zeng and Lin's approach with empirical Si.}
-  \item{\code{sHCF}}{Huang's approach with closed form Si.}
-  \item{\code{sHMB}}{Huang's approach with empirical Si.}
-  \item{\code{ISCF}}{Johnson and Strawderman's sandwich variance estimates with closed form Si.}
-  \item{\code{ISMB}}{Johnson and Strawderman's sandwich variance estimates with empirical Si.}
-  \item{\code{js}}{Johnson and Strawderman's iterating approach.}
+  \item{\code{ZLCF}}{Zeng and Lin's approach with closed form \eqn{V}, see \bold{Details}.}
+  \item{\code{ZLMB}}{Zeng and Lin's approach with empirical \eqn{V}, see \bold{Details}.}
+  \item{\code{sHCF}}{Huang's approach with closed form \eqn{V}, see \bold{Details}.}
+  \item{\code{sHMB}}{Huang's approach with empirical \eqn{V}, see \bold{Details}.}
+  \item{\code{ISCF}}{Johnson and Strawderman's sandwich variance estimates with closed form \eqn{V}, see \bold{Details}.}
+  \item{\code{ISMB}}{Johnson and Strawderman's sandwich variance estimates with empirical \eqn{V}, see \bold{Details}.}
 }}
 
 \item{control}{controls equation solver, maxiter, tolerance, and resampling variance estimation.
 The available equation solvers are \code{BBsolve} and \code{dfsane} of the \pkg{BB} package.
 Instead of searching for the zero crossing, options including \code{BBoptim} and \code{optim}
-will return solution from maximizing the corresponding objective function.}
+will return solution from maximizing the corresponding objective function.
+When \code{se = "bootstrap"} or \code{se = "MB"},
+an additional argument \code{parallel = TRUE} can be specified to
+enable parallel computation.
+The number of CPU cores can be specified with \code{parCl},
+the default number of CPU cores is the integer value of \code{detectCores() / 2}.}
 }
 \value{
 \code{aftsrr} returns an object of class "\code{aftsrr}" representing the fit.
@@ -98,6 +107,22 @@ General weights, additional sampling weights and fast sandwich variance estimati
 are also incorporated.
 Estimating equations are solved with Barzilar-Borwein spectral method implemented as
 \code{BBsolve} in package \pkg{BB}.
+}
+\details{
+When \code{se = "bootstrap"} or \code{se = "MB"}, the variance-covariance matrix
+is estimated through a bootstrap fashion.
+Bootstrap samples that failed to converge are removed when computing the empirical variance matrix.
+When bootstrap is not called, we assume the variance-covariance matrix has a sandwich form
+\deqn{\Sigma = A^{-1}VA^{_1}^\top,}
+where \eqn{V} is the asymptotic variance of the estimating function and
+\eqn{A} is the slope matrix.
+In this package, we provide seveal methods to estimate the variance-covariance
+matrix via this sandwich form, depending on how \eqn{V} and \eqn{A} are estimated.
+Specifically, the asymptotic variance, \eqn{V}, can be estimated by either a
+closed-form formulation (\code{CF}) or through bootstrap the estimating equations (\code{MB}).
+On the other hand, the methods to estimate the slope matrix \eqn{A} are
+the inducing smoothing approach (\code{IS}), Zeng and Lin's approach (\code{ZL}),
+and the smoothed Huang's approach (\code{sH}).
 }
 \examples{
 ## kidney data
