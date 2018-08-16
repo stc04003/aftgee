@@ -1338,12 +1338,12 @@ aftsrr <- function(formula, data, subset, id = NULL, contrasts = NULL,
     n <- nrow(DF)
     p <- ncol(X)
     clsize <- as.numeric(unlist(lapply(split(id, id), length)))
+    bhist <- NULL 
     if (sum(se %in% "NULL")) {
         fit <- rankFit(DF = DF, engine = engine, stdErr = NULL, gw = NULL)
         covmat <- matrix(NA, p, p)
     } else {
         fit <- rankFit(DF = DF, engine = engine, stdErr = NULL, gw = NULL)
-        bhist <- NULL 
         ZLMB.An.inv <- ZLCF.An.inv <- ISMB.An.inv <- ISCF.An.inv <- js.An.inv <- 1
         vBoot <- vMB <- vZLCF <- vZLMB <- vsHCF <- vsHMB <- vISCF <- vISMB <- bstep <- NaN
         if (sum(se %in% "bootstrap") > 0) {        

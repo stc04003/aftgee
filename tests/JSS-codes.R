@@ -76,6 +76,7 @@ summary(fit.pw) ## different results b/c different tol
 
 summary(aftsrr(Surv(edrel, rel) ~ histol + age, weights = hi, data = nwtco,
                rankWeights = "GP", eqType = "mis", subset = in.casecohort))
+
 summary(aftsrr(Surv(edrel, rel) ~ histol + age, weights = hi, data = nwtco,
                rankWeights = "PW", eqType = "mis", subset = in.casecohort))
 
