@@ -50,6 +50,11 @@ devtools::install_github("stc04003/aftgee")
 library(aftgee)
 ```
 
+### Online documentation 
+[Online document](https://www.sychiou.com/aftgee/index.html). 
+
+* Package vignette coming up.
+
 ## Examples
 Here are some examples to get started:
 ```{r example}
