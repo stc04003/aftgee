@@ -153,7 +153,7 @@ aftgee <- function(formula, data, subset, id = NULL, contrasts = NULL,
 aftgee.fit <- function(DF, corstr="independence",
                        B = 100, binit = "lm", yint = TRUE,
                        control = aftgee.control()) {
-    x <- as.matrix(DF[,-(1:5)])
+    x <- as.matrix(DF[,-(1:5), drop = FALSE])
     id <- DF$id
     n <- length(unique(id))
     rm <- NULL
