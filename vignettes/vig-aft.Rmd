@@ -1,0 +1,23 @@
+---
+title: "Accelerated Failure Time Model"
+author: Sy Han (Steven) Chiou
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+bibliography: ../inst/bib/aftgee.bib
+vignette: >
+  %\VignetteIndexEntry{Accelerated Failure Time Model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}{inputenc}
+---
+
+```{r default, include = FALSE}
+knitr::opts_chunk$set(prompt = TRUE, comment = "")
+```
+
+Accelerated Failure Time Model, an alternative to the popular Cox proportional rate model.
+	    
+## Reference
