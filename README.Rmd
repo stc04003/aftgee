@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
   fig.path = "README-"
 )
 ```
-## aftgee: Accerated Failure Time with Generalized Estimating Equation
+## aftgee: Accerated Failure Time with Generalized Estimating Equations
 
 The __aftgee__ package implements recently developed inference procedures for the accelerated failure time
 (AFT) models with both the rank-based approach and the least squares approach.

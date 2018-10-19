@@ -1,5 +1,5 @@
 
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.4.0-6666ff.svg)](https://cran.r-project.org/) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/aftgee)](https://cran.r-project.org/package=aftgee) [![packageversion](https://img.shields.io/badge/Package%20version-1.1.4-orange.svg?style=flat-square)](commits/master) [![Travis-CI Build Status](https://travis-ci.org/stc04003/aftgee.svg?branch=master)](https://travis-ci.org/stc04003/aftgee) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/stc04003/aftgee?branch=master&svg=true)](https://ci.appveyor.com/project/stc04003/aftgee) [![Last-changedate](https://img.shields.io/badge/last%20change-2018--09--21-yellowgreen.svg)](/commits/master)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.4.0-6666ff.svg)](https://cran.r-project.org/) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/aftgee)](https://cran.r-project.org/package=aftgee) [![packageversion](https://img.shields.io/badge/Package%20version-1.1.4-orange.svg?style=flat-square)](commits/master) [![Travis-CI Build Status](https://travis-ci.org/stc04003/aftgee.svg?branch=master)](https://travis-ci.org/stc04003/aftgee) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/stc04003/aftgee?branch=master&svg=true)](https://ci.appveyor.com/project/stc04003/aftgee) [![Last-changedate](https://img.shields.io/badge/last%20change-2018--10--19-yellowgreen.svg)](/commits/master)
 
 ------------------------------------------------------------------------
 
@@ -8,8 +8,8 @@
 
 ------------------------------------------------------------------------
 
-aftgee: Accerated Failure Time with Generalized Estimating Equation
--------------------------------------------------------------------
+aftgee: Accerated Failure Time with Generalized Estimating Equations
+--------------------------------------------------------------------
 
 The **aftgee** package implements recently developed inference procedures for the accelerated failure time (AFT) models with both the rank-based approach and the least squares approach. For the rank-based approach, the package allows various weight choices and uses an induced smoothing procedure that leads to much more efficient computation than the linear programming method. With the rank-based estimator as an initial value, the generalized estimating equation (GEE) approach is used as an extension of the least squares approach to the multivariate case, where the within cluster dependency is accountered for with working covariance structures. Additional sampling weights are incorporated to handle missing data needed as in case-cohort studies or general sampling schemes.
 
