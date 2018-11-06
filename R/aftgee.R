@@ -129,20 +129,21 @@ aftgee <- function(formula, data, subset, id = NULL, contrasts = NULL,
     DF <- as.data.frame(DF)
     out <- NULL
     if (sum(DF$status) == nrow(DF)) {
-        cat("Response is uncensored, ordinary least squares fitted with GEE is used.\n")
-        cat("An geese object is returned.\n")
-        out <- geese(as.formula(paste("log(time) ~ ", formula)[2]), data = DF, corstr = corstr)
-        return(out)
-        ## out$coef.init <- out$coef.res <- out$coefficients
-        ## out$coefficients <- cbind(out$coefficients, out$coefficients)
-        ## out$var.res <- vcov(out)
+        cat("There is no censoring in the data, ordinary least squares approach is fitted via geese.\n")
+        out$geese <- geese(as.formula(paste("log(time) ~ ", formula)[2]),
+                           data = DF, corstr = corstr)
+        out$coef.init <- out$coef.res <- out$geese$beta
+        out$coefficients <- cbind(out$coef.init, out$coef.res)
+        out$var.res <- out$geese$vbeta
     }
     else {
-        out <- aftgee.fit(DF = DF, corstr = corstr, B = B, binit = binit, control = control, yint = yint)
+        out <- aftgee.fit(DF = DF, corstr = corstr, B = B,
+                          binit = binit, control = control, yint = yint)
     } 
     out$y <- DF$time
     out$x <- DF[,-(1:5)]
-    rownames(out$coefficients) <- names(out$coef.res) <- names(out$coef.init) <- colnames(model.matrix(mterms, m, contrasts))
+    rownames(out$coefficients) <- names(out$coef.res) <-
+        names(out$coef.init) <- colnames(model.matrix(mterms, m, contrasts))
     ## out$intercept <- (sum(x[,1]) == nrow(x))
     colnames(out$coefficients) <- c("binit", "AFTGEE")
     out$call <- scall

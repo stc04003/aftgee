@@ -4,7 +4,7 @@
 library(aftgee)
 library(survival)
 
-datgen <- function(n = 500, tau = 327) {
+datgen <- function(n = 500, tau = .7) {
     x1 <- rbinom(n, 1, 0.5)
     x2 <- rnorm(n)
     e <- rweibull(n, 1, 3)
@@ -90,4 +90,3 @@ fit.ind <- aftgee(Surv(time, status) ~ age + sex, id = id, data = kidney)
 fit.ex <- aftgee(Surv(time, status) ~ age + sex, id = id, data = kidney, corstr = "ex")
 summary(fit.ind)
 summary(fit.ex)
-
