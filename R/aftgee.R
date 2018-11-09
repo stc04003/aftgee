@@ -131,7 +131,7 @@ aftgee <- function(formula, data, subset, id = NULL, contrasts = NULL,
     if (sum(DF$status) == nrow(DF)) {
         cat("There is no censoring in the data, ordinary least squares approach is fitted via geese.\n")
         out$geese <- geese(as.formula(paste("log(time) ~ ", formula)[2]),
-                           data = DF, corstr = corstr)
+                           weights = weights, id = id, data = DF, corstr = corstr)
         out$coef.init <- out$coef.res <- out$geese$beta
         out$coefficients <- cbind(out$coef.init, out$coef.res)
         out$var.res <- out$geese$vbeta
