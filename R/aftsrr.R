@@ -1318,8 +1318,10 @@ aftsrr <- function(formula, data, subset, id = NULL, contrasts = NULL,
     engine.control <- control[names(control) %in% names(attr(getClass(method), "slots"))]
     engine <- do.call("new", c(list(Class = method), engine.control))
     if (engine@b0 == 0) {
-        lm.formula <- paste("log(time)", paste(formula, collapse = ""))
-        engine@b0 <- as.numeric(coef(lm(lm.formula, data = DF[,-(2:4)])))[-1]
+        engine@b0 <- coef(lm(log(DF[,1]) ~ as.matrix(DF[,-(1:4)])))[-1]
+        engine@b0 <- as.numeric(engine@b0)
+        ## lm.formula <- paste("log(time)", paste(formula, collapse = ""))
+        ## engine@b0 <- as.numeric(coef(lm(lm.formula, data = DF[,-(2:4)])))[-1]
     }
     if (length(engine@b0) != ncol(DF) - 4) 
         stop ("Initial value length does not match with the numbers of covariates", call. = FALSE)
