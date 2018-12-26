@@ -75,6 +75,10 @@ the variance-covariance matrix will not be computed.}
 
 \item{control}{controls equation solver, maxiter, tolerance, and resampling variance estimation.
 The available equation solvers are \code{BBsolve} and \code{dfsane} of the \pkg{BB} package.
+The default algorithm control parameters are used when these functions are called.
+However, the monotonicity parameter, \code{M}, can be specified by users via the control list.
+When \code{M} is specified, the merit parameter, \code{noimp}, is set at \deqn{10 * M}.
+The readers are refered to the \pkg{BB} package for details.
 Instead of searching for the zero crossing, options including \code{BBoptim} and \code{optim}
 will return solution from maximizing the corresponding objective function.
 When \code{se = "bootstrap"} or \code{se = "MB"},

@@ -33,10 +33,10 @@ rankFit.gehan.is <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver,list(par = engine@b0, fn = gehan.est,
-                                           quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
+                                           quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE))),
                 error = function(e)
                     do.call(engine@solver,list(par = double(p), fn = gehan.est,
-                                               quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
+                                               quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE)))))
         end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
@@ -85,10 +85,10 @@ rankFit.gehan.ns <- function(DF, engine, stdErr, gw = NULL) {
         start.time <- Sys.time()
         suppressWarnings(
             fit <- tryCatch(do.call(engine@solver, list(par = engine@b0, fn = gehan.est, quiet = TRUE,
-                                                        control = list(tol = engine@tol, trace = FALSE))),
+                                                        control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE))),
                             error = function(e)
                                 do.call(engine@solver, list(par = double(p), fn = gehan.est, quiet = TRUE,
-                                                            control = list(tol = engine@tol, trace = FALSE)))))
+                                                            control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE)))))
         end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
@@ -137,10 +137,10 @@ rankFit.logrank.is <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver, list(par = engine@b0, fn = log.est,
-                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
+                                            quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE))),
                 error = function(e)
                     do.call(engine@solver, list(par = double(p), fn = log.est,
-                                                quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
+                                                quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE)))))
         end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
@@ -190,10 +190,10 @@ rankFit.logrank.ns <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver, list(par = engine@b0, fn = log.est,
-                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
+                                            quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE))),
                 error = function(e)
                     do.call(engine@solver, list(par = double(p), fn = log.est,
-                                                quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
+                                                quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE)))))
         end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
@@ -317,10 +317,10 @@ rankFit.pw.is <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver, list(par = engine@b0, fn = pw.est,
-                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
+                                            quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE))),
                 error = function(e)
                 do.call(engine@solver, list(par = double(p), fn = pw.est,
-                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
+                                            quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE)))))
         end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
@@ -375,10 +375,10 @@ rankFit.pw.ns <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver, list(par = engine@b0, fn = pw.est,
-                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
+                                            quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE))),
                 error = function(e)
                     do.call(engine@solver, list(par = double(p), fn = pw.est,
-                                                quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
+                                                quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE)))))
                 end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
@@ -511,10 +511,10 @@ rankFit.gp.is <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver, list(par = engine@b0, fn = gp.est,
-                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
+                                            quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE))),
                 error = function(e)
                     do.call(engine@solver, list(par = double(p), fn = gp.est,
-                                                quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
+                                                quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE)))))
         end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
@@ -574,10 +574,10 @@ rankFit.gp.ns <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver, list(par = engine@b0, fn = gp.est,
-                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
+                                            quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE))),
                 error = function(e)
                 do.call(engine@solver, list(par = double(p), fn = gp.est,
-                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
+                                            quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE)))))
         end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
@@ -705,10 +705,10 @@ rankFit.user.is <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver, list(par = engine@b0, fn = user.est,
-                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
+                                            quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE))),
                 error = function(e)
                 do.call(engine@solver, list(par = double(p), fn = user.est,
-                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
+                                            quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE)))))
                 end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
@@ -760,10 +760,10 @@ rankFit.user.ns <- function(DF, engine, stdErr, gw = NULL) {
         suppressWarnings(
             fit <- tryCatch(
                 do.call(engine@solver, list(par = engine@b0, fn = user.est,
-                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE))),
+                                            quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE))),
                 error = function(e)
                 do.call(engine@solver, list(par = double(p), fn = user.est,
-                                            quiet = TRUE, control = list(tol = engine@tol, trace = FALSE)))))
+                                            quiet = TRUE, control = list(tol = engine@tol, M = engine@M, noimp = 10 * engine@M, trace = FALSE)))))
                 end.time <- Sys.time()
     }
     if (engine@solver == "BBoptim") {
@@ -1015,9 +1015,9 @@ rankFit.Engine.mb <- function(DF, engine, stdErr, gw) {
 ## Point estimator
 setClass("Engine",
          representation(tol = "numeric", b0 = "numeric", sigma0 = "matrix",
-                        userRk = "numeric", maxIter = "numeric",
+                        userRk = "numeric", M = "numeric", maxIter = "numeric", 
                         solver = "character", trace = "logical"),
-         prototype(tol = 1e-3, b0 = 0, sigma0 = matrix(0), userRk = 0,
+         prototype(tol = 1e-3, b0 = 0, sigma0 = matrix(0), userRk = 0, M = 10,
                    maxIter = 50, solver = "dfsane", trace = FALSE),
          contains = "VIRTUAL")
 
@@ -1203,6 +1203,10 @@ setMethod("rankFit", signature(engine = "Engine", stdErr = "ISMB"), rankFit.Engi
 #' }
 #' @param control controls equation solver, maxiter, tolerance, and resampling variance estimation.
 #' The available equation solvers are \code{BBsolve} and \code{dfsane} of the \pkg{BB} package.
+#' The default algorithm control parameters are used when these functions are called.
+#' However, the monotonicity parameter, \code{M}, can be specified by users via the control list.
+#' When \code{M} is specified, the merit parameter, \code{noimp}, is set at \deqn{10 * M}.
+#' The readers are refered to the \pkg{BB} package for details.
 #' Instead of searching for the zero crossing, options including \code{BBoptim} and \code{optim}
 #' will return solution from maximizing the corresponding objective function.
 #' When \code{se = "bootstrap"} or \code{se = "MB"},
@@ -1317,7 +1321,7 @@ aftsrr <- function(formula, data, subset, id = NULL, contrasts = NULL,
     method <- paste(rkWeights, ".", eqType, sep = "")
     engine.control <- control[names(control) %in% names(attr(getClass(method), "slots"))]
     engine <- do.call("new", c(list(Class = method), engine.control))
-    if (engine@b0 == 0) {
+    if (length(engine@b0) == 1 && engine@b0 == 0) {
         engine@b0 <- coef(lm(log(DF[,1]) ~ as.matrix(DF[,-(1:4)])))[-1]
         engine@b0 <- as.numeric(engine@b0)
         ## lm.formula <- paste("log(time)", paste(formula, collapse = ""))
