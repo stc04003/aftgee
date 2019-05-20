@@ -10,7 +10,7 @@ aftgee(formula, data, subset, id = NULL, contrasts = NULL,
 }
 \arguments{
 \item{formula}{a formula expression, of the form \code{response ~ predictors}.
-The \code{response} is a \code{Surv} object object with right censoring.
+The \code{response} is a \code{Surv} object with right censoring.
 In the case of no censoring, \code{aftgee} will return an ordinary
 least estimate when \code{corstr = "independence"}.
 See the documentation of \code{lm}, \code{coxph} and \code{formula} for details.}

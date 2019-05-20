@@ -14,7 +14,7 @@ Encoding: UTF-8
 LazyData: true
 LazyLoad: yes
 Imports: methods, parallel, geepack, survival, BB, MASS
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 NeedsCompilation: yes
 Packaged: 2018-07-23 07:08:12 UTC; schiou
 Author: Sy Han Chiou [aut, cre],
