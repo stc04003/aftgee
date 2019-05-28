@@ -302,9 +302,10 @@ aftgee.est <- function(y, x, delta, beta, id, corstr = "independence", Z = rep(1
             e <- y - xmat %*% beta
             eres <- eRes(e, delta = delta, z = Z * weights)
             yhat <- delta * y + (1 - delta) * (eres[[1]] + xmat %*% beta)
-            yhatZ <- sqrt(Z) * yhat
-            xmatZ <- sqrt(Z) * xmat
-            geefit <- geese.fit(xmatZ, yhatZ, id, corstr = corstr, weights =  weights)
+            yhatZ <- sqrt(Z * weights) * yhat
+            xmatZ <- sqrt(Z * weights) * xmat
+            geefit <- geese.fit(xmatZ, yhatZ, id, corstr = corstr)
+            ## geefit <- geese.fit(xmatZ, yhatZ, id, corstr = corstr, weights =  weights)
         }
         if (length(unique(margin)) != 1L) {
             e <- y - xmat %*% beta

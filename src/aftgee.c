@@ -67,7 +67,7 @@ void gehan_s_obj(double *beta, double *Y, double *X, double *delta,
 void gehan_ns_est(double *beta, double *Y, double *X, double *delta, int *clsize,
 	    int *n, int *p, int *N, double *weights, double *gehanweights, double *sn) {
   int i, j, k, l, ik_idx = 0, jl_idx, r;
-  double *e = Calloc(*N, double), *xdif = Calloc(*p, double);
+  double *e = Calloc(*N, double);
   for (i = 0; i < *N; i++) {
     e[i] = 0.0;
     for (j = 0; j < *p; j++) {
@@ -83,9 +83,7 @@ void gehan_ns_est(double *beta, double *Y, double *X, double *delta, int *clsize
 	  for (l = 0; l < clsize[j]; l++) {
 	    if (e[ik_idx] - e[jl_idx] <= 0) {
 	      for (r = 0; r < *p; r++) {
-		xdif[r] = 0.0;
-		xdif[r] = X[ik_idx + r * *N] - X[jl_idx + r * *N];
-		sn[r] += gehanweights[ik_idx] * weights[ik_idx] * weights[jl_idx] * xdif[r];
+		sn[r] += gehanweights[ik_idx] * weights[ik_idx] * weights[jl_idx] * (X[ik_idx + r * *N] - X[jl_idx + r * *N]);
 	      } // end e[ik] - e[jl]
 	    }
 	    jl_idx++;
@@ -95,7 +93,6 @@ void gehan_ns_est(double *beta, double *Y, double *X, double *delta, int *clsize
       ik_idx++;
     }
   }
-  Free(xdif);
   Free(e);
 }
 
