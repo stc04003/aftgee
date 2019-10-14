@@ -84,8 +84,23 @@ residuals.aftgee <- function(object, ...){
   if (class(z) != "aftgee"){
     stop("Most be aftgee class")
   }
+  if ("(Intercept)" %in% attr(foo$coef.res, "names")) z$x <- as.matrix(cbind(1, z$x))
+  else z$x <- as.matrix(z$x)
   ans <- z["call"]
-  out <- log(z$y) - as.matrix(z$x) %*% z$coef.res
+  out <- log(z$y) - z$x %*% z$coef.res
+  out
+}
+
+#' @export
+resid.aftgee <- function(object, ...){
+  z <- object
+  if (class(z) != "aftgee"){
+    stop("Most be aftgee class")
+  }
+  if ("(Intercept)" %in% attr(foo$coef.res, "names")) z$x <- as.matrix(cbind(1, z$x))
+  else z$x <- as.matrix(z$x)
+  ans <- z["call"]
+  out <- log(z$y) - z$x %*% z$coef.res
   out
 }
 
@@ -139,7 +154,8 @@ predict.aftsrr <- function(object, newdata = NULL, se.fit = FALSE, type = "lp", 
 predict.aftgee <- function(object, newdata = NULL, se.fit = FALSE, ...){
     z <- object
     out <- NULL
-    z$x <- as.matrix(z$x)
+    if ("(Intercept)" %in% attr(foo$coef.res, "names")) z$x <- as.matrix(cbind(1, z$x))
+    else z$x <- as.matrix(z$x)
     if (class(z) != "aftgee"){
         stop("Most be aftgee class")
     }
