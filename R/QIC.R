@@ -3,14 +3,16 @@
 #'
 #' Implementation based on MES::QIC.geeglm
 #'
+#' @param object is a \code{aftgee} fit
+#' 
 #' @importFrom MASS ginv
-#' @noRd
 #' @export
-QIC <- function (object, tol = .Machine$double.eps) {
+#' @importFrom stats predict resid
+QIC <- function (object) {
     mu <- log(predict(object)$fit)
     y <- log(object$y)
     quasi <- sum(((y - mu)^2) / -2)
-    AIinverse <- ginv(object$gee.vbeta.naiv, tol = tol)
+    AIinverse <- ginv(object$gee.vbeta.naiv)
     Vr <- object$gee.vbeta
     trace <- sum(diag(AIinverse %*% Vr))
     params <- length(object$coef.res)

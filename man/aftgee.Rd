@@ -83,12 +83,12 @@ for multivariate dependence through working correlation structures to improve ef
 }
 \examples{
 library(survival)
-library(MASS)
+
 datgen <- function(n = 100, tau = 0.3, cen = 100, dim = 2) {
     id <- rep(1:n, rep(dim, n))
     x1 <- rbinom(dim * n, 1, 0.5)
     x2 <- rnorm(dim * n)
-    e <- c(t(exp(mvrnorm(n = n, mu = rep(0, dim), Sigma = tau + (1 - tau) * diag(dim)))))
+    e <- c(t(exp(MASS::mvrnorm(n = n, mu = rep(0, dim), Sigma = tau + (1 - tau) * diag(dim)))))
     T <- exp(2 + x1 + x2 + e)
     cstime <- runif(n, 0, cen)
     delta <- (T < cstime) * 1
@@ -98,10 +98,8 @@ datgen <- function(n = 100, tau = 0.3, cen = 100, dim = 2) {
 }
 set.seed(1)
 mydata <- datgen(n = 50, dim = 2)
-summary(aftgee(Surv(Y, delta) ~ x1 + x2, data = mydata,
-               id = id, corstr = "ind", B = 8))
-summary(aftgee(Surv(Y, delta) ~ x1 + x2, data = mydata,
-               id = id, corstr = "ex", B = 8))
+summary(aftgee(Surv(Y, delta) ~ x1 + x2, data = mydata, id = id, corstr = "ind", B = 8))
+summary(aftgee(Surv(Y, delta) ~ x1 + x2, data = mydata, id = id, corstr = "ex", B = 8))
 }
 \references{
 Chiou, S., Kim, J. and Yan, J. (2014) Marginal Semiparametric Multivariate
