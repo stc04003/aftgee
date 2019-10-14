@@ -129,15 +129,14 @@ the inducing smoothing approach (\code{IS}), Zeng and Lin's approach (\code{ZL})
 and the smoothed Huang's approach (\code{sH}).
 }
 \examples{
-## kidney data
+library(aftgee)
 library(survival)
-data(kidney)
-foo <- aftsrr(Surv(time, status) ~ age + sex, id = id,
-                data = kidney, se = c("ISMB", "ZLMB"), B = 10)
-foo
 
-## nwtco data
-library(survival)
+data(kidney)
+fit <- aftsrr(Surv(time, status) ~ age + sex, id = id,
+              data = kidney, se = c("ISMB", "ZLMB"), B = 10)
+fit
+
 data(nwtco)
 subinx <- sample(1:nrow(nwtco), 668, replace = FALSE)
 nwtco$subcohort <- 0
@@ -149,8 +148,8 @@ nwtco$study <- nwtco$study - 3
 nwtco$histol = nwtco$histol - 1
 sub <- nwtco[subinx,]
 fit <- aftsrr(Surv(edrel, rel) ~ histol + age12 + study, id = seqno,
-       weights = hi, data = sub, B = 10, se = c("ISMB", "ZLMB"),
-       subset = stage == 4)
+              weights = hi, data = sub, B = 10, se = c("ISMB", "ZLMB"),
+              subset = stage == 4)
 summary(fit)
 }
 \references{

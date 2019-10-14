@@ -25,18 +25,6 @@ residuals.aftsrr <- function(object, ...){
 
 #' @export
 #' @noRd
-resid.aftsrr <- function(object, ...){
-  z <- object
-  if (class(z) != "aftsrr"){
-    stop("Most be aftsrr class")
-  }
-  ans <- z["call"]
-  out <- log(z$y[,1]) - as.matrix(z$x) %*% z$beta
-  out
-}
-
-#' @export
-#' @noRd
 vcov.aftsrr <- function(object, ...){
   z <- object
   if (class(z) != "aftsrr"){
@@ -91,21 +79,7 @@ residuals.aftgee <- function(object, ...){
   if (class(z) != "aftgee"){
     stop("Most be aftgee class")
   }
-  if ("(Intercept)" %in% attr(foo$coef.res, "names")) z$x <- as.matrix(cbind(1, z$x))
-  else z$x <- as.matrix(z$x)
-  ans <- z["call"]
-  out <- log(z$y) - z$x %*% z$coef.res
-  out
-}
-
-#' @export
-#' @noRd
-resid.aftgee <- function(object, ...){
-  z <- object
-  if (class(z) != "aftgee"){
-    stop("Most be aftgee class")
-  }
-  if ("(Intercept)" %in% attr(foo$coef.res, "names")) z$x <- as.matrix(cbind(1, z$x))
+  if ("(Intercept)" %in% attr(object$coef.res, "names")) z$x <- as.matrix(cbind(1, z$x))
   else z$x <- as.matrix(z$x)
   ans <- z["call"]
   out <- log(z$y) - z$x %*% z$coef.res
@@ -125,8 +99,8 @@ predict.aftsrr <- function(object, newdata = NULL, se.fit = FALSE, type = "lp", 
       }
   }
   if (!is.null(newdata)) {
-      n <- as.matrix(newdata, ncol = length(z$beta))
-      out$fit <- as.numeric(n %*% z$beta)
+      newdata0 <- as.matrix(newdata, ncol = length(z$beta))
+      out$fit <- as.numeric(newdata0 %*% z$beta)
       if (type == "response") {
           out$fit <- as.numeric(exp(out$fit))
       }
@@ -146,7 +120,7 @@ predict.aftsrr <- function(object, newdata = NULL, se.fit = FALSE, type = "lp", 
               var[[i]] <- as.numeric(sqrt(diag(z$x %*% se.srr %*% t(z$x))))
           }
           if (!is.null(newdata)) {
-              var[[i]] <- as.numeric(sqrt(diag(n %*% se.srr %*% t(n))))
+              var[[i]] <- as.numeric(sqrt(diag(newdata0 %*% se.srr %*% t(newdata0))))
           }
       }
       out$se.fit <- var
@@ -162,7 +136,7 @@ predict.aftsrr <- function(object, newdata = NULL, se.fit = FALSE, type = "lp", 
 predict.aftgee <- function(object, newdata = NULL, se.fit = FALSE, ...){
     z <- object
     out <- NULL
-    if ("(Intercept)" %in% attr(foo$coef.res, "names")) z$x <- as.matrix(cbind(1, z$x))
+    if ("(Intercept)" %in% attr(object$coef.res, "names")) z$x <- as.matrix(cbind(1, z$x))
     else z$x <- as.matrix(z$x)
     if (class(z) != "aftgee"){
         stop("Most be aftgee class")
@@ -176,10 +150,10 @@ predict.aftgee <- function(object, newdata = NULL, se.fit = FALSE, ...){
     }
     if (!is.null(newdata)) {
         newdata0 <- as.matrix(newdata, ncol = length(z$coef.res))
-        if (z$intercept == TRUE & ncol(n) < length(z$coef.res)) {
+        if (z$intercept == TRUE & ncol(newdata0) < length(z$coef.res)) {
             newdata0 <- cbind(1, newdata0)
         }
-        out$fit <- exp(drop(n %*% z$coef.res))
+        out$fit <- exp(drop(newdata0 %*% z$coef.res))
         if (se.fit == TRUE) {
             out$se.fit <- sqrt(diag(newdata0 %*% z$var.res %*% t(newdata0)))
         }
