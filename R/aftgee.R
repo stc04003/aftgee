@@ -66,6 +66,7 @@
 #' @references Jin, Z. and Lin, D. Y. and Ying, Z. (2006)
 #' On Least-squares Regression with Censored Data. \emph{Biometrika}, \bold{90}, 341--353.
 #'
+#' @importFrom geepack geese geese.fit
 #' @export
 #' @keywords aftgee
 #'
@@ -237,9 +238,7 @@ aftgee.fit <- function(DF, corstr="independence",
             vhat <- var(t(bsamp))
         } ## end parallel 
     }
-    if (B == 0) {
-        vhat <- NULL
-    }
+    if (B == 0) vhat <- NULL
     ini.beta <- c(binitValue$beta)
     ini.sd <- c(binitValue$sd)
     ini.sdMat <- c(binitValue$sdMat)
@@ -247,6 +246,10 @@ aftgee.fit <- function(DF, corstr="independence",
                 coef.res = result$beta,
                 var.res = vhat,
                 varMargin = result$gamma,
+                gee.vbeta = result$vbeta,
+                gee.vbeta.naiv = result$vbeta.naiv,
+                gee.vbeta0 = result$vbeta0,
+                gee.vbeta.naiv0 = result$vbeta.naiv0,
                 alpha = result$alpha,
                 coef.init = ini.beta,
                 sd.init = ini.sd,
@@ -305,7 +308,6 @@ aftgee.est <- function(y, x, delta, beta, id, corstr = "independence", Z = rep(1
             yhatZ <- sqrt(Z * weights) * yhat
             xmatZ <- sqrt(Z * weights) * xmat
             geefit <- geese.fit(xmatZ, yhatZ, id, corstr = corstr)
-            ## geefit <- geese.fit(xmatZ, yhatZ, id, corstr = corstr, weights =  weights)
         }
         if (length(unique(margin)) != 1L) {
             e <- y - xmat %*% beta
@@ -325,19 +327,25 @@ aftgee.est <- function(y, x, delta, beta, id, corstr = "independence", Z = rep(1
             yhatZ <- sqrt(Z * weights) * yhat
             xmatZ <- sqrt(Z * weights) * xmat
             er2 <- as.matrix(eres2[margin])
-            ## geefit <- geese.fit(xmat, yhat, id, zsca = er2, scale.fix = TRUE, corstr = corstr, weights = Z * weights)
             geefit <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = corstr)
         }
         beta <- geefit$beta
         if (control$trace) cat("\n beta:", as.numeric(beta), "\n")
         convStep <- i
         if (max(abs(beta - betaprev) / abs(beta)) <= control$reltol) break
-    } ## end i for 1:maxiter
+    } 
+    ## Fitting independence structure at convergence for QIC calculation
+    if (length(unique(margin)) == 1L) geefit0 <- geese.fit(xmatZ, yhatZ, id, corstr = "independence")
+    else geefit0 <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = "independence")
     beta <- iniBeta <- geefit$beta
     alpha <- geefit$alpha
     gamma <- geefit$gamma ## eres2
     convergence <- ifelse(i == control$maxiter, 1, 0)
     out <- list(beta = beta, alpha = alpha, gamma = gamma, iniBeta = iniBeta,
+                ## variance matrix from geefit
+                vbeta = geefit$vbeta, vbeta.naiv = geefit$vbeta.naiv,
+                vbeta0 = geefit0$vbeta, vbeta.naiv0 = geefit0$vbeta.naiv,
+                ## iteration info.
                 convergence = convergence, convStep = convStep)
     return(out)
 }

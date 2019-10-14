@@ -1,7 +1,7 @@
 Package: aftgee
 Title: Accelerated Failure Time Model with Generalized Estimating
         Equations
-Version: 1.1.4
+Version: 1.1.5
 Authors@R: c(person("Sy Han", "Chiou", email = "schiou@utdallas.edu", role = c("aut", "cre")),
 	   person("Sangwook", "Kang", role = "aut"),
 	   person("Jun", "Yan", role = "aut"))
