@@ -1,4 +1,5 @@
 #' @export
+#' @noRd
 coef.aftsrr <- function(object, ...){
   z <- object
   if (class(z) != "aftsrr"){
@@ -11,6 +12,7 @@ coef.aftsrr <- function(object, ...){
 }
 
 #' @export
+#' @noRd
 residuals.aftsrr <- function(object, ...){
   z <- object
   if (class(z) != "aftsrr"){
@@ -22,6 +24,7 @@ residuals.aftsrr <- function(object, ...){
 }
 
 #' @export
+#' @noRd
 resid.aftsrr <- function(object, ...){
   z <- object
   if (class(z) != "aftsrr"){
@@ -33,6 +36,7 @@ resid.aftsrr <- function(object, ...){
 }
 
 #' @export
+#' @noRd
 vcov.aftsrr <- function(object, ...){
   z <- object
   if (class(z) != "aftsrr"){
@@ -57,6 +61,7 @@ vcov.aftsrr <- function(object, ...){
 }
 
 #' @export
+#' @noRd
 coef.aftgee <- function(object, ...){
   z <- object
   if (class(z) != "aftgee"){
@@ -68,6 +73,7 @@ coef.aftgee <- function(object, ...){
 }
 
 #' @export
+#' @noRd
 vcov.aftgee <- function(object, ...){
   z <- object
   if (class(z) != "aftgee"){
@@ -79,6 +85,7 @@ vcov.aftgee <- function(object, ...){
 }
 
 #' @export
+#' @noRd
 residuals.aftgee <- function(object, ...){
   z <- object
   if (class(z) != "aftgee"){
@@ -92,6 +99,7 @@ residuals.aftgee <- function(object, ...){
 }
 
 #' @export
+#' @noRd
 resid.aftgee <- function(object, ...){
   z <- object
   if (class(z) != "aftgee"){
@@ -105,6 +113,7 @@ resid.aftgee <- function(object, ...){
 }
 
 #' @export
+#' @noRd
 predict.aftsrr <- function(object, newdata = NULL, se.fit = FALSE, type = "lp", ...){
   z <- object
   out <- NULL
@@ -133,8 +142,6 @@ predict.aftsrr <- function(object, newdata = NULL, se.fit = FALSE, type = "lp", 
           names(var) <- z$var.meth
       for (i in 1:se.count) {
           se.srr <- z$covmat[[se.name[i]]]
-          ## rownames(se.srr) <- z$vari.name
-          ## colnames(se.srr) <- z$vari.name
           if (is.null(newdata)) {
               var[[i]] <- as.numeric(sqrt(diag(z$x %*% se.srr %*% t(z$x))))
           }
@@ -151,6 +158,7 @@ predict.aftsrr <- function(object, newdata = NULL, se.fit = FALSE, type = "lp", 
 }
 
 #' @export
+#' @noRd
 predict.aftgee <- function(object, newdata = NULL, se.fit = FALSE, ...){
     z <- object
     out <- NULL
@@ -161,16 +169,19 @@ predict.aftgee <- function(object, newdata = NULL, se.fit = FALSE, ...){
     }
     ans <- z["call"]
     if (is.null(newdata)) {
-        out$fit <- z$x %*% z$coef.res
+        out$fit <- exp(drop(z$x %*% z$coef.res)) # originally on log scale
+        if (se.fit == TRUE) {
+            out$se.fit <- sqrt(diag(z$x %*% z$var.res %*% t(z$x)))
+        }
     }
     if (!is.null(newdata)) {
-        n <- as.matrix(newdata, ncol = length(z$coef.res))
+        newdata0 <- as.matrix(newdata, ncol = length(z$coef.res))
         if (z$intercept == TRUE & ncol(n) < length(z$coef.res)) {
-            n <- cbind(1, n)
+            newdata0 <- cbind(1, newdata0)
         }
-        out$fit <- n %*% z$coef.res
+        out$fit <- exp(drop(n %*% z$coef.res))
         if (se.fit == TRUE) {
-            out$se.fit <- sqrt(diag(n %*% z$var.res %*% t(n)))
+            out$se.fit <- sqrt(diag(newdata0 %*% z$var.res %*% t(newdata0)))
         }
     }
     out
