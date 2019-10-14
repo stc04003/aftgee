@@ -51,3 +51,5 @@ skip_commits:
     - NEWS.md
     - .travis.yml
     - tests/*
+
+USE_RTOOLS: true
