@@ -82,8 +82,6 @@ Generalized estimating equation is generalized to multivariate AFT modeling to a
 for multivariate dependence through working correlation structures to improve efficiency.
 }
 \examples{
-library(survival)
-
 datgen <- function(n = 100, tau = 0.3, cen = 100, dim = 2) {
     id <- rep(1:n, rep(dim, n))
     x1 <- rbinom(dim * n, 1, 0.5)
