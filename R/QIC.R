@@ -8,6 +8,8 @@
 #' @importFrom MASS ginv
 #' @export
 #' @importFrom stats predict resid
+#' 
+#' @example inst/examples/ex_aftgee_QIC.R
 QIC <- function (object) {
     mu <- log(predict(object)$fit)
     y <- log(object$y)
