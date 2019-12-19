@@ -1170,6 +1170,8 @@ setMethod("rankFit", signature(engine = "Engine", stdErr = "ISMB"), rankFit.Engi
 #'   \item{\code{gehan}}{Gehan's weight}
 #'   \item{\code{PW}}{Prentice-Wilcoxon weight}
 #'   \item{\code{GP}}{GP class weight}
+#'   \item{\code{userdefined}}{a user defined weight provided as a vector
+#' with length equal to the number of subject. This argument is still under-development.}
 #' }
 #' @param eqType a character string specifying the type of the
 #'     estimating equation used to obtain the regression parameters.
