@@ -12,3 +12,5 @@
 ^\.git$
 ^vignettes$
 tests/JSS-codes*
+^CRAN-RELEASE$
+^cran-comments\.md$
