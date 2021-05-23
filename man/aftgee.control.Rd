@@ -4,9 +4,15 @@
 \alias{aftgee.control}
 \title{Auxiliary for Controlling AFTGEE Fitting}
 \usage{
-aftgee.control(maxiter = 50, reltol = 0.001, trace = FALSE,
-  seIni = FALSE, parallel = FALSE, parCl = parallel::detectCores()/2,
-  gp.pwr = -999)
+aftgee.control(
+  maxiter = 50,
+  reltol = 0.001,
+  trace = FALSE,
+  seIni = FALSE,
+  parallel = FALSE,
+  parCl = parallel::detectCores()/2,
+  gp.pwr = -999
+)
 }
 \arguments{
 \item{maxiter}{max number of iteration.}

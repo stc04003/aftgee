@@ -4,11 +4,19 @@
 \alias{aftsrr}
 \title{Accelerated Failure Time with Smooth Rank Regression}
 \usage{
-aftsrr(formula, data, subset, id = NULL, contrasts = NULL,
-  weights = NULL, B = 100, rankWeights = c("gehan", "logrank", "PW",
-  "GP", "userdefined"), eqType = c("is", "ns", "mis", "mns"),
-  se = c("NULL", "bootstrap", "MB", "ZLCF", "ZLMB", "sHCF", "sHMB",
-  "ISCF", "ISMB"), control = list())
+aftsrr(
+  formula,
+  data,
+  subset,
+  id = NULL,
+  contrasts = NULL,
+  weights = NULL,
+  B = 100,
+  rankWeights = c("gehan", "logrank", "PW", "GP", "userdefined"),
+  eqType = c("is", "ns", "mis", "mns"),
+  se = c("NULL", "bootstrap", "MB", "ZLCF", "ZLMB", "sHCF", "sHMB", "ISCF", "ISMB"),
+  control = list()
+)
 }
 \arguments{
 \item{formula}{a formula expression, of the form \code{response ~ predictors}.
@@ -131,11 +139,20 @@ the inducing smoothing approach (\code{IS}), Zeng and Lin's approach (\code{ZL})
 and the smoothed Huang's approach (\code{sH}).
 }
 \examples{
-data(kidney, package = "survival")
-fit <- aftsrr(Surv(time, status) ~ age + sex, id = id,
-              data = kidney, se = c("ISMB", "ZLMB"), B = 10)
-fit
+## Simulate data from an AFT model
+datgen <- function(n = 100) {
+    x1 <- rbinom(n, 1, 0.5)
+    x2 <- rnorm(n)
+    e <- rnorm(n)
+    tt <- exp(2 + x1 + x2 + e)
+    cen <- runif(n, 0, 100)
+    data.frame(Time = pmin(tt, cen), status = 1 * (tt < cen),
+               x1 = x1, x2 = x2, id = 1:n)
+}
+set.seed(1); dat <- datgen(n = 50)
+summary(aftsrr(Surv(Time, status) ~ x1 + x2, data = dat, se = c("ISMB", "ZLMB"), B = 10))
 
+## Data set with sampling weights
 data(nwtco, package = "survival")
 subinx <- sample(1:nrow(nwtco), 668, replace = FALSE)
 nwtco$subcohort <- 0

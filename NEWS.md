@@ -1,4 +1,6 @@
 # aftgee_1.1.5
+  * Fixed examples that depends on `kidney` from survival package, which no longer exist
+# aftgee_1.1.5
   * Add QIC
   * Fixed bugs from `non-conformable arguments`
   

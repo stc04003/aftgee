@@ -4,9 +4,19 @@
 \alias{aftgee}
 \title{Least-Squares Approach for Accelerated Failure Time with Generalized Estimating Equation}
 \usage{
-aftgee(formula, data, subset, id = NULL, contrasts = NULL,
-  weights = NULL, margin = NULL, corstr = "independence",
-  binit = "srrgehan", B = 100, control = aftgee.control())
+aftgee(
+  formula,
+  data,
+  subset,
+  id = NULL,
+  contrasts = NULL,
+  weights = NULL,
+  margin = NULL,
+  corstr = "independence",
+  binit = "srrgehan",
+  B = 100,
+  control = aftgee.control()
+)
 }
 \arguments{
 \item{formula}{a formula expression, of the form \code{response ~ predictors}.
@@ -82,22 +92,20 @@ Generalized estimating equation is generalized to multivariate AFT modeling to a
 for multivariate dependence through working correlation structures to improve efficiency.
 }
 \examples{
-datgen <- function(n = 100, tau = 0.3, cen = 100, dim = 2) {
-    id <- rep(1:n, rep(dim, n))
+## Simulate data from an AFT model with possible depended response
+datgen <- function(n = 100, tau = 0.3, dim = 2) {
     x1 <- rbinom(dim * n, 1, 0.5)
     x2 <- rnorm(dim * n)
     e <- c(t(exp(MASS::mvrnorm(n = n, mu = rep(0, dim), Sigma = tau + (1 - tau) * diag(dim)))))
-    T <- exp(2 + x1 + x2 + e)
-    cstime <- runif(n, 0, cen)
-    delta <- (T < cstime) * 1
-    Y <- pmin(T, cstime)
-    out <- data.frame(T = T, Y = Y, delta = delta, x1 = x1, x2 = x2, id = rep(1:n, each = dim))
-    out
+    tt <- exp(2 + x1 + x2 + e)
+    cen <- runif(n, 0, 100)
+    data.frame(Time = pmin(tt, cen), status = 1 * (tt < cen),
+               x1 = x1, x2 = x2, id = rep(1:n, each = dim))
 }
-set.seed(1)
-mydata <- datgen(n = 50, dim = 2)
-summary(aftgee(Surv(Y, delta) ~ x1 + x2, data = mydata, id = id, corstr = "ind", B = 8))
-summary(aftgee(Surv(Y, delta) ~ x1 + x2, data = mydata, id = id, corstr = "ex", B = 8))
+set.seed(1); dat <- datgen(n = 50, dim = 2)
+fm <- Surv(Time, status) ~ x1 + x2
+summary(aftgee(fm, data = dat, id = id, corstr = "ind", B = 8))
+summary(aftgee(fm, data = dat, id = id, corstr = "ex", B = 8))
 }
 \references{
 Chiou, S., Kim, J. and Yan, J. (2014) Marginal Semiparametric Multivariate

@@ -154,8 +154,8 @@ aftgee.fit <- function(DF, corstr="independence",
     }
     if (!(is.numeric(binit))) {
         if (binit == "lm") {
-            if (yint) linfit <- summary(lm(log(DF$time) ~ x, subset = DF$time > 0))
-            else linfit <- summary(lm(log(DF$time) ~ x - 1, subset = DF$time > 0))
+            if (yint) linfit <- summary(lm(log(DF$time) ~ x, subset = DF$status > 0))
+            else linfit <- summary(lm(log(DF$time) ~ x - 1, subset = DF$status > 0))
             first <- list(beta = linfit$coef[,1], sd = linfit$coef[,2])
             firstBeta <- first$beta
             firstSd <- first$sd
