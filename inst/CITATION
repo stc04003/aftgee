@@ -10,12 +10,12 @@ citEntry(entry = "Article",
   volume       = "61",
   number       = "11",
   pages        = "1--23",
-  url          = "http://www.jstatsoft.org/v61/i11/",
+  url          = "https://www.jstatsoft.org/v61/i11/",
 
   textVersion  =
   paste("Sy Han Chiou, Sangwook Kang, Jun Yan (2014).",
         "Fitting Accelerated Failure Time Models in Routine Survival Analysis with R Package aftgee.",
         "Journal of Statistical Software, 61(11), 1-23.",
-        "URL http://www.jstatsoft.org/v61/i11/.")
+        "URL https://www.jstatsoft.org/v61/i11/.")
 )
 

@@ -49,8 +49,8 @@ Efficient Resampling Methods for Nonsmooth Estimating Functions.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{http://github.com/stc04003/aftgee}
-  \item Report bugs at \url{http://github.com/stc04003/aftgee/issues}
+  \item \url{https://github.com/stc04003/aftgee}
+  \item Report bugs at \url{https://github.com/stc04003/aftgee/issues}
 }
 
 }
