@@ -5,7 +5,7 @@ output: github_document
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.4.0-6666ff.svg)](https://cran.r-project.org/)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/aftgee)](https://cran.r-project.org/package=aftgee)
-[![packageversion](https://img.shields.io/badge/Package%20version-1.1.5-orange.svg?style=flat-square)](commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-1.1.6-orange.svg?style=flat-square)](commits/master)
 [![Travis-CI Build Status](https://travis-ci.org/stc04003/aftgee.svg?branch=master)](https://travis-ci.org/stc04003/aftgee)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/stc04003/aftgee?branch=master&svg=true)](https://ci.appveyor.com/project/stc04003/aftgee)
 [![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg)](/commits/master)
@@ -17,12 +17,9 @@ output: github_document
 ----
 
 ```{r, echo = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "README-"
-)
+knitr::opts_chunk$set(comment = NA, prompt = TRUE, collapse = TRUE)
 ```
+
 ## aftgee: Accelerated Failure Time with Generalized Estimating Equations
 
 The __aftgee__ package implements recently developed inference procedures for the accelerated failure time
@@ -58,15 +55,38 @@ library(aftgee)
 ## Examples
 Here are some examples to get started:
 ```{r example}
-library(survival)
-data(kidney)
+## Simulate data from an AFT model with possible associated response
+datgen <- function(n = 100, tau = 0.3, dim = 2) {
+  x1 <- rbinom(dim * n, 1, 0.5)
+  x2 <- rnorm(dim * n)
+  e <- c(t(exp(MASS::mvrnorm(n = n, mu = rep(0, dim), Sigma = tau + (1 - tau) * diag(dim)))))
+  tt <- exp(2 + x1 + x2 + e)
+  cen <- runif(n, 0, 100)
+  data.frame(Time = pmin(tt, cen), status = 1 * (tt < cen),
+             x1 = x1, x2 = x2, id = rep(1:n, each = dim))
+}
+set.seed(1); dat <- datgen(n = 100, dim = 2)
+```
 
+```{r example2, cache = TRUE}
 library(aftgee)
 set.seed(123)
-fit.rk <- aftsrr(Surv(time, status) ~ age + sex, id = id, data = kidney, se = c("ISMB", "ZLMB"))
+fm <- Surv(Time, status) ~ x1 + x2
+## Fits semiparametric AFT with rank-based approach
+fit.rk <- aftsrr(fm, id = id, data = dat, se = c("ISMB", "ZLMB"))
 summary(fit.rk)
-fit.ge <- aftgee(Surv(time, status) ~ age + sex, id = id, data = kidney)
-summary(fit.ge)
+```
+
+```{r example3, cache = TRUE}
+## Fits semiparametric AFT with GEE approach and an independent correlation structure
+fit.gee1 <- aftgee(fm, id = id, data = dat, corstr = "ind")
+summary(fit.gee1)
+```
+
+```{r example4, cache = TRUE}
+## Fits semiparametric AFT with GEE approach and an exchangeable correlation structure
+fit.gee2 <- aftgee(fm, id = id, data = dat, corstr = "ex")
+summary(fit.gee2)
 ```
 
 ## Reference 
