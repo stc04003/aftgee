@@ -183,7 +183,8 @@ void log_ns_est(double *beta, double *Y, double *X, double *delta, int *clsize,
 
 // log-rank type estimating function (smooth-equivent form); old name = ulogfun
 void log_s_est(double *beta, double *Y, double *X, double *delta, int *clsize,
-	     double *sigma, int *n, int *p, int *N, double *weights, double *gw, double *sn) {
+	       double *sigma, int *n, int *p, int *N, double *weights,
+	       double *gw, double *sn) {
   int i, j, k, l, ik_idx = 0, jl_idx, r;
   double *e = Calloc(*N, double), *nu = Calloc(*p, double);
   double rikjl, z, H, sqrtn = sqrt(*n), edif, de;

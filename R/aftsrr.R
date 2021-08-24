@@ -120,8 +120,9 @@ rankFit.logrank.is <- function(DF, engine, stdErr, gw = NULL) {
     p <- ncol(X)
     clsize <- as.numeric(unlist(lapply(split(id, id), length)))
     log.obj <- function(b) {
-        ans <- .C("log_s_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
-                  as.integer(clsize), as.double(engine@sigma0), as.integer(length(clsize)),
+        ans <- .C("log_s_est", as.double(b), as.double(Y), as.double(X),
+                  as.double(delta), as.integer(clsize), as.double(engine@sigma0),
+                  as.integer(length(clsize)),
                   as.integer(p), as.integer(n), as.double(W), as.double(gw),
                   out = double(p), PACKAGE = "aftgee")$out
         return(sum(ans^2))
@@ -1417,13 +1418,13 @@ aftsrr <- function(formula, data, subset, id = NULL, contrasts = NULL,
 
 varOut <- function(dat, na.rm = TRUE) {
     dat[which(dat %in% boxplot(dat, plot = FALSE)$out)] <- NA
-    dat <- dat[complete.cases(dat),]
+    dat <- dat[complete.cases(dat),,drop = FALSE]
     var(dat, na.rm = na.rm)
 }
 
 rmOut <- function(dat, na.rm = TRUE) {
     dat[which(dat %in% boxplot(dat, plot = FALSE)$out)] <- NA
-    dat <- dat[complete.cases(dat),]
+    dat <- dat[complete.cases(dat),,drop = FALSE]
 }
 
 ##############################################################################
