@@ -62,7 +62,7 @@
 #'
 #' @references Chiou, S., Kim, J. and Yan, J. (2014) Marginal Semiparametric Multivariate
 #' Accelerated Failure Time Model with Generalized Estimating Equation.
-#' \emph{Life Time Data}, \bold{20}(4): 599--618.
+#' \emph{Lifetime Data Analysis}, \bold{20}(4): 599--618.
 #' @references Jin, Z. and Lin, D. Y. and Ying, Z. (2006)
 #' On Least-squares Regression with Censored Data. \emph{Biometrika}, \bold{90}, 341--353.
 #'

@@ -1,4 +1,4 @@
-# aftgee_1.1.5
+# aftgee_1.1.6
   * Fixed examples that depends on `kidney` from survival package, which no longer exist
   * Change 'http' to 'https'
   
