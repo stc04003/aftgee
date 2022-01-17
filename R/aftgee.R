@@ -165,7 +165,7 @@ aftgee.fit <- function(DF, corstr="independence",
             engine.control <- control[names(control) %in% names(attr(getClass("gehan.is"), "slots"))]
             engine <- do.call("new", c(list(Class = "gehan.is"), engine.control))
             if (engine@b0 == 0) {
-                engine@b0 <- as.numeric(coef(lm(log(DF$time) ~ x - 1, subset = DF$time > 0)))
+                engine@b0 <- as.numeric(coef(lm(log(DF$time) ~ x - 1, subset = DF$status > 0)))
             }
             engine@sigma0 <- diag(length(engine@b0))
             first <- rankFit.gehan.is(DF[,-5], engine, NULL)
