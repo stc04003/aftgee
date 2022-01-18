@@ -77,171 +77,172 @@ aftgee <- function(formula, data, subset, id = NULL, contrasts = NULL,
                    binit = "srrgehan", B = 100,
                    control = aftgee.control()
                    ) {
-    scall <- match.call()
-    mnames <- c("", "formula", "data", "weights", "margin", "subset", "na.action", "id")
-    cnames <- names(scall)
-    cnames <- cnames[match(mnames, cnames, 0)]
-    mcall <- scall[cnames]
-    ##  if (is.null(mcall$id)) mcall$id <- as.name("id")
-    mcall[[1]] <- as.name("model.frame")
-    m <- eval(mcall, parent.frame())
-    id <- model.extract(m, id)
-    mterms <- attr(m, "terms")
-    weights <- model.extract(m, weights) 
-    obj <- unclass(m[,1]) 
-    if (class(m[[1]]) != "Surv" || ncol(obj) > 2)
-        stop("aftsrr only supports Surv object with right censoring.", call. = FALSE)
-    if (is.null(id)) id <- 1:nrow(obj)
-    if (is.null(weights)) weights <- rep(1, nrow(obj))
-    margin <- model.extract(m, margin)
-    if (is.null(margin)) margin <- rep(1, nrow(obj))
-    formula[[2]] <- NULL
-    ## Create DF; the first 2 columns are from Surv with time and status
-    ## time, status, id, weights, margin, x1, x2, ...
-    if (formula == ~1) {
-        stop("No covariates are detected.")
-        ## DF <- cbind(obj, zero = 0)
-    } else {
-        DF <- cbind(obj, id, weights, margin, model.matrix(mterms, m, contrasts))
-        yint <- (sum(colnames(DF) == "(Intercept)") > 0)
-        if (sum(colnames(DF) == "(Intercept)") > 0)
-            DF <- DF[,-which(colnames(DF) == "(Intercept)")]
-    }
-    DF <- as.data.frame(DF)
-    out <- NULL
-    if (sum(DF$status) == nrow(DF)) {
-        cat("There is no censoring in the data, ordinary least squares approach is fitted via geese.\n")
-        out$geese <- geese(as.formula(paste("log(time) ~ ", formula)[2]),
-                           weights = weights, id = id, data = DF, corstr = corstr)
-        out$coef.init <- out$coef.res <- out$geese$beta
-        out$coefficients <- cbind(out$coef.init, out$coef.res)
-        out$var.res <- out$geese$vbeta
-    }
-    else {
-        out <- aftgee.fit(DF = DF, corstr = corstr, B = B,
-                          binit = binit, control = control, yint = yint)
-    } 
-    out$y <- DF$time
-    out$x <- DF[,-(1:5)]
-    rownames(out$coefficients) <- names(out$coef.res) <-
-        names(out$coef.init) <- colnames(model.matrix(mterms, m, contrasts))
-    ## out$intercept <- (sum(x[,1]) == nrow(x))
-    colnames(out$coefficients) <- c("binit", "AFTGEE")
-    out$call <- scall
-    class(out) <- "aftgee"
-    out
+  scall <- match.call()
+  mnames <- c("", "formula", "data", "weights", "margin", "subset", "na.action", "id")
+  cnames <- names(scall)
+  cnames <- cnames[match(mnames, cnames, 0)]
+  mcall <- scall[cnames]
+  ##  if (is.null(mcall$id)) mcall$id <- as.name("id")
+  mcall[[1]] <- as.name("model.frame")
+  m <- eval(mcall, parent.frame())
+  id <- model.extract(m, id)
+  mterms <- attr(m, "terms")
+  weights <- model.extract(m, weights) 
+  obj <- unclass(m[,1]) 
+  if (class(m[[1]]) != "Surv" || ncol(obj) > 2)
+    stop("aftsrr only supports Surv object with right censoring.", call. = FALSE)
+  if (is.null(id)) id <- 1:nrow(obj)
+  if (is.null(weights)) weights <- rep(1, nrow(obj))
+  margin <- model.extract(m, margin)
+  if (is.null(margin)) margin <- rep(1, nrow(obj))
+  formula[[2]] <- NULL
+  ## Create DF; the first 2 columns are from Surv with time and status
+  ## time, status, id, weights, margin, x1, x2, ...
+  if (formula == ~1) {
+    stop("No covariates are detected.")
+    ## DF <- cbind(obj, zero = 0)
+  } else {
+    DF <- cbind(obj, id, weights, margin, model.matrix(mterms, m, contrasts))
+    yint <- (sum(colnames(DF) == "(Intercept)") > 0)
+    if (sum(colnames(DF) == "(Intercept)") > 0)
+      DF <- DF[,-which(colnames(DF) == "(Intercept)")]
+  }
+  DF <- as.data.frame(DF)
+  out <- NULL
+  if (sum(DF$status) == nrow(DF)) {
+    cat("There is no censoring in the data, ordinary least squares approach is fitted via geese.\n")
+    out$geese <- geese(as.formula(paste("log(time) ~ ", formula)[2]),
+                       weights = weights, id = id, data = DF, corstr = corstr)
+    out$coef.init <- out$coef.res <- out$geese$beta
+    out$coefficients <- cbind(out$coef.init, out$coef.res)
+    out$var.res <- out$geese$vbeta
+  }
+  else {
+    out <- aftgee.fit(DF = DF, corstr = corstr, B = B,
+                      binit = binit, control = control, yint = yint)
+  } 
+  out$y <- DF$time
+  out$x <- DF[,-(1:5)]
+  rownames(out$coefficients) <- names(out$coef.res) <-
+    names(out$coef.init) <- colnames(model.matrix(mterms, m, contrasts))
+  ## out$intercept <- (sum(x[,1]) == nrow(x))
+  colnames(out$coefficients) <- c("binit", "AFTGEE")
+  out$call <- scall
+  class(out) <- "aftgee"
+  out
 }
 
 aftgee.fit <- function(DF, corstr="independence",
                        B = 100, binit = "lm", yint = TRUE,
                        control = aftgee.control()) {
-    x <- as.matrix(DF[,-(1:5), drop = FALSE])
-    id <- DF$id
-    n <- length(unique(id))
-    rm <- NULL
-    rmName <- NULL
-    firstBeta <- firstSd <- firstSdMat <- firstconvergence <- NULL
-    clsize <- unlist(lapply(split(id, id), length))
-    N <- sum(clsize)
-    if (is.numeric(binit)) {
-        if (length(binit) != ncol(x) + yint * 1)
-            stop("binit value length does not match with numbers of covariates.", call. = FALSE)
-        firstBeta <- binit      
+  x <- as.matrix(DF[,-(1:5), drop = FALSE])
+  id <- DF$id
+  n <- length(unique(id))
+  rm <- NULL
+  rmName <- NULL
+  firstBeta <- firstSd <- firstSdMat <- firstconvergence <- NULL
+  clsize <- unlist(lapply(split(id, id), length))
+  N <- sum(clsize)
+  if (is.numeric(binit)) {
+    if (length(binit) != ncol(x) + yint * 1)
+      stop("binit value length does not match with numbers of covariates.", call. = FALSE)
+    firstBeta <- binit      
+  }
+  if (!(is.numeric(binit))) {
+    if (!(binit %in% c("lm", "srrgehan"))) 
+      stop("Invalid binit value method", call. = FALSE)
+  }
+  if (!(is.numeric(binit))) {
+    if (binit == "lm") {
+      if (yint) linfit <- summary(lm(log(DF$time) ~ x, subset = DF$status > 0))
+      else linfit <- summary(lm(log(DF$time) ~ x - 1, subset = DF$status > 0))
+      first <- list(beta = linfit$coef[,1], sd = linfit$coef[,2])
+      firstBeta <- first$beta
+      firstSd <- first$sd
+      firstconvergence <- first$convergence
     }
-    if (!(is.numeric(binit))) {
-        if (!(binit %in% c("lm", "srrgehan"))) 
-            stop("Invalid binit value method", call. = FALSE)
+    if (binit == "srrgehan") {
+      engine.control <- control[names(control) %in% names(attr(getClass("gehan.is"), "slots"))]
+      engine <- do.call("new", c(list(Class = "gehan.is"), engine.control))
+      if (engine@b0 == 0) {
+        ## engine@b0 <- as.numeric(coef(lm(log(DF$time) ~ x - 1, subset = DF$status > 0)))
+        engine@b0 <- as.numeric(coef(lm(log(DF$time) ~ x))[-1])
+      }
+      engine@sigma0 <- diag(length(engine@b0))
+      first <- rankFit.gehan.is(DF[,-5], engine, NULL)
+      firstBeta <- first$beta
+      firstSdMat <- NA
+      firstconvergence <- first$convergence
+      if (yint) firstBeta <- c(mean(log(DF$time) - x %*% firstBeta), firstBeta) 
     }
-    if (!(is.numeric(binit))) {
-        if (binit == "lm") {
-            if (yint) linfit <- summary(lm(log(DF$time) ~ x, subset = DF$status > 0))
-            else linfit <- summary(lm(log(DF$time) ~ x - 1, subset = DF$status > 0))
-            first <- list(beta = linfit$coef[,1], sd = linfit$coef[,2])
-            firstBeta <- first$beta
-            firstSd <- first$sd
-            firstconvergence <- first$convergence
+  }
+  if (yint) x <- cbind(1, x)
+  binitValue <- list(beta = firstBeta, sd = firstSd, sdMat = firstSdMat)
+  result <- aftgee.est(log(DF$time), x, DF$status, binitValue$beta, id, corstr,
+                       rep(1, nrow(DF)), DF$margin, DF$weights, control)
+  ## variance estimation
+  zsamp <- bsamp <- NULL
+  if (B > 0) {
+    if (!control$parallel) {
+      bsamp <- matrix(NA, nrow = B, ncol = length(result$beta))
+      bini <- result$beta
+      for (i in 1:B){
+        Z <- as.vector(rep(rexp(n, 1), time = clsize))
+        zsamp <- cbind(zsamp, Z)
+        if (control$seIni) {
+          DF0 <- DF
+          DF0$weights <- Z * DF0$weights
+          bini <- rankFit.gehan.is(DF0[,-5], engine, NULL)$beta
+          if (yint) bini <- c(mean(log(DF0$time) - as.matrix(DF0[,-(1:5)]) %*% bini), bini)
         }
-        if (binit == "srrgehan") {
-            engine.control <- control[names(control) %in% names(attr(getClass("gehan.is"), "slots"))]
-            engine <- do.call("new", c(list(Class = "gehan.is"), engine.control))
-            if (engine@b0 == 0) {
-                engine@b0 <- as.numeric(coef(lm(log(DF$time) ~ x - 1, subset = DF$status > 0)))
-            }
-            engine@sigma0 <- diag(length(engine@b0))
-            first <- rankFit.gehan.is(DF[,-5], engine, NULL)
-            firstBeta <- first$beta
-            firstSdMat <- NA
-            firstconvergence <- first$convergence
-            if (yint) firstBeta <- c(mean(log(DF$time) - x %*% firstBeta), firstBeta) 
-        }
-    }
-    if (yint) x <- cbind(1, x)
-    binitValue <- list(beta = firstBeta, sd = firstSd, sdMat = firstSdMat)
-    result <- aftgee.est(log(DF$time), x, DF$status, binitValue$beta, id, corstr,
-                         rep(1, nrow(DF)), DF$margin, DF$weights, control)
-    ## variance estimation
-    zsamp <- bsamp <- NULL
-    if (B > 0) {
-        if (!control$parallel) {
-            bsamp <- matrix(NA, nrow = B, ncol = length(result$beta))
-            bini <- result$beta
-            for (i in 1:B){
-                Z <- as.vector(rep(rexp(n, 1), time = clsize))
-                zsamp <- cbind(zsamp, Z)
-                if (control$seIni) {
-                    DF0 <- DF
-                    DF0$weights <- Z * DF0$weights
-                    bini <- rankFit.gehan.is(DF0[,-5], engine, NULL)$beta
-                    if (yint) bini <- c(mean(log(DF0$time) - as.matrix(DF0[,-(1:5)]) %*% bini), bini)
-                }
-                bsamp[i,] <- aftgee.est(log(DF$time), x, DF$status, bini, id, corstr, Z, DF$margin, DF$weights, control)$beta
-            }
-            vhat <- var(bsamp)
+        bsamp[i,] <- aftgee.est(log(DF$time), x, DF$status, bini, id, corstr, Z, DF$margin, DF$weights, control)$beta
+      }
+      vhat <- var(bsamp)
+    } else {
+      cl <- makeCluster(control$parCl)
+      clusterExport(cl = cl,
+                    varlist = c("n", "clsize", "DF", "control", "x", "id", "corstr", "result"),
+                    envir = environment())
+      bsamp <- parSapply(cl, 1:B, function(z) {
+        Z <- as.vector(rep(rexp(n, 1), time = clsize))
+        if (control$seIni) {
+          DF0 <- DF
+          DF0$weights <- Z * DF0$weights
+          bini <- rankFit.gehan.is(DF0[,-5], engine, NULL)$beta
+          if (yint) bini <- c(mean(log(DF0$time) - as.matrix(DF0[,-(1:5)]) %*% bini), bini)
         } else {
-            cl <- makeCluster(control$parCl)
-            clusterExport(cl = cl,
-                          varlist = c("n", "clsize", "DF", "control", "x", "id", "corstr", "result"),
-                          envir = environment())
-            bsamp <- parSapply(cl, 1:B, function(z) {
-                Z <- as.vector(rep(rexp(n, 1), time = clsize))
-                if (control$seIni) {
-                    DF0 <- DF
-                    DF0$weights <- Z * DF0$weights
-                    bini <- rankFit.gehan.is(DF0[,-5], engine, NULL)$beta
-                    if (yint) bini <- c(mean(log(DF0$time) - as.matrix(DF0[,-(1:5)]) %*% bini), bini)
-                } else {
-                    bini <- result$beta
-                }
-                aftgee.est(log(DF$time), x, DF$status, bini, id, corstr, Z, DF$margin, DF$weights, control)$beta
-            })
-            stopCluster(cl)
-            vhat <- var(t(bsamp))
-        } ## end parallel 
-    }
-    if (B == 0) vhat <- NULL
-    ini.beta <- c(binitValue$beta)
-    ini.sd <- c(binitValue$sd)
-    ini.sdMat <- c(binitValue$sdMat)
-    fit <- list(coefficients = cbind(ini.beta, result$beta),
-                coef.res = result$beta,
-                var.res = vhat,
-                varMargin = result$gamma,
-                gee.vbeta = result$vbeta,
-                gee.vbeta.naiv = result$vbeta.naiv,
-                gee.vbeta0 = result$vbeta0,
-                gee.vbeta.naiv0 = result$vbeta.naiv0,
-                alpha = result$alpha,
-                coef.init = ini.beta,
-                sd.init = ini.sd,
-                var.init.mat = ini.sdMat,
-                binit = binit,
-                conv = result$convergence,
-                ini.conv = firstconvergence,
-                bhat = bsamp,
-                zsamp = zsamp,
-                conv.step = result$convStep)
-    class(fit) <- "aftgee.fit"
-    fit
+          bini <- result$beta
+        }
+        aftgee.est(log(DF$time), x, DF$status, bini, id, corstr, Z, DF$margin, DF$weights, control)$beta
+      })
+      stopCluster(cl)
+      vhat <- var(t(bsamp))
+    } ## end parallel 
+  }
+  if (B == 0) vhat <- NULL
+  ini.beta <- c(binitValue$beta)
+  ini.sd <- c(binitValue$sd)
+  ini.sdMat <- c(binitValue$sdMat)
+  fit <- list(coefficients = cbind(ini.beta, result$beta),
+              coef.res = result$beta,
+              var.res = vhat,
+              varMargin = result$gamma,
+              gee.vbeta = result$vbeta,
+              gee.vbeta.naiv = result$vbeta.naiv,
+              gee.vbeta0 = result$vbeta0,
+              gee.vbeta.naiv0 = result$vbeta.naiv0,
+              alpha = result$alpha,
+              coef.init = ini.beta,
+              sd.init = ini.sd,
+              var.init.mat = ini.sdMat,
+              binit = binit,
+              conv = result$convergence,
+              ini.conv = firstconvergence,
+              bhat = bsamp,
+              zsamp = zsamp,
+              conv.step = result$convStep)
+  class(fit) <- "aftgee.fit"
+  fit
 }
 
 ## aftgee.se; bootstrap or resampling, true value or aftsrr as initial value
@@ -268,91 +269,91 @@ aftgee.fit <- function(DF, corstr="independence",
 aftgee.control <- function(maxiter = 50, reltol = 0.001, trace = FALSE,
                            seIni = FALSE, parallel = FALSE,
                            parCl = parallel::detectCores() / 2, gp.pwr = -999) {
-    list(maxiter = maxiter, reltol = reltol, trace = trace, seIni = seIni,
-         parallel = parallel, parCl = parCl, gp.pwr = gp.pwr)
+  list(maxiter = maxiter, reltol = reltol, trace = trace, seIni = seIni,
+       parallel = parallel, parCl = parCl, gp.pwr = gp.pwr)
 }
 
 aftgee.est <- function(y, x, delta, beta, id, corstr = "independence", Z = rep(1, length(y)),
                        margin = rep(1, length(id)), weights = rep(1, length(y)),
                        control = aftgee.control()) {
-    xmat <- as.matrix(x) 
-    nobs <- length(y)
-    for (i in 1:control$maxiter) {
-        betaprev <- beta
-        eres <- NULL
-        eres2 <- NULL
-        if (length(unique(margin)) == 1L) {
-            e <- y - xmat %*% beta
-            eres <- eRes(e, delta = delta, z = Z * weights)
-            yhat <- delta * y + (1 - delta) * (eres[[1]] + xmat %*% beta)
-            yhatZ <- sqrt(Z * weights) * yhat
-            xmatZ <- sqrt(Z * weights) * xmat
-            geefit <- geese.fit(xmatZ, yhatZ, id, corstr = corstr)
-        }
-        if (length(unique(margin)) != 1L) {
-            e <- y - xmat %*% beta
-            er1 <- NULL
-            er2 <- NULL
-            for (m in unique(margin)) {
-                temp <- eRes(e[margin == m], delta[margin == m], Z[margin == m])
-                temp[[2]] <- ifelse(delta[margin == m] == 1, e[margin == m]^2, temp[[2]])
-                eres2[m] <- mean(temp[[2]], na.rm = TRUE)
-                dum <- cumsum(ifelse(margin == m, 1, 0))
-                er1temp <- temp[[1]][ifelse(margin == m, dum, NA)]
-                er1 <- rbind(er1, er1temp)
-            }
-            er1 <- as.vector(er1)
-            er1 <- er1[!is.na(er1)]
-            yhat <- delta * y + (1 - delta) * (er1 + xmat %*% beta)
-            yhatZ <- sqrt(Z * weights) * yhat
-            xmatZ <- sqrt(Z * weights) * xmat
-            er2 <- as.matrix(eres2[margin])
-            geefit <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = corstr)
-        }
-        beta <- geefit$beta
-        if (control$trace) cat("\n beta:", as.numeric(beta), "\n")
-        convStep <- i
-        if (max(abs(beta - betaprev) / abs(beta)) <= control$reltol) break
-    } 
-    ## Fitting independence structure at convergence for QIC calculation
-    if (length(unique(margin)) == 1L) geefit0 <- geese.fit(xmatZ, yhatZ, id, corstr = "independence")
-    else geefit0 <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = "independence")
-    beta <- iniBeta <- geefit$beta
-    alpha <- geefit$alpha
-    gamma <- geefit$gamma ## eres2
-    convergence <- ifelse(i == control$maxiter, 1, 0)
-    out <- list(beta = beta, alpha = alpha, gamma = gamma, iniBeta = iniBeta,
-                ## variance matrix from geefit
-                vbeta = geefit$vbeta, vbeta.naiv = geefit$vbeta.naiv,
-                vbeta0 = geefit0$vbeta, vbeta.naiv0 = geefit0$vbeta.naiv,
-                ## iteration info.
-                convergence = convergence, convStep = convStep)
-    return(out)
+  xmat <- as.matrix(x) 
+  nobs <- length(y)
+  for (i in 1:control$maxiter) {
+    betaprev <- beta
+    eres <- NULL
+    eres2 <- NULL
+    if (length(unique(margin)) == 1L) {
+      e <- y - xmat %*% beta
+      eres <- eRes(e, delta = delta, z = Z * weights)
+      yhat <- delta * y + (1 - delta) * (eres[[1]] + xmat %*% beta)
+      yhatZ <- sqrt(Z * weights) * yhat
+      xmatZ <- sqrt(Z * weights) * xmat
+      geefit <- geese.fit(xmatZ, yhatZ, id, corstr = corstr)
+    }
+    if (length(unique(margin)) != 1L) {
+      e <- y - xmat %*% beta
+      er1 <- NULL
+      er2 <- NULL
+      for (m in unique(margin)) {
+        temp <- eRes(e[margin == m], delta[margin == m], Z[margin == m])
+        temp[[2]] <- ifelse(delta[margin == m] == 1, e[margin == m]^2, temp[[2]])
+        eres2[m] <- mean(temp[[2]], na.rm = TRUE)
+        dum <- cumsum(ifelse(margin == m, 1, 0))
+        er1temp <- temp[[1]][ifelse(margin == m, dum, NA)]
+        er1 <- rbind(er1, er1temp)
+      }
+      er1 <- as.vector(er1)
+      er1 <- er1[!is.na(er1)]
+      yhat <- delta * y + (1 - delta) * (er1 + xmat %*% beta)
+      yhatZ <- sqrt(Z * weights) * yhat
+      xmatZ <- sqrt(Z * weights) * xmat
+      er2 <- as.matrix(eres2[margin])
+      geefit <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = corstr)
+    }
+    beta <- geefit$beta
+    if (control$trace) cat("\n beta:", as.numeric(beta), "\n")
+    convStep <- i
+    if (max(abs(beta - betaprev) / abs(beta)) <= control$reltol) break
+  } 
+  ## Fitting independence structure at convergence for QIC calculation
+  if (length(unique(margin)) == 1L) geefit0 <- geese.fit(xmatZ, yhatZ, id, corstr = "independence")
+  else geefit0 <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = "independence")
+  beta <- iniBeta <- geefit$beta
+  alpha <- geefit$alpha
+  gamma <- geefit$gamma ## eres2
+  convergence <- ifelse(i == control$maxiter, 1, 0)
+  out <- list(beta = beta, alpha = alpha, gamma = gamma, iniBeta = iniBeta,
+              ## variance matrix from geefit
+              vbeta = geefit$vbeta, vbeta.naiv = geefit$vbeta.naiv,
+              vbeta0 = geefit0$vbeta, vbeta.naiv0 = geefit0$vbeta.naiv,
+              ## iteration info.
+              convergence = convergence, convStep = convStep)
+  return(out)
 }
 
 eRes <- function(e, delta, z = rep(1, length(e))) {
-    nobs <- length(e)
-    ord <- order(e)
-    ei <- e[ord]
-    deltai <- delta[ord]
-    zi <- z[ord]
-    dummy <- 1:nobs
-    tmp <- survfit(Surv(ei, deltai) ~ 1, weights = zi)
-    Shat <- with(tmp, approx(time, surv, ei))$y
-    edif <- c(diff(ei), 0)  ## diff(ei) gives 1 less terms
-    ehat <- rev(cumsum(rev(edif * Shat)))
-    inpt <- mean(ehat)
-    ehat2 <- rev(cumsum(rev(ei * edif * Shat)))
-    ehat <- ehat/Shat + ei    ## +ei because there was a diff() in edif
-    ehat2 <- 2 * ehat2/Shat + ei^2
-    ehat[is.na(ehat)] <- ei[is.na(ehat)]
-    ehat2[is.na(ehat2)] <- ei[is.na(ehat2)]^2
-    ehat2[which(ehat2 < 0)] <- NaN
-    eres <- ehat
-    eres2 <- ehat2
-    eres[dummy[ord]] <- ehat  ## puting it back to the original order
-    eres2[dummy[ord]] <- ehat2
-    return(list(eres, eres2, inpt))
+  nobs <- length(e)
+  ord <- order(e)
+  ei <- e[ord]
+  deltai <- delta[ord]
+  zi <- z[ord]
+  dummy <- 1:nobs
+  tmp <- survfit(Surv(ei, deltai) ~ 1, weights = zi)
+  Shat <- with(tmp, approx(time, surv, ei))$y
+  edif <- c(diff(ei), 0)  ## diff(ei) gives 1 less terms
+  ehat <- rev(cumsum(rev(edif * Shat)))
+  inpt <- mean(ehat)
+  ehat2 <- rev(cumsum(rev(ei * edif * Shat)))
+  ehat <- ehat/Shat + ei    ## +ei because there was a diff() in edif
+  ehat2 <- 2 * ehat2/Shat + ei^2
+  ehat[is.na(ehat)] <- ei[is.na(ehat)]
+  ehat2[is.na(ehat2)] <- ei[is.na(ehat2)]^2
+  ehat2[which(ehat2 < 0)] <- NaN
+  eres <- ehat
+  eres2 <- ehat2
+  eres[dummy[ord]] <- ehat  ## puting it back to the original order
+  eres2[dummy[ord]] <- ehat2
+  return(list(eres, eres2, inpt))
 }
 
 ## ## Internal function for obtaining the se estimator for an aftgee object 
@@ -369,7 +370,7 @@ eRes <- function(e, delta, z = rep(1, length(e))) {
 ##                 Z <- as.vector(rep(rexp(n, 1), time = clsize))
 ##                 DF$weights <- Z
 ##                 boot.ini <- b0
-                
+
 ##                 }
 
 

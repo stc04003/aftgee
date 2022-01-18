@@ -1403,7 +1403,8 @@ aftsrr <- function(formula, data, subset, id = NULL, contrasts = NULL,
                        sHCF = vsHCF, sHMB = vsHMB,
                        ISCF = vISCF, ISMB = vISMB)        
     }
-    out <- list(beta = fit$beta, covmat = covmat, convergence = fit$conv, bstep = fit$iter, var.meth = se, bhist = bhist)
+    out <- list(beta = fit$beta, covmat = covmat, convergence = fit$conv,
+                bstep = fit$iter, var.meth = se, bhist = bhist)
     class(out) <- "aftsrr"
     out$call <- scall
     out$vari.name <- colnames(X)
