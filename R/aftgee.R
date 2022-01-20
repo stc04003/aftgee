@@ -195,7 +195,8 @@ aftgee.fit <- function(DF, corstr="independence",
           bini <- rankFit.gehan.is(DF0[,-5], engine, NULL)$beta
           if (yint) bini <- c(mean(log(DF0$time) - as.matrix(DF0[,-(1:5)]) %*% bini), bini)
         }
-        bsamp[i,] <- aftgee.est(log(DF$time), x, DF$status, bini, id, corstr, Z, DF$margin, DF$weights, control)$beta
+        bsamp[i,] <- aftgee.est(log(DF$time), x, DF$status, bini, id, corstr, Z,
+                                DF$margin, DF$weights, control)$beta
       }
       vhat <- var(bsamp)
     } else {
@@ -213,7 +214,8 @@ aftgee.fit <- function(DF, corstr="independence",
         } else {
           bini <- result$beta
         }
-        aftgee.est(log(DF$time), x, DF$status, bini, id, corstr, Z, DF$margin, DF$weights, control)$beta
+        aftgee.est(log(DF$time), x, DF$status, bini, id, corstr, Z,
+                   DF$margin, DF$weights, control)$beta
       })
       stopCluster(cl)
       vhat <- var(t(bsamp))
@@ -273,11 +275,21 @@ aftgee.control <- function(maxiter = 50, reltol = 0.001, trace = FALSE,
        parallel = parallel, parCl = parCl, gp.pwr = gp.pwr)
 }
 
-aftgee.est <- function(y, x, delta, beta, id, corstr = "independence", Z = rep(1, length(y)),
-                       margin = rep(1, length(id)), weights = rep(1, length(y)),
+aftgee.est <- function(y, x, delta, beta, id,
+                       corstr = "independence",
+                       Z = rep(1, length(y)),
+                       margin = rep(1, length(id)),
+                       weights = rep(1, length(y)),
                        control = aftgee.control()) {
+  iniBeta <- beta
   xmat <- as.matrix(x) 
   nobs <- length(y)
+  xmatZ <- sqrt(Z * weights) * xmat
+  ## If x does not have an intercept term, e.g., a column of 1s, then center xmat and xmatZ
+  if (!any(apply(xmat, 2, function(e) length(unique(e))) == 1)) {
+    xmat <- (diag(nrow(x)) - 1 / nrow(x)) %*% xmat
+    xmatZ <- (diag(nrow(x)) - 1 / nrow(x)) %*% xmatZ
+  }
   for (i in 1:control$maxiter) {
     betaprev <- beta
     eres <- NULL
@@ -287,7 +299,7 @@ aftgee.est <- function(y, x, delta, beta, id, corstr = "independence", Z = rep(1
       eres <- eRes(e, delta = delta, z = Z * weights)
       yhat <- delta * y + (1 - delta) * (eres[[1]] + xmat %*% beta)
       yhatZ <- sqrt(Z * weights) * yhat
-      xmatZ <- sqrt(Z * weights) * xmat
+      ## xmatZ <- sqrt(Z * weights) * xmat
       geefit <- geese.fit(xmatZ, yhatZ, id, corstr = corstr)
     }
     if (length(unique(margin)) != 1L) {
@@ -306,7 +318,7 @@ aftgee.est <- function(y, x, delta, beta, id, corstr = "independence", Z = rep(1
       er1 <- er1[!is.na(er1)]
       yhat <- delta * y + (1 - delta) * (er1 + xmat %*% beta)
       yhatZ <- sqrt(Z * weights) * yhat
-      xmatZ <- sqrt(Z * weights) * xmat
+      ## xmatZ <- sqrt(Z * weights) * xmat
       er2 <- as.matrix(eres2[margin])
       geefit <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = corstr)
     }
@@ -318,7 +330,7 @@ aftgee.est <- function(y, x, delta, beta, id, corstr = "independence", Z = rep(1
   ## Fitting independence structure at convergence for QIC calculation
   if (length(unique(margin)) == 1L) geefit0 <- geese.fit(xmatZ, yhatZ, id, corstr = "independence")
   else geefit0 <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = "independence")
-  beta <- iniBeta <- geefit$beta
+  beta <- geefit$beta
   alpha <- geefit$alpha
   gamma <- geefit$gamma ## eres2
   convergence <- ifelse(i == control$maxiter, 1, 0)
