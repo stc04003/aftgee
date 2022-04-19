@@ -172,7 +172,7 @@ aftgee.fit <- function(DF, corstr="independence",
       first <- rankFit.gehan.is(DF[,-5], engine, NULL)
       firstBeta <- first$beta
       firstSdMat <- NA
-      firstconvergence <- first$convergence
+      firstconvergence <- first$conv
       if (yint) firstBeta <- c(mean(log(DF$time) - x %*% firstBeta), firstBeta) 
     }
   }
