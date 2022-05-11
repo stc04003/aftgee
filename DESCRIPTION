@@ -13,7 +13,7 @@ BugReports: https://github.com/stc04003/aftgee/issues
 Encoding: UTF-8
 LazyLoad: yes
 Imports: methods, parallel, geepack, survival, BB, MASS
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 NeedsCompilation: yes
 Packaged: 2018-07-23 07:08:12 UTC; schiou
 Author: Sy Han Chiou [aut, cre],
