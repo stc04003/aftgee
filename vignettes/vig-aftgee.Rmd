@@ -14,13 +14,115 @@ vignette: >
   %\VignetteEncoding{UTF-8}{inputenc}
 ---
 
+\newcommand{\dif}{\mathrm{d}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+\newcommand{\X}{\mathbf{X}}
+\newcommand{\Y}{\mathbf{Y}}
+\newcommand{\C}{\mathbf{C}}
+\newcommand{\T}{\mathbf{T}}
+\newcommand{\bfDelta}{\mathbf{\Delta}}
+
 ```{r default, include = FALSE}
 knitr::opts_chunk$set(prompt = TRUE, comment = "")
 ```
-In this vignette, we demonstrate the usage of `aftgee`.
-
-   ```{R aftgee-args}
-   args(aftgee)
+In this vignette, we demonstrate the usage of the `aftgee()` function from the __`aftgee`__ package[@R:aftgee; @chiou2014fitting].
+The vignette is based on  __`aftgee`__ version `r packageVersion("aftgee")`.
+   ```{R aftsrr-args}
+library(aftgee)
+packageVersion("aftgee")
    ```
+
+
+## AFT model
+The univariate semiparametric semiparametric accelerated failure time (AFT) model is specified as
+$$\log(T_i) = X_i^\top\beta + \epsilon_i, i = 1, \ldots, n, $$
+where $T_i$ is the failure time, $X_i$ is the $p\times1$ covariate vector, $\beta$ is the $p\times1$ regression coefficient,
+and $\epsilon_i$'s are independent and identically distributed random variables with an unspecified distribution.
+In the presence of right censoring, the observed data are independent copies of $(Y_i, \Delta_i, X_i), i = 1, \ldots, n$, 
+where $Y_i = \min(T_i, C_i), \Delta_i = I(T_i < C_i)$, and $I(\cdot)$ is the indicator function.
+
+## Least-squares estimator
+
+With survival data from right censoring, @buckley1979linear proposed 
+a least-squares approach that replaces each response $T_i$ with the conditional expectation $Y_i(\beta) = E_\beta(T_i|Y_i, \Delta_i, X_i)$.
+<!--The conditional expectation is defined as
+$$\widehat{Y}_i(b) = \Delta_iY_i + (1 - \Delta_i)\left[\frac{\int_{e_i(b)}^\infty td\widehat{F}_{e_i(\beta)}(t)}{ 1 - \widehat{F}_{e_i(\beta)}\{e_i(\beta)\}} + X_i^\top b\right].$$ -->
+The theoretical properties of the Buckley and James estimator have been studied by @ritov1990estimation and @lai1991large.
+The method is rarely used in practice due to numerical challenges. 
+@jin2006least proposed an iterative procedure to generalize the Buckley and James estimator, making the latter more practical. 
+@chiou2014marginal embedded the generalized estimating equation (GEE) procedure to generalized the iterative procedure to 
+accommodates within-cluster dependence in cluster survival data. 
+The GEE embedded approach accounts for multivariate dependence through working correlation structures to improve efficiency.
+To illustrate the idea, we expand the notations to multivariate AFT model, 
+$$T_{ik} + X_{ik}^\top\beta + \epsilon_{ik}, i = 1, \ldots, n, k = 1, \ldots, K_i, $$
+where $K_i$ is the $i$ cluster size, 
+$\beta$ is an unknown $p\times1$ vector of regression parameters and the error terms, 
+$\epsilon_{i}= \{\epsilon_{i1}, \ldots, \epsilon_{iK_i}\}$ are independent and identically distributed random variables 
+with an unspecified distribution throughout clusters. 
+In the presence of censoring, the observed data consists of copies of
+$\{Y_{ik}, \Delta_{ik}, X_{ik}\}$ for $i = 1, \ldots, n$, and $k = 1, \ldots, K_i$, 
+where $Y_{ik} = \min(T_{ik}, C_{ik})$ and $\Delta_{ik} = I(T_{ik} < C_{ik})$.
+
+
+Define $\Omega_{i}^{-1}\big(\alpha(b)\big)$ to be an $K_i\times K_i$
+nonsingular working weight matrix that may involve additional working
+parameters $\alpha$ that depends on an initial value $b$ of $\beta_0$.
+For $i = 1, \ldots, n$ and $k = 1, \ldots, K_i$, let $\widehat{\Y}_i(b)$,
+$\Y_i$, $\T_i$, $\C_i$ and $\bfDelta_i$ be $K_i\times 1$ vector formed
+by stacking $\widehat{Y}_{ik}(b)$, $Y_{ik}$, $C_{ik}$ and $\Delta_{ik}$, where
+\begin{equation*}
+  \widehat{Y}_{ik}(b) = \Delta_{ik}Y_{ik} + (1 - \Delta_{ik})
+  \left[\frac{\int_{e_{ik}(b)}^\infty u \dif \widehat{F}_{e_{ik}(\beta)}}{1 -
+      \widehat{F}_{e_{ik}(\beta)}\{e_{ik}(b)\}} + X_{ik}^\top b \right].
+\end{equation*}
+A generalization of iterative least-square estimating equation is
+\begin{equation}
+  \label{equ:gee}
+  U_{n, GEE}(\beta, b, \alpha) =
+  \sum_{i=1}^n(\X_i - \bar{\X})^\top\Omega_i^{-1}\left\{\alpha(b)\right\}\{\widehat{\Y}_i(b) - \X_i\beta\} = 0,
+\end{equation}
+where $\bar{\X}_i = \sum_{i=1}^n X_i / n$.
+Given $\alpha$ and $b$, the solution to $U_{n, GEE}(\beta, b, \alpha) = 0$ has a closed form
+\begin{equation*}
+  L_n(b, \alpha) =
+  \left [ \sum_{i=1}^{n}(\X_{i}-\bar{\X})^{\top} \Omega_{i}^{-1}\big(\alpha(b)\big) (\X_{i}-\bar{\X}) \right ]^{-1}
+  \left [ \sum_{i=1}^{n}(\X_{i}-\bar{X})^\top \Omega_{i}^{-1}\big(\alpha(b)\big)
+    \left(\widehat{\Y}_{i}(b)-\bar{\Y}(b)\right)\right ],
+\end{equation*}
+where $\bar{\Y}(b) = \sum_i^n\widehat{\Y}_i(b)/n$.
+
+The GEE estimator, denoted by $\widehat{\beta}_{n, GEE}$,
+can be obtained from an iterative procedure:
+
+  1. Obtain an initial estimate $\widehat{\beta}^{(0)}_{n, GEE} = b_n$ of $\beta$ and initialize with $m = 1$.
+  2. Obtain an estimate $\widehat\alpha_n$ of $\alpha$ given
+  $\widehat\beta^{(m-1)}_{n, GEE}$, $\widehat\alpha_n(\widehat{\beta}_{n, GEE}^{(m-1)})$.
+  3. Update with $\widehat\beta^{(m)}_{n, GEE} = L_n\big(\widehat\beta^{(m-1)}_{n,  GEE}, \widehat\alpha_n(\widehat\beta^{(m-1)}_{n, GEE})\big)$.
+  4. Increase $m$ by one and repeat 2 and 3 until convergence.
+
+The iteration proceeds with the aid of function \code{geese}
+in \pkg{geepack} \citep{Rpkg:geepack, Hale:Hojs:Yan:gee:2006}.
+The estimator reduces to the least squares estimator of
+\citet{Jin:Lin:Wei:Ying:rank:2006} when the working
+weight matrix $\Omega_i$'s are the identity matrix.
+We refer to \citet{Chio:Kang:Kim:Yan:marg:2014} for more details.
+The working parameter estimate $\widehat{\alpha}_n$ does not affect
+the consistency of the GEE estimator, but may affect its efficiency.
+Higher efficiency can be achieved if $\Omega_i$ is closer to the
+covariance matrix of $\widehat{\Y}_i(b)$ and even an imperfect working
+weight still improves the efficiency \citep{Chio:Kang:Kim:Yan:marg:2014}.
+The variance of the estimator can again be estimated by resampling
+procedures.
+
+
+## The `aftgee()` interface
+
+The `aftgee()` is used to fit a semiparametric AFT model with rank-based approaches.
+The function interface of `aftgee()` is
+
+```{R}
+args(aftgee)
+```
 
 ## Reference
