@@ -54,10 +54,10 @@ Install and load the package from GitHub using
 
 [Online document](https://www.sychiou.com/aftgee/index.html) includes:
 
-  - Package vignette on rank-based estimators with
-    [`aftsrr()`](https://www.sychiou.com/aftgee/articles/aftsrr.html).
-  - Package vignette on least-squares estimators with
-    [`aftgee()`](https://www.sychiou.com/aftgee/articles/aftgee.html).
+  - Package vignette on [rank-based estimators with
+    `aftsrr()`](https://www.sychiou.com/aftgee/articles/aftsrr.html).
+  - Package vignette on [least-squares estimators with
+    `aftgee()`](https://www.sychiou.com/aftgee/articles/aftgee.html).
 
 ## Reference
 
