@@ -10,7 +10,7 @@ version](https://img.shields.io/badge/R%3E%3D-3.4.0-6666ff.svg)](https://cran.r-
 Status](https://travis-ci.org/stc04003/aftgee.svg?branch=master)](https://travis-ci.org/stc04003/aftgee)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/stc04003/aftgee?branch=master&svg=true)](https://ci.appveyor.com/project/stc04003/aftgee)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2021--07--11-yellowgreen.svg)](/commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2022--05--11-yellowgreen.svg)](/commits/master)
 
 -----
 
@@ -47,88 +47,17 @@ Install and load the package from GitHub using
 ``` r
 > devtools::install_github("stc04003/aftgee")
 > library(aftgee)
+> packageVersion("aftgee")
 ```
 
 ### Online documentation
 
-[Online document](https://www.sychiou.com/aftgee/index.html).
+[Online document](https://www.sychiou.com/aftgee/index.html) includes:
 
-  - Package vignette coming up.
-
-## Examples
-
-Here are some examples to get started:
-
-``` r
-> ## Simulate data from an AFT model with possible associated response
-> datgen <- function(n = 100, tau = 0.3, dim = 2) {
-+   x1 <- rbinom(dim * n, 1, 0.5)
-+   x2 <- rnorm(dim * n)
-+   e <- c(t(exp(MASS::mvrnorm(n = n, mu = rep(0, dim), Sigma = tau + (1 - tau) * diag(dim)))))
-+   tt <- exp(2 + x1 + x2 + e)
-+   cen <- runif(n, 0, 100)
-+   data.frame(Time = pmin(tt, cen), status = 1 * (tt < cen),
-+              x1 = x1, x2 = x2, id = rep(1:n, each = dim))
-+ }
-> set.seed(1); dat <- datgen(n = 100, dim = 2)
-```
-
-``` r
-> library(aftgee)
-> set.seed(123)
-> fm <- Surv(Time, status) ~ x1 + x2
-> ## Fits semiparametric AFT with rank-based approach
-> fit.rk <- aftsrr(fm, id = id, data = dat, se = c("ISMB", "ZLMB"))
-> summary(fit.rk)
-Call:
-aftsrr(formula = fm, data = dat, id = id, se = c("ISMB", "ZLMB"))
-
-Variance Estimator: ISMB
-   Estimate StdErr z.value   p.value    
-x1    1.104  0.124   8.891 < 2.2e-16 ***
-x2    0.963  0.075  12.870 < 2.2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Variance Estimator: ZLMB
-   Estimate StdErr z.value   p.value    
-x1    1.104  0.120   9.186 < 2.2e-16 ***
-x2    0.963  0.085  11.305 < 2.2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
-
-``` r
-> ## Fits semiparametric AFT with GEE approach and an independent correlation structure
-> fit.gee1 <- aftgee(fm, id = id, data = dat, corstr = "ind")
-> summary(fit.gee1)
-Call:
-aftgee(formula = fm, data = dat, id = id, corstr = "ind")
-
-AFTGEE Estimator
-            Estimate StdErr z.value   p.value    
-(Intercept)    3.369  0.116  28.994 < 2.2e-16 ***
-x1             1.054  0.145   7.288 < 2.2e-16 ***
-x2             0.958  0.081  11.890 < 2.2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
-
-``` r
-> ## Fits semiparametric AFT with GEE approach and an exchangeable correlation structure
-> fit.gee2 <- aftgee(fm, id = id, data = dat, corstr = "ex")
-> summary(fit.gee2)
-Call:
-aftgee(formula = fm, data = dat, id = id, corstr = "ex")
-
-AFTGEE Estimator
-            Estimate StdErr z.value   p.value    
-(Intercept)    3.369  0.115  29.196 < 2.2e-16 ***
-x1             1.055  0.146   7.244 < 2.2e-16 ***
-x2             0.960  0.085  11.333 < 2.2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
+  - Package vignette on [rank-based estimators with
+    `aftsrr()`](https://www.sychiou.com/aftgee/articles/aftsrr.html).
+  - Package vignette on [least-squares estimators with
+    `aftgee()`](https://www.sychiou.com/aftgee/articles/aftgee.html).
 
 ## Reference
 

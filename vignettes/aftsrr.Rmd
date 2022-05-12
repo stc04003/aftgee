@@ -1,0 +1,283 @@
+---
+title: "Rank-based Estimators for Accelerated Failure Time Model"
+author: Sy Han (Steven) Chiou
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+bibliography: ../inst/bib/aftgee.bib
+vignette: >
+  %\VignetteIndexEntry{Rank-based Estimators for Accelerated Failure Time Model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}{inputenc}
+---
+
+```{r default, include = FALSE}
+knitr::opts_chunk$set(prompt = TRUE, comment = "")
+```
+In this vignette, we demonstrate the usage of the `aftsrr()` function from the __`aftgee`__ package [@R:aftgee; @chiou2014fitting].
+The vignette is based on  __`aftgee`__ version `r packageVersion("aftgee")`.
+   ```{R aftsrr-args}
+library(aftgee)
+packageVersion("aftgee")
+   ```
+
+## AFT model
+The univariate semiparametric semiparametric accelerated failure time (AFT) model is specified as
+$$\log(T_i) = X_i^\top\beta + \epsilon_i, i = 1, \ldots, n, $$
+where $T_i$ is the failure time, $X_i$ is the $p\times1$ covariate vector, $\beta$ is the $p\times1$ regression coefficient,
+and $\epsilon_i$'s are independent and identically distributed random variables with an unspecified distribution.
+In the presence of right censoring, the observed data are independent copies of $(Y_i, \Delta_i, X_i), i = 1, \ldots, n$, 
+where $Y_i = \min(T_i, C_i), \Delta_i = I(T_i < C_i)$, and $I(\cdot)$ is the indicator function.
+
+## Rank-based estimator
+
+The regression parameters, $\beta$, can be estimated by solving the rank-based weighted estimating equation,
+$$U_{n, \varphi}(\beta) = \sum_{i = 1}^nw_i\varphi_i(\beta)\Delta_i \left[X_i - \frac{\sum_{j = 1}^nw_jX_jI\{e_j(\beta)\ge e_i(\beta)\}}{\sum_{j = 1}^nw_jI\{e_j(\beta)\ge e_i(\beta)\}}\right] = 0,$$
+where $e_i(\beta) = Y_i - X_i^\top\beta$, $w_i$ is a sampling weight, and 
+$\varphi(\beta)$ is a possibly data-dependent non-negative weight function with values between 0 and 1.
+Let $\widehat{F}_{e_i(\beta)}(t)$ be the estimated cumulative distribution based on the residuals $e_i(\beta)$'s. 
+Common choices of $\varphi_i(\beta)$ implemented in the __`aftgee`__ package are. 
+
+  - Logrank weight [@Pren:line:1978]; $\varphi_i(\beta) = 1$
+  - Gehan weight [@Geha:gene:1965]; $\varphi_i(\beta) = n^{-1}\sum_{j = 1}^nI\{e_j(\beta)\ge e_i(\beta)\}$
+  - Prentice-Wilcoxon weight [@Pren:line:1978]; $\varphi_i(\beta) = 1 - \widehat{F}_{e_i(\beta)}(t)$
+  - General $G^p$ class weight [@harrington1982class]; $\varphi_i(\beta) = \left[1 - \widehat{F}_{e_i(\beta)}(t)\right]^p, p\ge0$
+
+The solution to $U_{n, \varphi}(\beta) = 0$, denoted by $\widehat\beta_{n, \varphi}$, is 
+consistent to the true parameter, $\beta_0$, and is asymptotically normal [e.g., @Tsia:esti:1990].
+We used the Kaplan-Meier estimator to obtain  $\widehat{F}_{e_i(\beta)}(t)$.
+The Barzilai-Borwein spectral method implemented in package __`BB`__ package [@R:BB] is the used to
+solve $U_{n, \varphi}(\beta) = 0$ directly.
+
+## Smoothed rank-based estimator
+
+A computationally more efficient approach is the induced smoothing procedure [@brown2005standard; @brown2007induced].
+The idea is to replace the nonsmooth estimating equations with a
+smoothed version, whose solutions are asymptotically equivalent to those of the former.
+Define an independent $p\times1$ standard normal random vector $Z$ and a $p\times p$ matrix $\Gamma_n$
+such that $\Gamma_n^2 = \Sigma_n$, where $\Sigma_n$ is a symmetric positive definite matrix. 
+The induced smoothing procedure replaces $U_{n, \varphi}(\beta)$ with 
+$E_Z[U_{n, \varphi}(\beta + n^{-1/2}\Gamma_nZ)]$,
+where the expectation is taken with respect to $Z$.
+With the Gehan's weight, the induced smooth estimating equation is 
+$$\widetilde{U}_{n, G}(\beta) = \sum_{i = 1}^n\sum_{j = 1}^nw_iw_j\Delta_i(X_i - X_j)
+\Phi\left[\frac{e_j(\beta) - e_i(\beta)}{r_{ij}}\right] = 0, $$
+where $r_{ij}^2 = (X_i - X_j)^\top\Sigma_n(X_i - X_j)$ and $\Phi(\cdot)$ is the 
+standard normal cumulative distribution function.
+The smooth Gehan estimating equation is monotone and continuously differentiable with respect to $\beta$, hence, 
+its root can be found with standard numerical methods such as the Barzilai-Borwein spectral method.
+
+
+On the other hand, deriving the smoothed estimating equations with general weights is challenging because
+$E_Z[U_{n, \varphi}(\beta + n^{-1/2}\Gamma_nZ)]$ involves the expectation of the ratio of two random quantities.
+The __*aftgee*__ package implements the iterative induced smoothing procedure proposed in @chiou2015rank.
+For general weights, the regression parameters, $\beta$, can be estimated with the following steps:
+
+  1. Obtain an initial estimate $\widetilde\beta_{n, \varphi}^{(0)} = b_n$ of $\beta$ and initialize with $m = 1$. 
+  2. Update $\widetilde\beta_{n, \varphi}^{(m)}$ by solving 
+  $\widetilde{U}_{n, \varphi}(\widetilde\beta_{n, \varphi}^{(m-1)} , \widetilde\beta_{n, \varphi}^{(m)}) = 0$.
+  3. Increase $m$ by one and repeat Step 2 until 
+  $\left|\widetilde\beta_{n, \varphi, q}^{(m-1)} - \widetilde\beta_{n, \varphi, q}^{(m)}\right| < t$ for all 
+  $q = 1, \ldots, p$, where $\widetilde\beta_{n, \varphi, q}^{(m)}$ is the $q$th component of 
+  $\widetilde\beta_{n, \varphi}^{(m)}$ and $t$ is a prefixed tolerance.
+  
+The smoothed estimating equation, $\widetilde{U}_{n, \varphi}(b, \beta)$, has the form
+$$\widetilde{U}_{n, \varphi}(b, \beta) = \sum_{i = 1}^n\sum_{j = 1}^nw_iw_j\Delta_i\phi_i(b)(X_i - X_j)\Phi\left[\frac{e_j(\beta) - e_i(\beta)}{r_{ij}}\right] = 0.$$
+A simple choice of the initial estimator is the easy-to-compute Gehan's estimator, $\widetilde\beta_{n, G}$.
+
+
+## The `aftsrr()` interface
+
+The `aftsrr()` is used to fit a semiparametric AFT model with rank-based approaches.
+The function interface of `aftsrr()` is
+
+```{R}
+args(aftsrr)
+```
+
+The arguments are:
+
+  - `formula`: a formula expression, of the form `response ~ predictors`. The `response` is a `Surv` object object with right censoring. 
+  - `data`: an optional `data.frame` in which to interpret the variables occurring in the `formula`.
+  - `subset`: an optional vector specifying a subset of observations to be used in the fitting process.
+  - `id`: an optional vector used to identify the clusters. If missing, each individual row of `data` is presumed to represent a distinct subject. 
+  - `contrasts`: an optional list.
+  - `weights`: an optional vector of observation weights.
+  - `B`: a numeric value specifies the resampling number. When `B = 0` or `se = NULL`, only the point estimator will be displayed.
+  - `rankWeights`:  a character string specifying the type of general weights. The following are permitted:
+      - `logrank`: logrank weight. 
+      - `gehan`: Gehan's weight. 
+      - `PW`: Prentice-Wilcoxon weight. 
+      - `GP`: GP class weight. 
+      - `userdefined`: a user defined weight provided as a vector with length equal to the number of subject. This argument is still under-development.
+  - `eqType`: a character string specifying the type of the estimating equation used to obtain the regression parameters.  The following are permitted:
+      - `is`: Regression parameters are estimated by directly solving the induced-smoothing estimating equations. This is the default and recommended method.
+      - `ns`: Regression parameters are estimated by directly solving the nonsmooth estimating equations.
+      - `mis`: Regression parameters are estimated by iterating the monotonic induced smoothing Gehan-based estimating equations. This is typical when `rankWeights = "PW"` and `rankWeights = "GP"`.
+      - `mns`: Regression parameters are estimated by iterating the monotonic non-smoothed Gehan-based estimating equations. This is typical when `rankWeights = "PW"` and `rankWeights = "GP"`.
+  - `se`: a character string, or a list of character strings, specifying the estimating method for the variance-covariance matrix. The following are permitted:
+      - `NULL`: The variance-covariance matrix will not be computed.
+      - `bootstrap`: nonparametric bootstrap.
+      - `MB`: multiplier resampling.
+      - `ZLCF`: Zeng and Lin's approach with closed form $V$.
+      - `ZLMB`: Zeng and Lin's approach with empirical $V$.
+      - `sHCF`: Huang's approach with closed form $V$.
+      - `sHMB`: Huang's approach with empirical $V$.
+      - `ISCF`: Johnson and Strawderman's sandwich variance estimates with closed form $V$.
+      - `ISMB`: Johnson and Strawderman's sandwich variance estimates with empirical $V$.
+  - `control`: a list of control parameters.
+
+### The equation types
+The arguments `eqType = "is"`estimates the regression parameters by solving the non-smoothed estimating equation, $U_{n, \varphi}(\beta)$ directly. 
+The arguments `eqType = "is"`estimates the regression parameters by solving the approximated induced smoothing estimating equation
+$$U_{n, \varphi}(\beta) = \sum_{i = 1}^nw_i\varphi_i(\beta)\Delta_i \left[X_i - \frac{\sum_{j = 1}^nw_jX_j\Phi\{e_j(\beta)\ge e_i(\beta)\}}{\sum_{j = 1}^nw_j\Phi\{e_j(\beta)\ge e_i(\beta)\}}\right] = 0.$$
+The arguments `eqType = "mis"`estimates the regression parameters using the above mentioned iterative procedure
+with 
+$$\widetilde{U}_{n, \varphi}(b, \beta) = \sum_{i = 1}^n\sum_{j = 1}^nw_iw_j\Delta_i\phi_i(b)(X_i - X_j)\Phi\left[\frac{e_j(\beta) - e_i(\beta)}{r_{ij}}\right] = 0.$$ 
+The arguments `eqType = "mis"`estimates the regression parameters using the same algorithm except with the 
+induced smoothing $\widetilde{U}_{n, \varphi}(b, \beta)$ replaced with 
+$$\widehat{U}_{n, \varphi}(b, \beta) = \sum_{i = 1}^n\sum_{j = 1}^nw_iw_j\Delta_i\phi_i(b)(X_i - X_j)I\left[\frac{e_j(\beta) - e_i(\beta)}{r_{ij}}\right] = 0.$$
+
+### Variance estimation 
+The `aftsrr()` allows users to estiamte the variance-covariance matrix of $\beta$ through 
+the nonparametric bootstrap or the multiplier resampling procedure.
+Bootstrap samples that failed to converge are removed when computing the empirical variance matrix. 
+When bootstrap is not called, we assume the variance-covariance matrix has a sandwich form
+$$\Sigma = A^{-1}V(A^{-1})^\top,$$
+where $V$ is the asymptotic variance of the estimating function and $A$ is the slope matrix. 
+In __`aftgee`__, we provide seveal methods to estimate the variance-covariance matrix via this sandwich form,
+depending on how $V$ and $A$ are estimated. 
+Specifically, the asymptotic variance, $V$, can be estimated by either a closed-form formulation (`CF`) 
+or through bootstrap the estimating equations (`MB`). 
+On the other hand, the methods to estimate the slope matrix $A$ are the induced smoothing approach (`IS`), 
+Zeng and Lin's approach (`ZL`) [@zeng2008efficient], 
+and the smoothed Huang's approach (`sH`) [@huang2002calibration].
+
+### The `control` list
+
+The `control` list controls equation solver, maxiter, tolerance, and resampling variance estimation. 
+The available equation solvers are `BBsolve` and `dfsane` of the __`BB`__ package. 
+The default algorithm control parameters are used when these functions are called. 
+However, the monotonicity parameter, `M`, can be specified by users via the control list. 
+When `M` is specified, the merit parameter, `noimp`, is set at `10 * M`.
+The readers are refered to the __`BB`__ package for details.
+Instead of searching for the zero crossing, options including `BBoptim` and `optim` 
+will return solution from maximizing the corresponding objective function. 
+When `se = "bootstrap"` or `se = "MB"`, 
+an additional argument `parallel = TRUE` can be specified to enable parallel computation. 
+The number of CPU cores can be specified with `parCl`, the default number
+of CPU cores is the integer value of `detectCores() / 2`.
+
+## An simulated example 
+The following function generates simulated data following an AFT model 
+$$\log(T) = 2 + X_1 + X_2 + \epsilon, $$
+where $X_1$ is a Bernoulli random variable with $p = 0.5$, $X_2$ is a standard normal random variable, 
+and $\epsilon$ is an independent standard normal random variable.
+```{R}
+datgen <- function(n = 100) {
+  x1 <- rbinom(n, 1, 0.5)
+  x2 <- rnorm(n)
+  e <- rnorm(n)
+  tt <- exp(2 + x1 + x2 + e)
+  cen <- runif(n, 0, 100)
+  data.frame(Time = pmin(tt, cen), status = 1 * (tt < cen),
+             x1 = x1, x2 = x2, id = 1:n)
+}
+set.seed(1); head(dat <- datgen(n = 50))
+```
+
+The observed data, $(Y, \Delta, X)$, correspond to `Time`, `status`, `x1`, and `x2`. 
+The following gives the induced smoothing Gehan estimate (default) of $\beta$ with the
+variance matrix estimated by the induced smoothing approach and Zeng and Lin's approach.
+
+```{R, cache = TRUE}
+system.time(fit1 <- aftsrr(Surv(Time, status) ~ x1 + x2, data = dat, se = c("ISMB", "ZLMB")))
+summary(fit1)
+```
+
+The non-smooth counterpart presented below yield similar results.
+```{R, cache = TRUE}
+system.time(fit2 <- aftsrr(Surv(Time, status) ~ x1 + x2, data = dat, 
+                           eqType = "ns", se = c("ISMB", "ZLMB")))
+summary(fit2)
+```
+
+The Prentice-Wilcoxon estimator obtained by the iterative procedure also yields similar results.
+```{R, cache = TRUE}
+system.time(fit3 <- aftsrr(Surv(Time, status) ~ x1 + x2, data = dat, 
+                           rankWeights = "PW", se = c("ISMB", "ZLMB")))
+summary(fit3)
+```
+
+The following provides an example with the variance estimate obtained by bootstrap while taking advantage of parallel computing. 
+The bootstrap variance estimator is compatible with the sandwich variance estimator.
+
+```{R, cache = TRUE}
+system.time(fit4 <- aftsrr(Surv(Time, status) ~ x1 + x2, data = dat, se = "bootstrap", 
+                           control = list(parallel = TRUE)))
+summary(fit4)
+```
+
+
+## National Wilm's Tumor Study
+
+We demonstrate the performance of the weighted approach with an application to the cohort study conducted by 
+the National Wilm's Tumor Study Group (NWTSG) [@breslow1999design].
+The interest of the study was to assess the relationship between the tumor histology and
+the outcome, time to tumor relapse. 
+The data set can be loaded with the following code. 
+```{R}
+data(nwtco, package = "survival")
+head(nwtco)
+```
+The variables of interest are the following. 
+
+  - `seqno`: Patient id
+  - `edrel`: Time to relapse
+  - `red`: Indicator for relapse
+  - `histol`: Histology from central lab;  (1 = favorable, 0 = unfavorable)
+  - `age`: Patient's age in month
+  - `study`: Study group; (3 = NWTSG-3 and 4 = NWTSG-4)
+
+There were a total of 4028 subjects in the full cohort.
+Among them, 571 were cases who experienced the relapse of tumor; a censoring rate of about 86\%.
+The following codes converts the variables, `histol`, `stage`, and `study` into a factor and transform `age` to year. 
+```{R}
+nwtco$age <- nwtco$age / 12
+nwtco$histol <- factor(nwtco$histol)
+nwtco$stage <- factor(nwtco$stage)
+nwtco$study <- factor(nwtco$study)
+```
+
+We first fit the full cohort data.
+```{R, cache = T}
+system.time(fit.full <- aftsrr(Surv(edrel, rel) ~ histol + age + study, 
+                               data = nwtco, se = "ISMB"))
+summary(fit.full)
+```
+We now create an artificial case-cohort data to evaluate the performance of the weighted approach.
+The following creates a case0cohort with 668 patients selected as sub-cohort sample to form the total case-cohort sample size of 1154.
+We also created the case-cohort weight accordingly.
+```{R, cache = T}
+set.seed(1)
+subinx <- sample(1:nrow(nwtco), 668, replace = FALSE)
+nwtco$subcohort <- 0
+nwtco$subcohort[subinx] <- 1
+pn <- mean(nwtco$subcohort)
+nwtco$hi <- nwtco$rel + ( 1 - nwtco$rel) * nwtco$subcohort / pn
+```
+The case-cohort analysis is provided below. 
+Point estimates are close to these in case-cohort analysis, with their standard errors taken into consideration.
+All the standard errors decrease compared to the
+case-cohort analyses, which is expected as full information
+became available for all covariates.
+```{R, cache = T}
+system.time(fit.case <- aftsrr(Surv(edrel, rel) ~ histol + age + study, weights = hi, 
+                               data = nwtco, subset = subcohort > 0, se = "ISMB"))
+summary(fit.case)
+```
+
+## Reference
