@@ -142,7 +142,7 @@ induced smoothing $\widetilde{U}_{n, \varphi}(b, \beta)$ replaced with
 $$\widehat{U}_{n, \varphi}(b, \beta) = \sum_{i = 1}^n\sum_{j = 1}^nw_iw_j\Delta_i\phi_i(b)(X_i - X_j)I\left[\frac{e_j(\beta) - e_i(\beta)}{r_{ij}}\right] = 0.$$
 
 ### Variance estimation 
-The `aftsrr()` allows users to estiamte the variance-covariance matrix of $\beta$ through 
+The `aftsrr()` allows users to estimate the variance-covariance matrix of $\beta$ through 
 the nonparametric bootstrap or the multiplier resampling procedure.
 Bootstrap samples that failed to converge are removed when computing the empirical variance matrix. 
 When bootstrap is not called, we assume the variance-covariance matrix has a sandwich form

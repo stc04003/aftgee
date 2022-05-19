@@ -1297,6 +1297,10 @@ aftsrr <- function(formula, data, subset, id = NULL, contrasts = NULL,
             DF <- DF[,-which(colnames(DF) == "(Intercept)")]
     }
     DF <- as.data.frame(DF)
+    if (any(DF$time < 0))
+      stop("Failure time must be positive.")
+    if (any(DF$time == 0))
+      DF$time <- ifelse(DF$time == 0, min(min2(DF$time) / 2, 1e-5), DF$time)
     ## setup engine
     method <- paste(rkWeights, ".", eqType, sep = "")
     engine.control <- control[names(control) %in% names(attr(getClass(method), "slots"))]

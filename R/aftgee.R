@@ -90,7 +90,7 @@ aftgee <- function(formula, data, subset, id = NULL, contrasts = NULL,
   weights <- model.extract(m, weights) 
   obj <- unclass(m[,1]) 
   if (class(m[[1]]) != "Surv" || ncol(obj) > 2)
-    stop("aftsrr only supports Surv object with right censoring.", call. = FALSE)
+    stop("aftgee only supports Surv object with right censoring.", call. = FALSE)
   if (is.null(id)) id <- 1:nrow(obj)
   if (is.null(weights)) weights <- rep(1, nrow(obj))
   margin <- model.extract(m, margin)
@@ -108,6 +108,10 @@ aftgee <- function(formula, data, subset, id = NULL, contrasts = NULL,
       DF <- DF[,-which(colnames(DF) == "(Intercept)")]
   }
   DF <- as.data.frame(DF)
+  if (any(DF$time < 0))
+    stop("Failure time must be positive.")
+  if (any(DF$time == 0))
+    DF$time <- ifelse(DF$time == 0, min(min2(DF$time) / 2, 1e-5), DF$time)
   out <- NULL
   if (sum(DF$status) == nrow(DF)) {
     cat("There is no censoring in the data, ordinary least squares approach is fitted via geese.\n")
@@ -368,24 +372,4 @@ eRes <- function(e, delta, z = rep(1, length(e))) {
   return(list(eres, eres2, inpt))
 }
 
-## ## Internal function for obtaining the se estimator for an aftgee object 
-## aftgee.se <- function(DF, x, B, b0, yint, control = aftgee.control()) {
-##     ## use the standard bootstrap when resampling = FALSE
-##     clsize <- unlist(lapply(split(DF$id, DF$id), length))
-##     n <- length(unique(DF$id))
-##     bb <- NULL
-##     if (control$parallel) {
-##         cl <- makeCluster(stdErr@parCl)
-##         clusterExport(cl = cl, varlist=c("DF", "x"), envir = environment())
-##         if (control$resampling) {
-##             out <- parSapply(cl, 1:B, function(x) {
-##                 Z <- as.vector(rep(rexp(n, 1), time = clsize))
-##                 DF$weights <- Z
-##                 boot.ini <- b0
-
-##                 }
-
-
-##         }
-##     }
-## }
+min2 <- function(x) min(x[x != min(x)])
