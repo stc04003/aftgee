@@ -55,7 +55,7 @@ Recently, @chiou2014marginal embedded the generalized estimating equation (GEE) 
 accommodates within-cluster dependence in cluster survival data. 
 The GEE embedded approach accounts for multivariate dependence through working correlation structures to improve efficiency.
 To illustrate the idea, we expand the notations to multivariate AFT model, 
-$$T_{ik} + X_{ik}^\top\beta + \epsilon_{ik}, i = 1, \ldots, n, k = 1, \ldots, K_i, $$
+$$\log(T_{ik}) = X_{ik}^\top\beta + \epsilon_{ik}, i = 1, \ldots, n, k = 1, \ldots, K_i, $$
 where $K_i$ is the $i$ cluster size, 
 $\beta$ is an unknown $p\times1$ vector of regression parameters and the error terms, 
 $\epsilon_{i}= \{\epsilon_{i1}, \ldots, \epsilon_{iK_i}\}$ are independent and identically distributed random variables 
