@@ -2,6 +2,8 @@
 
 S3method(coef,aftgee)
 S3method(coef,aftsrr)
+S3method(confint,aftgee)
+S3method(confint,aftsrr)
 S3method(predict,aftgee)
 S3method(predict,aftsrr)
 S3method(print,aftgee)

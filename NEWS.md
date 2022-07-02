@@ -1,5 +1,6 @@
 # aftgee_1.1.7
   * Fix the print in ini.conv
+  * Add S3 method confint()
 # aftgee_1.1.6
   * Fixed examples that depends on `kidney` from survival package, which no longer exist
   * Change 'http' to 'https'
