@@ -10,5 +10,10 @@ datgen <- function(n = 100, tau = 0.3, dim = 2) {
 }
 set.seed(1); dat <- datgen(n = 50, dim = 2)
 fm <- Surv(Time, status) ~ x1 + x2
-summary(aftgee(fm, data = dat, id = id, corstr = "ind", B = 8))
-summary(aftgee(fm, data = dat, id = id, corstr = "ex", B = 8))
+fit1 <- aftgee(fm, data = dat, id = id, corstr = "ind", B = 8)
+fit2 <- aftgee(fm, data = dat, id = id, corstr = "ex", B = 8)
+summary(fit1)
+summary(fit2)
+
+confint(fit1)
+confint(fit2)

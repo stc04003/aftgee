@@ -26,3 +26,4 @@ fit <- aftsrr(Surv(edrel, rel) ~ histol + age12 + study, id = seqno,
               weights = hi, data = sub, B = 10, se = c("ISMB", "ZLMB"),
               subset = stage == 4)
 summary(fit)
+confint(fit)
