@@ -1323,7 +1323,7 @@ aftsrr <- function(formula, data, subset, id = NULL, contrasts = NULL,
     id <- DF$id
     Y <- log(DF$time)
     delta <- DF$status
-    X <- as.matrix(DF[,-(1:4)])
+    X <- as.matrix(DF[, -(1:4), drop = FALSE])
     W <- DF$weights
     n <- nrow(DF)
     p <- ncol(X)
