@@ -1,9 +1,7 @@
 #' @export
 summary.aftgee <- function(object,...){
   z <- object
-  if (class(z) != "aftgee"){
-    stop("Most be aftgee class")
-  }
+  if (!is.aftgee(z)) stop("Most be aftgee class")
   ans <- z["call"]
   TAB.ini <- NULL
   ## aftgee part
@@ -28,9 +26,7 @@ summary.aftgee <- function(object,...){
 #' @export
 summary.aftsrr <- function(object,...){
   z <- object
-  if (class(z) != "aftsrr"){
-    stop("Most be aftsrr class")
-  }
+  if (!is.aftsrr(z)) stop("Most be aftsrr class")
   ans <- z["call"]
   var.meth <- z$var.meth[z$var.meth %in%
                          c("NULL", "bootstrap", "MB", "ZLCF", "ZLMB", "sHCF", "sHMB", "ISCF", "ISMB", "js")]
@@ -81,6 +77,7 @@ print.summary.aftsrr <- function(x, ...){
 format.perc <- function (probs, digits) 
   paste(format(100 * probs, trim = TRUE, scientific = FALSE, digits = digits), "%")
 
+#' @importFrom stats qnorm setNames
 #' @export
 confint.aftsrr <- function(object, parm, level = 0.95, ...) {
   cf <- coef(object)
@@ -138,3 +135,6 @@ confint.aftgee <- function(object, parm, level = 0.95, ...) {
   ci[] <- cf[parm] + ses[parm] %o% fac
   ci
 }
+
+is.aftgee <- function(x) inherits(x, "aftgee")
+is.aftsrr <- function(x) inherits(x, "aftsrr")

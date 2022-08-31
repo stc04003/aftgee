@@ -1,7 +1,7 @@
 Package: aftgee
 Title: Accelerated Failure Time Model with Generalized Estimating
         Equations
-Version: 1.1.7
+Version: 1.2.0
 Authors@R: c(person("Sy Han", "Chiou", email = "schiou@utdallas.edu", role = c("aut", "cre")),
 	   person("Sangwook", "Kang", role = "aut"),
 	   person("Jun", "Yan", role = "aut"))
@@ -12,11 +12,12 @@ URL: https://github.com/stc04003/aftgee
 BugReports: https://github.com/stc04003/aftgee/issues
 Encoding: UTF-8
 LazyLoad: yes
-Imports: methods, parallel, geepack, survival, BB, MASS
-RoxygenNote: 7.1.2
+Imports: methods, parallel, geepack, survival, BB, MASS, Rcpp
+RoxygenNote: 7.2.1
 NeedsCompilation: yes
 Packaged: 2018-07-23 07:08:12 UTC; schiou
 Author: Sy Han Chiou [aut, cre],
   Sangwook Kang [aut],
   Jun Yan [aut]
 Maintainer: Sy Han Chiou <schiou@utdallas.edu>
+LinkingTo: Rcpp, RcppArmadillo

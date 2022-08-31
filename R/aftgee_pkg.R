@@ -43,6 +43,7 @@
 #' @importFrom stats approx coef complete.cases lm model.extract model.matrix pnorm printCoefmat
 #' @importFrom stats rexp rnorm var vcov weights as.formula
 #' @importFrom utils vi
+#' @importFrom Rcpp sourceCpp
 #'
 #' @useDynLib aftgee, .registration = TRUE
 #' @docType package
