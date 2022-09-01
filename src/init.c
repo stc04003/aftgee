@@ -34,7 +34,7 @@ static const R_CMethodDef CEntries[] = {
 
 static const R_CallMethodDef CallEntries[] = {
     {"_aftgee_log_ns_est",    (DL_FUNC) &_aftgee_log_ns_est, 6},
-    {"_aftgee_gehan_ns_est",  (DL_FUNC) &_aftgee_log_ns_est, 6},
+    {"_aftgee_gehan_ns_est",  (DL_FUNC) &_aftgee_gehan_ns_est, 6},
     {"_aftgee_getSuv",  (DL_FUNC) &_aftgee_getSuv, 3},
     {NULL, NULL, 0}
 };

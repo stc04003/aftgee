@@ -1914,11 +1914,9 @@ zlFun <- function(beta, Y, X, delta, id, weights = rep(1, nrow(X)),
     smooth <- ifelse(method != "nonsm", TRUE, FALSE)
     UnMat <- zmat <- ahat <- unTime <- NULL
     An.inv <- 1
-    
     UnV <- viEmp(beta, Y, delta, X, id, weights, B, mb = FALSE, zbeta = TRUE, smooth = smooth,
                  gw = gw, rankWeights = rankWeights, sigma = sigma,
                  gpweight = gpweight)
-    
     zmat <- UnV$zmat
     UnV <- UnV$UnV
     if (vClose == TRUE) {
@@ -1980,7 +1978,6 @@ isFun <- function(beta, Y, delta, X, id, weights = rep(1, nrow(X)), sigma, B = 5
         pw <- getSmoothSuv(Y, X, beta, delta, weights)
         An <- abarpwfun(beta, Y, X, delta, clsize, sigma, weights, pw)
     }
-
     if (qr(An)$rank != p) {
         covmat <- ginv(An) %*% vi %*% ginv(An)
         An.msg <- "An is singular"

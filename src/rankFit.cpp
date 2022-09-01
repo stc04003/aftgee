@@ -104,7 +104,7 @@ arma::vec gehan_ns_est(const arma::vec& a,
   if(n < 1) return out;
   arma::vec yexa = Y - X.t() * a;
   yexa.replace(-arma::datum::inf, arma::datum::nan);
-  yexa.replace(arma::datum::nan, yexa.min());
+  yexa.replace(arma::datum::nan, yexa.min() - 0.01);
   arma::uvec const idx = arma::sort_index(yexa);
   auto cmp = [](cmp_par const &x, cmp_par const &y){
     return x.first <= y.first;
@@ -117,7 +117,7 @@ arma::vec gehan_ns_est(const arma::vec& a,
     indices.emplace(yexa[idx_i], idx_i);
     x_col_sum = sum(matvec2(X, W), 1);
     w_sum = sum(W);
-    out = D(idx_i) * W(idx_i) * (w_sum * X.col(idx_i) - x_col_sum);
+    out = D(idx_i) * W(idx_i) * gw(idx_i) * (w_sum * X.col(idx_i) - x_col_sum);
   }
   auto indices_head = indices.begin();
   for(arma::uword i = 1; i < n; ++i) {
@@ -125,9 +125,9 @@ arma::vec gehan_ns_est(const arma::vec& a,
     indices.emplace(yexa[idx_i], idx_i);
     if(yexa[idx_i] > indices_head->first) {
       while(yexa[idx_i] > indices_head->first) {
-	x_col_sum -= W(indices_head->second) * X.col(indices_head->second);
-	w_sum -= W(indices_head->second);
-	++indices_head;
+				x_col_sum -= W(indices_head->second) * X.col(indices_head->second);
+				w_sum -= W(indices_head->second);
+				++indices_head;
       }
     }
     else --indices_head;
