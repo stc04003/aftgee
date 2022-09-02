@@ -11,6 +11,10 @@ log_ns_est <- function(a, X, D, Y, W, gw) {
     .Call(`_aftgee_log_ns_est`, a, X, D, Y, W, gw)
 }
 
+gehan_s_est <- function(a, X, D, Y, W, nc, sigma, gw) {
+    .Call(`_aftgee_gehan_s_est`, a, X, D, Y, W, nc, sigma, gw)
+}
+
 #' @noRd
 gehan_ns_est <- function(a, X, D, Y, W, gw) {
     .Call(`_aftgee_gehan_ns_est`, a, X, D, Y, W, gw)

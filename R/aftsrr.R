@@ -23,10 +23,11 @@ rankFit.gehan.is <- function(DF, engine, stdErr, gw = NULL) {
            out = double(1), PACKAGE = "aftgee")$out
     }
     gehan.est <- function(b) {
-        .C("gehan_s_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
-           as.integer(clsize), as.double(engine@sigma0), as.integer(length(clsize)),
-           as.integer(p), as.integer(n), as.double(W), as.double(gw),
-           out = double(p), PACKAGE = "aftgee")$out
+        drop(gehan_s_est(b, X, delta, Y, W, length(clsize), engine@sigma0, gw))
+        ## .C("gehan_s_est", as.double(b), as.double(Y), as.double(X), as.double(delta),
+        ##    as.integer(clsize), as.double(engine@sigma0), as.integer(length(clsize)),
+        ##    as.integer(p), as.integer(n), as.double(W), as.double(gw),
+        ##    out = double(p), PACKAGE = "aftgee")$out
     }
     if (engine@solver %in% c("BBsolve", "dfsane")) {
         start.time <- Sys.time()
@@ -1648,13 +1649,15 @@ viEmp <- function(beta, Y, delta, X, id, weights = rep(1, nrow(X)), B = 500,
     gpweight <- ifelse(rankWeights %in% c("nsGP", "GP"), gpweight, 1)
     if (smooth) {
         if (rankWeights == "gehan") {
-            UnV[,i] <- as.vector(.C("gehan_s_est", as.double(newbeta), as.double(Y),
-                                    as.double(X), as.double(delta),
-                                    as.integer(clsize), as.double(sigma),
-                                    as.integer(length(clsize)), as.integer(p),
-                                    as.integer(sum(clsize)),
-                                    as.double(weights * Z), as.double(gw),
-                                    out = as.double(sn), PACKAGE = "aftgee")$out) # / n
+            UnV[,i] <- drop(gehan_s_est(newbeta, X, delta, Y, weights * Z,
+                                        length(clsize), sigma, gw))
+            ## UnV[,i] <- as.vector(.C("gehan_s_est", as.double(newbeta), as.double(Y),
+            ##                         as.double(X), as.double(delta),
+            ##                         as.integer(clsize), as.double(sigma),
+            ##                         as.integer(length(clsize)), as.integer(p),
+            ##                         as.integer(sum(clsize)),
+            ##                         as.double(weights * Z), as.double(gw),
+            ##                         out = as.double(sn), PACKAGE = "aftgee")$out) # / n
         }
         if (rankWeights %in% c("nslogrank", "logrank")) {
             UnV[,i] <- uilogFun(beta = newbeta, Y = Y, X = X, delta = delta,
@@ -1679,13 +1682,15 @@ viEmp <- function(beta, Y, delta, X, id, weights = rep(1, nrow(X)), B = 500,
                              clsize = clsize, sigma = sigma, weights = weights,
                              rankWeights = "PW")
             }
-            UnV[,i] <- as.vector(.C("gehan_s_est", as.double(newbeta), as.double(Y),
-                                    as.double(X), as.double(delta),
-                                    as.integer(clsize), as.double(sigma),
-                                    as.integer(length(clsize)), as.integer(p),
-                                    as.integer(sum(clsize)),
-                                    as.double(weights * Z), as.double(gw),
-                                    out = as.double(sn), PACKAGE = "aftgee")$out) # / n
+            UnV[,i] <- drop(gehan_s_est(newbeta, X, delta, Y, weights * Z,
+                                        length(clsize), sigma, gw))
+            ## UnV[,i] <- as.vector(.C("gehan_s_est", as.double(newbeta), as.double(Y),
+            ##                         as.double(X), as.double(delta),
+            ##                         as.integer(clsize), as.double(sigma),
+            ##                         as.integer(length(clsize)), as.integer(p),
+            ##                         as.integer(sum(clsize)),
+            ##                         as.double(weights * Z), as.double(gw),
+            ##                         out = as.double(sn), PACKAGE = "aftgee")$out) # / n
         }
         if (rankWeights %in% c("PW", "GP", "eGP")) {
             pw <- getPw(Y = Y, X = X, beta = newbeta, 
@@ -2018,11 +2023,6 @@ uiFun <- function(beta, Y, X, delta, clsize, sigma, n, Z, weights, smooth = TRUE
   N <- nrow(X)
   p <- ncol(X)
   ans <- numeric(p)
-  sn <- vector("double", p)
-  ans <- .C("gehan_s_est", as.double(beta), as.double(Y), as.double(X), as.double(delta),
-            as.integer(clsize), as.double(sigma), as.integer(n), as.integer(p),
-            as.integer(N), as.double(Z * weights), as.double(gw),
-            out = as.double(sn), PACKAGE = "aftgee")$out
-  ans <- ans - constant
+  drop(gehan_s_est(beta, X, delta, Y, Z * weights, length(clsize), sigma, gw)) - constant
 }
 

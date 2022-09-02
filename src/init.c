@@ -8,7 +8,6 @@ extern void abargehanfunC(void *, void *, void *, void *, void *, void *, void *
 extern void abarlogfunC(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void abarpwfunC(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void gehan_ns_wt(void *, void *, void *, void *, void *, void *, void *, void *, void *);
-extern void gehan_s_est(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void gehan_s_obj(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void gehan_s_wt(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void log_s_est(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
@@ -17,6 +16,7 @@ extern void omegafun(void *, void *, void *, void *, void *, void *, void *, voi
 /* .Call calls */
 extern SEXP _aftgee_log_ns_est(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _aftgee_gehan_ns_est(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP _aftgee_gehan_s_est(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _aftgee_getSuv(SEXP, SEXP, SEXP);
 
 static const R_CMethodDef CEntries[] = {
@@ -24,7 +24,6 @@ static const R_CMethodDef CEntries[] = {
     {"abarlogfunC",   (DL_FUNC) &abarlogfunC,   12},
     {"abarpwfunC",    (DL_FUNC) &abarpwfunC,    12},
     {"gehan_ns_wt",   (DL_FUNC) &gehan_ns_wt,    9},
-    {"gehan_s_est",   (DL_FUNC) &gehan_s_est,   12},
     {"gehan_s_obj",   (DL_FUNC) &gehan_s_obj,   12},
     {"gehan_s_wt",    (DL_FUNC) &gehan_s_wt,    10},
     {"log_s_est",     (DL_FUNC) &log_s_est,     12},
@@ -35,6 +34,7 @@ static const R_CMethodDef CEntries[] = {
 static const R_CallMethodDef CallEntries[] = {
     {"_aftgee_log_ns_est",    (DL_FUNC) &_aftgee_log_ns_est, 6},
     {"_aftgee_gehan_ns_est",  (DL_FUNC) &_aftgee_gehan_ns_est, 6},
+    {"_aftgee_gehan_s_est",  (DL_FUNC) &_aftgee_gehan_s_est, 8},
     {"_aftgee_getSuv",  (DL_FUNC) &_aftgee_getSuv, 3},
     {NULL, NULL, 0}
 };

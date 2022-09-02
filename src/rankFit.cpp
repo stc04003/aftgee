@@ -10,12 +10,26 @@ using namespace Rcpp;
 
 using cmp_par = std::pair<double, arma::uword>;
 
+arma::mat matvec(arma::mat x, arma::vec y) {
+  arma::mat out(x.n_rows, x.n_cols);
+  for (size_t i = 0; i < x.n_cols; i++) {
+    out.col(i) = x.col(i) % y;
+  }
+  return out;
+}
+
 arma::mat matvec2(arma::mat x, arma::vec y) {
   arma::mat out(x.n_rows, x.n_cols);
   for (size_t i = 0; i < x.n_rows; i++) {
     out.row(i) = x.row(i) % y.t();
   }
   return out;
+}
+
+bool iseye(const arma::mat& M) {
+  int n = M.n_rows;
+	arma::mat A(n, n, arma::fill::eye);
+  return(arma::approx_equal(A, M, "absdiff", 0.001));
 }
 
 //' @noRd
@@ -64,6 +78,37 @@ arma::vec log_ns_est(const arma::vec& a,
   }
   return out;
 }
+
+// [[Rcpp::export(rng = false)]]
+arma::vec gehan_s_est(const arma::vec& a,
+											const arma::mat& X,
+											const arma::vec& D,
+											const arma::vec& Y,
+											const arma::vec& W,
+											const int& nc,
+											const arma::mat& sigma,
+											const arma::vec& gw) {
+	int n = Y.n_elem;
+  int p = a.n_elem;
+  arma::vec out(p, arma::fill::zeros);
+  arma::vec yexa = Y - X * a;
+	arma::vec Dgw = D % gw;
+	arma::mat cSigma(p, p, arma::fill::eye);
+	if (iseye(sigma) == false) cSigma = chol(sigma).t();
+  for (int i = 0; i < n - 1; i++) {
+    arma::mat xdif = repmat(X.row(i), n - i - 1, 1) - X.rows(i + 1, n - 1);
+		arma::mat xs = xdif;
+		if (iseye(sigma) == false) xs = xdif * cSigma;
+		arma::vec rij = sqrt(sum(xs % xs, 1));
+		arma::vec yexa2 = yexa.subvec(i + 1, n - 1);
+    arma::vec H = arma::normcdf(sqrt(nc) * (yexa2 - yexa[i]) / rij); 
+    arma::vec Dgwj = Dgw.subvec(i + 1, n - 1);
+    arma::vec Wj = W.subvec(i + 1, n - 1);
+    out += W(i) * sum(matvec(xdif, (Dgw(i) + Dgwj) % Wj % H - Dgwj % Wj)).t();
+  }
+  return out;
+}
+
 
 // Faster version if no ties
 // 
