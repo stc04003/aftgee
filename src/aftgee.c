@@ -235,38 +235,38 @@ void gehan_ns_wt(double *beta, double *Y, double *X, int *clsize,
 }
 
 // Compute smooth gehan weight; used to prepare for method #3 and #4; old name = getgehan
-void gehan_s_wt(double *beta, double *Y, double *X, int *clsize,
-	       double *sigma, int *n, int *p, int *N, double *weights, double *de) {
-  int i, j, k, l, ik_idx = 0, jl_idx;
-  double *e = Calloc(*N, double);
-  double rikjl, edif, H, z, sqrtn = sqrt(*n);
-  for (i = 0; i < *N; i++) {
-    e[i] = 0.0;
-    for (j = 0; j < *p; j++) {
-      e[i] += X[j * *N + i] * beta[j];
-    }
-    e[i] = Y[i] - e[i];
-  }
-  for (i = 0; i < *n; i++) {
-    for (k = 0; k < clsize[i]; k++) {
-	jl_idx = 0;
-	for (j = 0; j < *n; j++) {
-	  for (l = 0; l < clsize[j]; l++) {
-	    rikjl = get_rikjl(X, sigma, N, p, ik_idx, jl_idx);
-	    if (rikjl != 0) {
-	      edif = e[jl_idx] - e[ik_idx];
-	      z = sqrtn * edif / rikjl;
-	      H = pnorm(z, 0.0, 1.0, 1, 0);
-	      de[ik_idx] += weights[jl_idx] * H;
-	    } // end if rikjl != 0
-	    jl_idx++;
-	  } // end for l
-	} // end for j
-      ik_idx++;
-    } // end for k
-  } // end for i
-  Free(e);
-}
+/* void gehan_s_wt(double *beta, double *Y, double *X, int *clsize, */
+/* 								double *sigma, int *n, int *p, int *N, double *weights, double *de) { */
+/*   int i, j, k, l, ik_idx = 0, jl_idx; */
+/*   double *e = Calloc(*N, double); */
+/*   double rikjl, edif, H, z, sqrtn = sqrt(*n); */
+/*   for (i = 0; i < *N; i++) { */
+/*     e[i] = 0.0; */
+/*     for (j = 0; j < *p; j++) { */
+/*       e[i] += X[j * *N + i] * beta[j]; */
+/*     } */
+/*     e[i] = Y[i] - e[i]; */
+/*   } */
+/*   for (i = 0; i < *n; i++) { */
+/*     for (k = 0; k < clsize[i]; k++) { */
+/* 			jl_idx = 0; */
+/* 			for (j = 0; j < *n; j++) { */
+/* 				for (l = 0; l < clsize[j]; l++) { */
+/* 					rikjl = get_rikjl(X, sigma, N, p, ik_idx, jl_idx); */
+/* 					if (rikjl != 0) { */
+/* 						edif = e[jl_idx] - e[ik_idx]; */
+/* 						z = sqrtn * edif / rikjl; */
+/* 						H = pnorm(z, 0.0, 1.0, 1, 0); */
+/* 						de[ik_idx] += weights[jl_idx] * H; */
+/* 					} // end if rikjl != 0 */
+/* 					jl_idx++; */
+/* 				} // end for l */
+/* 			} // end for j */
+/*       ik_idx++; */
+/*     } // end for k */
+/*   } // end for i */
+/*   Free(e); */
+/* } */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // March 15

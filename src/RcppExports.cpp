@@ -70,3 +70,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gehan_s_wt
+arma::vec gehan_s_wt(const arma::vec& a, const arma::mat& X, const arma::vec& Y, const arma::vec& W, const int& nc, const arma::mat& sigma);
+RcppExport SEXP _aftgee_gehan_s_wt(SEXP aSEXP, SEXP XSEXP, SEXP YSEXP, SEXP WSEXP, SEXP ncSEXP, SEXP sigmaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type W(WSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nc(ncSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP);
+    rcpp_result_gen = Rcpp::wrap(gehan_s_wt(a, X, Y, W, nc, sigma));
+    return rcpp_result_gen;
+END_RCPP
+}

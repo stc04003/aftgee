@@ -20,3 +20,8 @@ gehan_ns_est <- function(a, X, D, Y, W, gw) {
     .Call(`_aftgee_gehan_ns_est`, a, X, D, Y, W, gw)
 }
 
+#' @noRd
+gehan_s_wt <- function(a, X, Y, W, nc, sigma) {
+    .Call(`_aftgee_gehan_s_wt`, a, X, Y, W, nc, sigma)
+}
+

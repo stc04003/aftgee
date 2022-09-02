@@ -181,3 +181,30 @@ arma::vec gehan_ns_est(const arma::vec& a,
   }
   return out;
 }
+
+//' @noRd
+// [[Rcpp::export(rng = false)]]
+arma::vec gehan_s_wt(const arma::vec& a,
+										 const arma::mat& X,
+										 const arma::vec& Y,
+										 const arma::vec& W,
+										 const int& nc,
+										 const arma::mat& sigma) {
+	int n = Y.n_elem;
+  int p = a.n_elem;
+  arma::vec out(n, arma::fill::zeros);
+  arma::vec yexa = Y - X * a;
+	arma::mat cSigma(p, p, arma::fill::eye);
+	if (iseye(sigma) == false) cSigma = chol(sigma).t();
+  for (int i = 0; i < n; i++) {
+    arma::mat xdif = repmat(X.row(i), n, 1) - X;
+		arma::mat xs = xdif;
+		if (iseye(sigma) == false) xs = xdif * cSigma;
+		arma::vec rij = sqrt(sum(xs % xs, 1));
+	  arma::vec H = arma::normcdf(sqrt(nc) * (yexa - yexa[i]) / rij);
+		// std::cout << H << "\n";
+		H.replace(arma::datum::nan, 0);
+    out[i] = sum(H % W);
+  }
+  return out;
+}

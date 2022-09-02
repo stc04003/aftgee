@@ -261,10 +261,7 @@ rankFit.logrank.mis <- function(DF, engine, stdErr, gw = NULL) {
     iter <- 1
     start.time <- Sys.time()
     for (i in 1:engine@maxIter) {
-        gw <- 1 / .C("gehan_s_wt", as.double(b1), as.double(Y), as.double(X), as.integer(clsize),
-                     as.double(engine@sigma0), as.integer(length(clsize)), 
-                     as.integer(p), as.integer(n), as.double(W),
-                     out = double(n), PACKAGE = "aftgee")$out
+        gw <- 1 / drop(gehan_s_wt(b1, X, Y, W, length(clsize), engine@sigma0))
         gw <- ifelse(gw == Inf, 0, gw)
         engine@b0 <- b2 <- rankFit.gehan.is(DF, engine, stdErr, gw)$beta
         iter <- iter + 1
@@ -444,10 +441,7 @@ rankFit.pw.mis <- function(DF, engine, stdErr, gw = NULL) {
         er <- Y - X %*% b1
         tmp <- survfit(Surv(er, delta) ~ 1, weights = W)
         s0 <- approx(tmp$time, tmp$surv, er, "constant", yleft = 1, yright = min(tmp$surv))$y
-        gw <- s0 / .C("gehan_s_wt", as.double(b1), as.double(Y), as.double(X), as.integer(clsize),
-                      as.double(engine@sigma0), as.integer(length(clsize)),
-                      as.integer(p), as.integer(n), as.double(W),
-                      out = double(n), PACKAGE = "aftgee")$out
+        gw <- s0 / drop(gehan_s_wt(b1, X, Y, W, length(clsize), engine@sigma0))
         gw <- ifelse(gw == Inf, 0, gw)
         engine@b0 <- b2 <- rankFit.gehan.is(DF, engine, stdErr, gw)$beta
         iter <- iter + 1
@@ -602,7 +596,7 @@ rankFit.gp.mns <- function(DF, engine, stdErr, gw = NULL) {
         er <- Y - X %*% b1
         tmp <- survfit(Surv(er, delta) ~ 1, weights = W)
         s0 <- approx(tmp$time, tmp$surv, er, "constant", yleft = 1, yright = min(tmp$surv))$y
-        s0 <- s0^pwr
+        s0 <- s0^pwr       
         gw <- s0 / .C("gehan_ns_wt", as.double(b1), as.double(Y), as.double(X), as.integer(clsize),
                       as.integer(length(clsize)), as.integer(p), as.integer(n), as.double(W),
                       out = double(n), PACKAGE = "aftgee")$out
@@ -641,10 +635,7 @@ rankFit.gp.mis <- function(DF, engine, stdErr, gw = NULL) {
         tmp <- survfit(Surv(er, delta) ~ 1, weights = W)
         s0 <- approx(tmp$time, tmp$surv, er, "constant", yleft = 1, yright = min(tmp$surv))$y
         s0 <- s0^pwr
-        gw <- s0 / .C("gehan_s_wt", as.double(b1), as.double(Y), as.double(X), as.integer(clsize),
-                      as.double(engine@sigma0), as.integer(length(clsize)),
-                      as.integer(p), as.integer(n), as.double(W),
-                      out = double(n), PACKAGE = "aftgee")$out
+        gw <- s0 / drop(gehan_s_wt(b1, X, Y, W, length(clsize), engine@sigma0))
         gw <- ifelse(gw == Inf, 0, gw)
         engine@b0 <- b2 <- rankFit.gehan.is(DF, engine, stdErr, gw)$beta
         iter <- iter + 1
@@ -1527,10 +1518,7 @@ getGehan <- function(Y, X, beta, N, delta, clsize, sigma, weights, smooth = FALS
     n <- length(clsize)
     a <- vector("double", N)
     if (smooth == TRUE) {
-        out <- matrix(.C("gehan_s_wt", as.double(beta), as.double(Y), as.double(X), as.integer(clsize),
-                         as.double(sigma), as.integer(n), as.integer(p),
-                         as.integer(N), as.double(weights),
-                         out = as.double(a), PACKAGE = "aftgee")$out, ncol = 1)
+        out <- gehan_s_wt(beta, X, Y, W, length(clsize), sigma)
     }
     if (smooth == FALSE) {
         out <- matrix(.C("gehan_ns_wt", as.double(beta), as.double(Y),
