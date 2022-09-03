@@ -25,3 +25,11 @@ gehan_s_wt <- function(a, X, Y, W, nc, sigma) {
     .Call(`_aftgee_gehan_s_wt`, a, X, Y, W, nc, sigma)
 }
 
+gehan_ns_wt <- function(a, X, Y, W) {
+    .Call(`_aftgee_gehan_ns_wt`, a, X, Y, W)
+}
+
+log_s_est <- function(a, X, D, Y, W, nc, sigma, gw) {
+    .Call(`_aftgee_log_s_est`, a, X, D, Y, W, nc, sigma, gw)
+}
+

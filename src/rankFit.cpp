@@ -32,6 +32,7 @@ bool iseye(const arma::mat& M) {
   return(arma::approx_equal(A, M, "absdiff", 0.001));
 }
 
+// log-rank type estimating function (non-smooth); old name = ulognsfun */
 //' @noRd
 // [[Rcpp::export(rng = false)]]
 arma::vec log_ns_est(const arma::vec& a,
@@ -79,6 +80,8 @@ arma::vec log_ns_est(const arma::vec& a,
   return out;
 }
 
+// Gehan type estimating function (smooth); old name = ufun */
+// @noRd
 // [[Rcpp::export(rng = false)]]
 arma::vec gehan_s_est(const arma::vec& a,
 											const arma::mat& X,
@@ -182,6 +185,7 @@ arma::vec gehan_ns_est(const arma::vec& a,
   return out;
 }
 
+// Compute smooth gehan weight; used to prepare for method #3 and #4; old name = getgehan
 //' @noRd
 // [[Rcpp::export(rng = false)]]
 arma::vec gehan_s_wt(const arma::vec& a,
@@ -207,4 +211,77 @@ arma::vec gehan_s_wt(const arma::vec& a,
     out[i] = sum(H % W);
   }
   return out;
+}
+
+// Compute non-smooth gehan weight; used to prepare for method #3 and #4; old name = getnsgehan
+// [[Rcpp::export(rng = false)]]
+arma::vec gehan_ns_wt(const arma::vec& a,
+											const arma::mat& X,
+											const arma::vec& Y,
+											const arma::vec& W) {
+  arma::uword const n = Y.n_elem;
+  arma::uword const p = a.n_elem;
+  arma::vec out(n, arma::fill::zeros);
+  if(n < 1) return out;
+  arma::vec yexa = Y - X.t() * a;
+  yexa.replace(-arma::datum::inf, arma::datum::nan);
+  yexa.replace(arma::datum::nan, yexa.min() - 0.01);
+  arma::uvec const idx = arma::sort_index(yexa);
+  auto cmp = [](cmp_par const &x, cmp_par const &y){
+    return x.first <= y.first;
+  };
+  std::set<cmp_par, decltype(cmp)> indices(cmp);
+  double w_sum{};
+  {
+    auto const idx_i = idx[0];
+    indices.emplace(yexa[idx_i], idx_i);
+    w_sum = sum(W);
+    out[idx_i] = w_sum;
+  }
+  auto indices_head = indices.begin();
+  for(arma::uword i = 1; i < n; ++i) {
+    auto const idx_i = idx[i];
+    indices.emplace(yexa[idx_i], idx_i);
+    if(yexa[idx_i] > indices_head->first) {
+      while(yexa[idx_i] > indices_head->first) {
+				w_sum -= W(indices_head->second);
+				++indices_head;
+      }
+    }
+    else --indices_head;
+		out[idx_i] = w_sum;
+  }
+  return out;
+}
+
+// log-rank type estimating function (smooth-equivent form); old name = ulogfun
+// @noRd
+// [[Rcpp::export(rng = false)]]
+arma::vec log_s_est(const arma::vec& a,
+										const arma::mat& X,
+										const arma::vec& D,
+										const arma::vec& Y,
+										const arma::vec& W,
+										const int& nc,
+										const arma::mat& sigma,
+										const arma::vec& gw) {
+  int n = Y.n_elem;
+  int p = a.n_elem;
+  arma::rowvec out(p, arma::fill::zeros);
+  arma::vec yexa = Y - X * a; 
+	arma::mat cSigma(p, p, arma::fill::eye);
+	if (iseye(sigma) == false) cSigma = chol(sigma).t();
+  for (int i = 0; i < n; i++) {
+    if (D(i) > 0) {
+			arma::mat xdif = repmat(X.row(i), n, 1) - X;
+			arma::mat xs = xdif;
+			if (iseye(sigma) == false) xs = xdif * cSigma;
+			arma::vec rij = sqrt(sum(xs % xs, 1));
+			arma::vec H = arma::normcdf(sqrt(nc) * (yexa - yexa[i]) / rij);
+			H.replace(arma::datum::nan, 0);
+			if (sum(H) != 0) 
+				out += gw(i) * W(i) * (X.row(i) - sum(matvec(X, H)) / sum(H));
+		}
+  }
+  return out.t();
 }
