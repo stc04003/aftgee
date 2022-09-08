@@ -89,7 +89,7 @@ aftgee <- function(formula, data, subset, id = NULL, contrasts = NULL,
   mterms <- attr(m, "terms")
   weights <- model.extract(m, weights) 
   obj <- unclass(m[,1]) 
-  if (class(m[[1]]) != "Surv" || ncol(obj) > 2)
+  if (!is.Surv(m[[1]]) || ncol(obj) > 2)
     stop("aftgee only supports Surv object with right censoring.", call. = FALSE)
   if (is.null(id)) id <- 1:nrow(obj)
   if (is.null(weights)) weights <- rep(1, nrow(obj))

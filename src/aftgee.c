@@ -40,21 +40,21 @@ void gehan_s_obj(double *beta, double *Y, double *X, double *delta,
   for (i = 0; i < *n; i++) {
     for (k = 0; k < clsize[i]; k++) {
       if (delta[ik_idx] != 0) {
-	jl_idx = 0;
-	for (j = 0; j < *n; j++) {
-	  for (l = 0; l < clsize[j]; l++) {
-	    rikjl = get_rikjl(X, sigma, N, p, ik_idx, jl_idx);
-	    if (rikjl != 0) {
-	      edif = e[jl_idx] - e[ik_idx];
-	      z = sqrtn * edif / rikjl;
-	      H = pnorm(z, 0.0, 1.0, 1, 0);
-	      h = dnorm(z, 0.0, 1.0, 0);
-	      *ln += gehanweights[ik_idx] * weights[ik_idx] * weights[jl_idx] *
-		(edif * H + rikjl * h / sqrtn);
-	    }
-	    jl_idx++;
-	  }
-	}
+				jl_idx = 0;
+				for (j = 0; j < *n; j++) {
+					for (l = 0; l < clsize[j]; l++) {
+						rikjl = get_rikjl(X, sigma, N, p, ik_idx, jl_idx);
+						if (rikjl != 0) {
+							edif = e[jl_idx] - e[ik_idx];
+							z = sqrtn * edif / rikjl;
+							H = pnorm(z, 0.0, 1.0, 1, 0);
+							h = dnorm(z, 0.0, 1.0, 0);
+							*ln += gehanweights[ik_idx] * weights[ik_idx] * weights[jl_idx] *
+								(edif * H + rikjl * h / sqrtn);
+						}
+						jl_idx++;
+					}
+				}
       }
       ik_idx++;
     }
@@ -63,242 +63,6 @@ void gehan_s_obj(double *beta, double *Y, double *X, double *delta,
   /* *ln /= (*n * (*n - 1)); */
 }
 
-// Gehan type estimating function (non-smooth) old name = unsfun
-void gehan_ns_est(double *beta, double *Y, double *X, double *delta, int *clsize,
-	    int *n, int *p, int *N, double *weights, double *gehanweights, double *sn) {
-  int i, j, k, l, ik_idx = 0, jl_idx, r;
-  double *e = Calloc(*N, double);
-  for (i = 0; i < *N; i++) {
-    e[i] = 0.0;
-    for (j = 0; j < *p; j++) {
-      e[i] += X[j * *N + i] * beta[j];
-    }
-    e[i] = Y[i] - e[i];
-  }
-  for (i = 0; i < *n; i++) {
-    for (k = 0; k < clsize[i]; k++) {
-      if (delta[ik_idx] != 0) {
-	jl_idx = 0;
-	for (j = 0; j < *n; j++) {
-	  for (l = 0; l < clsize[j]; l++) {
-	    if (e[ik_idx] - e[jl_idx] <= 0) {
-	      for (r = 0; r < *p; r++) {
-		sn[r] += gehanweights[ik_idx] * weights[ik_idx] * weights[jl_idx] * (X[ik_idx + r * *N] - X[jl_idx + r * *N]);
-	      } // end e[ik] - e[jl]
-	    }
-	    jl_idx++;
-	  }
-	}
-      }
-      ik_idx++;
-    }
-  }
-  Free(e);
-}
-
-// Gehan type estimating function (smooth); old name = ufun
-void gehan_s_est(double *beta, double *Y, double *X, double *delta, int *clsize,
-	  double *sigma, int *n, int *p, int *N, double *weights, double *gehanweights, double *sn) {
-  int i, j, k, l, ik_idx = 0, jl_idx, r;
-  double *e = Calloc(*N, double), *xdif = Calloc(*p, double);
-  double rikjl, z, H, sqrtn = sqrt(*n), edif;
-  for (i = 0; i < *N; i++) {
-    e[i] = 0.0;
-    for (j = 0; j < *p; j++) {
-      e[i] += X[j * *N + i] * beta[j];
-    }
-    e[i] = Y[i] - e[i];
-  }
-  for (i = 0; i < *n; i++) {
-    for (k = 0; k < clsize[i]; k++) {
-      if (delta[ik_idx] != 0) {
-	jl_idx = 0;
-	for (j = 0; j < *n; j++) {
-	  for (l = 0; l < clsize[j]; l++) {
-	    rikjl = get_rikjl(X, sigma, N, p, ik_idx, jl_idx);
-	    if (rikjl != 0) {
-	      edif = e[jl_idx] - e[ik_idx];
-	      z = sqrtn * edif / rikjl;
-	      H = pnorm(z, 0.0, 1.0, 1, 0);
-	      for (r = 0; r < *p; r++) {
-		xdif[r] = 0.0;
-		xdif[r] = X[ik_idx + r * *N] - X[jl_idx + r * *N];
-		sn[r] += gehanweights[ik_idx] * weights[ik_idx] * weights[jl_idx] * xdif[r] * H;
-	      } // end for r
-	    }
-	    jl_idx++;
-	  }
-	}
-      }
-      ik_idx++;
-    }
-  }
-  Free(xdif);
-  Free(e);
-}
-
-// log-rank type estimating function (non-smooth); old name = ulognsfun
-void log_ns_est(double *beta, double *Y, double *X, double *delta, int *clsize,
-		int *n, int *p, int *N, double *weights, double *gw, double *sn) {
-  int i, j, k, l, ik_idx = 0, jl_idx, r;
-  double *e = Calloc(*N, double), *nu = Calloc(*p, double);
-  double de = 0.0;
-  for (i = 0; i < *N; i++) {
-    e[i] = 0.0;
-    for (j = 0; j < *p; j++) {
-      e[i] += X[j * *N + i] * beta[j];
-    }
-    e[i] = Y[i] - e[i];
-  }
-  for (i = 0; i < *n; i++) {
-    for (k = 0; k < clsize[i]; k++) {
-      if (delta[ik_idx] != 0) {
-	/* reset nu */
-	for ( r = 0; r < *p; r++) {
-	  nu[r] = 0.0;
-	}
-	de = 0.0;
-	jl_idx = 0;
-	for (j = 0; j < *n; j++) {
-	  for (l = 0; l < clsize[j]; l++) {
-	    if (e[ik_idx] - e[jl_idx] <= 0) {
-	      for ( r = 0; r < *p; r++) {
-		nu[r] += X[jl_idx + r * *N] * weights[jl_idx];
-	      }
-	      de += weights[jl_idx];
-	    }
-	    jl_idx++;
-	  }
-	}  // end jl
-	for (r =  0; r < *p; r++) {
-	  sn[r] += weights[ik_idx] * gw[ik_idx] * (X[ik_idx + r * *N] - nu[r] / de);
-	}
-      }
-      ik_idx++;
-    }
-  }
-  Free(nu);
-  Free(e);
-}
-
-// log-rank type estimating function (smooth-equivent form); old name = ulogfun
-void log_s_est(double *beta, double *Y, double *X, double *delta, int *clsize,
-	       double *sigma, int *n, int *p, int *N, double *weights,
-	       double *gw, double *sn) {
-  int i, j, k, l, ik_idx = 0, jl_idx, r;
-  double *e = Calloc(*N, double), *nu = Calloc(*p, double);
-  double rikjl, z, H, sqrtn = sqrt(*n), edif, de;
-  for (i = 0; i < *N; i++) {
-    e[i] = 0.0;
-    for (j = 0; j < *p; j++) {
-      e[i] += X[j * *N + i] * beta[j];
-    }
-    e[i] = Y[i] - e[i];
-  }
-  for (i = 0; i < *n; i++) {
-    for (k = 0; k < clsize[i]; k++) {
-      if (delta[ik_idx] != 0) {
-	/* reset nu */
-	for ( r = 0; r < *p; r++) {
-	  nu[r] = 0.0;
-	}
-	de = 0.0;
-	jl_idx = 0;
-	for (j = 0; j < *n; j++) {
-	  for (l = 0; l < clsize[j]; l++) {
-	    rikjl = get_rikjl(X, sigma, N, p, ik_idx, jl_idx);
-	    if (rikjl != 0) {
-	      edif = e[jl_idx] - e[ik_idx];
-	      z = sqrtn * edif / rikjl;
-	      H = pnorm(z, 0.0, 1.0, 1, 0);
-	      for (r = 0; r < *p; r++) {
-		nu[r] += weights[jl_idx] * X[jl_idx + r * *N] * H;
-	      }
-	      de += weights[jl_idx] * H;
-	    }
-	    jl_idx++;
-	  }
-	}
-	for ( r = 0; r < *p; r ++) {
-	  sn[r] += weights[ik_idx] * gw[ik_idx] * (X[ik_idx + r * *N] - nu[r] / de);
-	}
-      }
-      ik_idx++;
-    }
-  }
-  //  Free(edif);
-  Free(nu);
-  //  Free(de);
-  Free(e);
-  /* for (r = 0; r < *p; r++) { */
-  /*   sn[r] /= (*n * (*n - 1)); */
-  /* } */
-}
-
-// Compute non-smooth gehan weight; used to prepare for method #3 and #4; old name = getnsgehan
-void gehan_ns_wt(double *beta, double *Y, double *X, int *clsize,
-	     int *n, int *p, int *N, double *weights, double *de) {
-  int i, j, k, l, ik_idx = 0, jl_idx = 0;
-  double *e = Calloc(*N, double);
-  double edif;
-  for (i = 0; i < *N; i++) {
-    e[i] = 0.0;
-    for (j = 0; j < *p; j++) {
-      e[i] += X[j * *N + i] * beta[j];
-    }
-    e[i] = Y[i] - e[i];
-  }
-  for (i = 0; i < *n; i++) {
-    for (k = 0; k < clsize[i]; k++) {
-	jl_idx = 0;
-	for (j = 0; j < *n; j++) {
-	  for (l = 0; l < clsize[j]; l++) {
-	    edif = e[jl_idx] - e[ik_idx];
-	    if (edif >= 0) {
-	      de[ik_idx] += weights[jl_idx];
-	    }
-	    jl_idx++;
-	  } // end for l
-	} // end for j
-	ik_idx++;
-    } // end for k
-  } // end for i
-  Free(e);
-}
-
-// Compute smooth gehan weight; used to prepare for method #3 and #4; old name = getgehan
-void gehan_s_wt(double *beta, double *Y, double *X, int *clsize,
-	       double *sigma, int *n, int *p, int *N, double *weights, double *de) {
-  int i, j, k, l, ik_idx = 0, jl_idx;
-  double *e = Calloc(*N, double);
-  double rikjl, edif, H, z, sqrtn = sqrt(*n);
-  for (i = 0; i < *N; i++) {
-    e[i] = 0.0;
-    for (j = 0; j < *p; j++) {
-      e[i] += X[j * *N + i] * beta[j];
-    }
-    e[i] = Y[i] - e[i];
-  }
-  for (i = 0; i < *n; i++) {
-    for (k = 0; k < clsize[i]; k++) {
-	jl_idx = 0;
-	for (j = 0; j < *n; j++) {
-	  for (l = 0; l < clsize[j]; l++) {
-	    rikjl = get_rikjl(X, sigma, N, p, ik_idx, jl_idx);
-	    if (rikjl != 0) {
-	      edif = e[jl_idx] - e[ik_idx];
-	      z = sqrtn * edif / rikjl;
-	      H = pnorm(z, 0.0, 1.0, 1, 0);
-	      de[ik_idx] += weights[jl_idx] * H;
-	    } // end if rikjl != 0
-	    jl_idx++;
-	  } // end for l
-	} // end for j
-      ik_idx++;
-    } // end for k
-  } // end for i
-  Free(e);
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // March 15
@@ -387,7 +151,6 @@ void abarlogfunC(double *beta, double *Y, double *X, double *delta, int *clsize,
   double *e = Calloc(*N, double), *xdif = Calloc(*p, double),
     *nu1 = Calloc(*p * *p, double), *nu2 = Calloc(*p, double), *nu3 = Calloc(*p, double);
   double rikjl, edif, H, h, z, sqrtn = sqrt(*n), coef, de;
-
   /* compute the e vector */
   for (i = 0; i < *N; i++) {
     e[i] = 0.0;
@@ -396,7 +159,6 @@ void abarlogfunC(double *beta, double *Y, double *X, double *delta, int *clsize,
     }
     e[i] = Y[i] - e[i];
   }
-
   /*The main abar part */
   for (i = 0; i < *n; i++) {
     for (k = 0; k < clsize[i]; k++) {
@@ -452,7 +214,6 @@ void abarlogfunC(double *beta, double *Y, double *X, double *delta, int *clsize,
       ik_idx++;
     } // end for k
   } // end for i
-
   Free(xdif);
   Free(e);
   Free(nu1);
@@ -477,7 +238,6 @@ void omegafun(double *beta,
 	      double *omega) {
   int i, k, j, l, m, r, s, ik_idx = 0, jl_idx, rs_idx, emk = 0, ind = 0, omega_idx;
   double *xdif = Calloc(*p, double), *e = Calloc(*N, double), *ksi = Calloc(*p * *N, double);
-
   // compute e
   for (i = 0; i < *N; i++) {
     e[i] = 0.0;
@@ -486,14 +246,12 @@ void omegafun(double *beta,
     }
     e[i] = Y[i] - e[i];
    }
-
   // compute ksi
   for (i = 0; i < *n; i++) {
     for (k = 0; k < clsize[i]; k++) {
       jl_idx = 0;
       for (j = 0; j < *n; j++) {
 	for (l = 0; l < clsize[j]; l++) {
-
 	  if (delta[ik_idx] != 0) {
 	    if (e[ik_idx] - e[jl_idx] < 0) {
 	      for (m = 0; m < *p; m++) {
@@ -501,7 +259,6 @@ void omegafun(double *beta,
 	      } // end for m
 	    } // end if e - e <0
 	  } // end if delta[ik_idx] != 0
-
 	  if (delta[jl_idx] != 0) {
 	    if (e[ik_idx] - e[jl_idx] >= 0) {
 	      rs_idx = 0;
@@ -517,7 +274,6 @@ void omegafun(double *beta,
 		  rs_idx++;
 		} // end for s
 	      } // end for r
-
 	      for (m = 0; m < *p; m++) {
 		ksi[ik_idx + m * *N] -= xdif[m] / (*n * emk);
 		xdif[m] = 0;
@@ -530,7 +286,6 @@ void omegafun(double *beta,
       ik_idx++;
     } // end for k1
   } // end for i
-
   for (i = 0; i < *n; i++) {
     ind += clsize[i];
     for (k = 0; k < clsize[i]; k++) {
@@ -545,7 +300,6 @@ void omegafun(double *beta,
       } // end for l
     } // end for k
   } // end for i
-
   /* for (r = 0; r < *p * *p; r++) { */
   /* omega[r] /= *n; */
   /* } */
@@ -565,7 +319,6 @@ void abarpwfunC(double *beta, double *Y, double *X, double *delta,
   int i, j, k, l, ik_idx = 0, jl_idx, r, s, xdif_idx, xdif_idx2;
   double *e = Calloc(*N, double), *nu = Calloc(*N * *p, double);
   double rikjl, edif, H, z, sqrtn = sqrt(*n), de;
-
   /* compute the e vector */
   for (i = 0; i < *N; i++) {
     e[i] = 0.0;
@@ -574,7 +327,6 @@ void abarpwfunC(double *beta, double *Y, double *X, double *delta,
     }
     e[i] = Y[i] - e[i];
   }
-
   /*The main abar part */
   for (i = 0; i < *n; i++) {
     for (k = 0; k < clsize[i]; k++) {
@@ -635,7 +387,6 @@ void getnsgehan (double *beta, double *Y, double *X, int *clsize,
   int i, j, k, l, ik_idx = 0, jl_idx;
   double *e = Calloc(*N, double);
   double edif;
-
   /* compute the e vector */
   for (i = 0; i < *N; i++) {
     e[i] = 0.0;
@@ -644,7 +395,6 @@ void getnsgehan (double *beta, double *Y, double *X, int *clsize,
     }
     e[i] = Y[i] - e[i];
   }
-
   for (i = 0; i < *n; i++) {
     for (k = 0; k < clsize[i]; k++) {
 	jl_idx = 0;
