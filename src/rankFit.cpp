@@ -105,7 +105,8 @@ arma::vec gehan_s_est(const arma::vec& a,
 		arma::vec rij = sqrt(sum(xs % xs, 1));
 		arma::vec yexa2 = yexa.subvec(i + 1, n - 1);
     arma::vec H = arma::normcdf(sqrt(nc) * (yexa2 - yexa[i]) / rij); 
-    arma::vec Dgwj = Dgw.subvec(i + 1, n - 1);
+		H.replace(arma::datum::nan, 0);
+		arma::vec Dgwj = Dgw.subvec(i + 1, n - 1);
     arma::vec Wj = W.subvec(i + 1, n - 1);
     out += W(i) * sum(matvec(xdif, (Dgw(i) + Dgwj) % Wj % H - Dgwj % Wj)).t();
   }
@@ -141,11 +142,11 @@ arma::vec gehan_s_est(const arma::vec& a,
 //' @noRd
 // [[Rcpp::export(rng = false)]]
 arma::vec gehan_ns_est(const arma::vec& a,
-		       const arma::mat& X,
-		       const arma::vec& D,
-		       const arma::vec& Y,
-		       const arma::vec& W,
-		       const arma::vec& gw) {
+											 const arma::mat& X,
+											 const arma::vec& D,
+											 const arma::vec& Y,
+											 const arma::vec& W,
+											 const arma::vec& gw) {
   arma::uword const n = Y.n_elem;
   arma::uword const p = a.n_elem;
   arma::vec out(p, arma::fill::zeros);
