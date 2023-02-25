@@ -28,7 +28,7 @@ arma::mat matvec2(arma::mat x, arma::vec y) {
 
 bool iseye(const arma::mat& M) {
   int n = M.n_rows;
-	arma::mat A(n, n, arma::fill::eye);
+  arma::mat A(n, n, arma::fill::eye);
   return(arma::approx_equal(A, M, "absdiff", 0.001));
 }
 
@@ -84,29 +84,29 @@ arma::vec log_ns_est(const arma::vec& a,
 // @noRd
 // [[Rcpp::export(rng = false)]]
 arma::vec gehan_s_est(const arma::vec& a,
-											const arma::mat& X,
-											const arma::vec& D,
-											const arma::vec& Y,
-											const arma::vec& W,
-											const int& nc,
-											const arma::mat& sigma,
-											const arma::vec& gw) {
-	int n = Y.n_elem;
+		      const arma::mat& X,
+		      const arma::vec& D,
+		      const arma::vec& Y,
+		      const arma::vec& W,
+		      const int& nc,
+		      const arma::mat& sigma,
+		      const arma::vec& gw) {
+  int n = Y.n_elem;
   int p = a.n_elem;
   arma::vec out(p, arma::fill::zeros);
   arma::vec yexa = Y - X * a;
-	arma::vec Dgw = D % gw;
-	arma::mat cSigma(p, p, arma::fill::eye);
-	if (iseye(sigma) == false) cSigma = chol(sigma).t();
+  arma::vec Dgw = D % gw;
+  arma::mat cSigma(p, p, arma::fill::eye);
+  if (iseye(sigma) == false) cSigma = chol(sigma).t();
   for (int i = 0; i < n - 1; i++) {
     arma::mat xdif = repmat(X.row(i), n - i - 1, 1) - X.rows(i + 1, n - 1);
-		arma::mat xs = xdif;
-		if (iseye(sigma) == false) xs = xdif * cSigma;
-		arma::vec rij = sqrt(sum(xs % xs, 1));
-		arma::vec yexa2 = yexa.subvec(i + 1, n - 1);
+    arma::mat xs = xdif;
+    if (iseye(sigma) == false) xs = xdif * cSigma;
+    arma::vec rij = sqrt(sum(xs % xs, 1));
+    arma::vec yexa2 = yexa.subvec(i + 1, n - 1);
     arma::vec H = arma::normcdf(sqrt(nc) * (yexa2 - yexa[i]) / rij); 
-		H.replace(arma::datum::nan, 0);
-		arma::vec Dgwj = Dgw.subvec(i + 1, n - 1);
+    H.replace(arma::datum::nan, 0);
+    arma::vec Dgwj = Dgw.subvec(i + 1, n - 1);
     arma::vec Wj = W.subvec(i + 1, n - 1);
     out += W(i) * sum(matvec(xdif, (Dgw(i) + Dgwj) % Wj % H - Dgwj % Wj)).t();
   }
@@ -142,11 +142,11 @@ arma::vec gehan_s_est(const arma::vec& a,
 //' @noRd
 // [[Rcpp::export(rng = false)]]
 arma::vec gehan_ns_est(const arma::vec& a,
-											 const arma::mat& X,
-											 const arma::vec& D,
-											 const arma::vec& Y,
-											 const arma::vec& W,
-											 const arma::vec& gw) {
+		       const arma::mat& X,
+		       const arma::vec& D,
+		       const arma::vec& Y,
+		       const arma::vec& W,
+		       const arma::vec& gw) {
   arma::uword const n = Y.n_elem;
   arma::uword const p = a.n_elem;
   arma::vec out(p, arma::fill::zeros);
@@ -174,9 +174,9 @@ arma::vec gehan_ns_est(const arma::vec& a,
     indices.emplace(yexa[idx_i], idx_i);
     if(yexa[idx_i] > indices_head->first) {
       while(yexa[idx_i] > indices_head->first) {
-				x_col_sum -= W(indices_head->second) * X.col(indices_head->second);
-				w_sum -= W(indices_head->second);
-				++indices_head;
+	x_col_sum -= W(indices_head->second) * X.col(indices_head->second);
+	w_sum -= W(indices_head->second);
+	++indices_head;
       }
     }
     else --indices_head;
@@ -190,25 +190,25 @@ arma::vec gehan_ns_est(const arma::vec& a,
 //' @noRd
 // [[Rcpp::export(rng = false)]]
 arma::vec gehan_s_wt(const arma::vec& a,
-										 const arma::mat& X,
-										 const arma::vec& Y,
-										 const arma::vec& W,
-										 const int& nc,
-										 const arma::mat& sigma) {
-	int n = Y.n_elem;
+		     const arma::mat& X,
+		     const arma::vec& Y,
+		     const arma::vec& W,
+		     const int& nc,
+		     const arma::mat& sigma) {
+  int n = Y.n_elem;
   int p = a.n_elem;
   arma::vec out(n, arma::fill::zeros);
   arma::vec yexa = Y - X * a;
-	arma::mat cSigma(p, p, arma::fill::eye);
-	if (iseye(sigma) == false) cSigma = chol(sigma).t();
+  arma::mat cSigma(p, p, arma::fill::eye);
+  if (iseye(sigma) == false) cSigma = chol(sigma).t();
   for (int i = 0; i < n; i++) {
     arma::mat xdif = repmat(X.row(i), n, 1) - X;
-		arma::mat xs = xdif;
-		if (iseye(sigma) == false) xs = xdif * cSigma;
-		arma::vec rij = sqrt(sum(xs % xs, 1));
-	  arma::vec H = arma::normcdf(sqrt(nc) * (yexa - yexa[i]) / rij);
-		// std::cout << H << "\n";
-		H.replace(arma::datum::nan, 0);
+    arma::mat xs = xdif;
+    if (iseye(sigma) == false) xs = xdif * cSigma;
+    arma::vec rij = sqrt(sum(xs % xs, 1));
+    arma::vec H = arma::normcdf(sqrt(nc) * (yexa - yexa[i]) / rij);
+    // std::cout << H << "\n";
+    H.replace(arma::datum::nan, 0);
     out[i] = sum(H % W);
   }
   return out;
@@ -217,11 +217,10 @@ arma::vec gehan_s_wt(const arma::vec& a,
 // Compute non-smooth gehan weight; used to prepare for method #3 and #4; old name = getnsgehan
 // [[Rcpp::export(rng = false)]]
 arma::vec gehan_ns_wt(const arma::vec& a,
-											const arma::mat& X,
-											const arma::vec& Y,
-											const arma::vec& W) {
+		      const arma::mat& X,
+		      const arma::vec& Y,
+		      const arma::vec& W) {
   arma::uword const n = Y.n_elem;
-  arma::uword const p = a.n_elem;
   arma::vec out(n, arma::fill::zeros);
   if(n < 1) return out;
   arma::vec yexa = Y - X.t() * a;
@@ -245,12 +244,12 @@ arma::vec gehan_ns_wt(const arma::vec& a,
     indices.emplace(yexa[idx_i], idx_i);
     if(yexa[idx_i] > indices_head->first) {
       while(yexa[idx_i] > indices_head->first) {
-				w_sum -= W(indices_head->second);
-				++indices_head;
+	w_sum -= W(indices_head->second);
+	++indices_head;
       }
     }
     else --indices_head;
-		out[idx_i] = w_sum;
+    out[idx_i] = w_sum;
   }
   return out;
 }
@@ -259,30 +258,30 @@ arma::vec gehan_ns_wt(const arma::vec& a,
 // @noRd
 // [[Rcpp::export(rng = false)]]
 arma::vec log_s_est(const arma::vec& a,
-										const arma::mat& X,
-										const arma::vec& D,
-										const arma::vec& Y,
-										const arma::vec& W,
-										const int& nc,
-										const arma::mat& sigma,
-										const arma::vec& gw) {
+		    const arma::mat& X,
+		    const arma::vec& D,
+		    const arma::vec& Y,
+		    const arma::vec& W,
+		    const int& nc,
+		    const arma::mat& sigma,
+		    const arma::vec& gw) {
   int n = Y.n_elem;
   int p = a.n_elem;
   arma::rowvec out(p, arma::fill::zeros);
   arma::vec yexa = Y - X * a; 
-	arma::mat cSigma(p, p, arma::fill::eye);
-	if (iseye(sigma) == false) cSigma = chol(sigma).t();
+  arma::mat cSigma(p, p, arma::fill::eye);
+  if (iseye(sigma) == false) cSigma = chol(sigma).t();
   for (int i = 0; i < n; i++) {
     if (D(i) > 0) {
-			arma::mat xdif = repmat(X.row(i), n, 1) - X;
-			arma::mat xs = xdif;
-			if (iseye(sigma) == false) xs = xdif * cSigma;
-			arma::vec rij = sqrt(sum(xs % xs, 1));
-			arma::vec H = arma::normcdf(sqrt(nc) * (yexa - yexa[i]) / rij);
-			H.replace(arma::datum::nan, 0);
-			if (sum(H) != 0) 
-				out += gw(i) * W(i) * (X.row(i) - sum(matvec(X, H)) / sum(H));
-		}
+      arma::mat xdif = repmat(X.row(i), n, 1) - X;
+      arma::mat xs = xdif;
+      if (iseye(sigma) == false) xs = xdif * cSigma;
+      arma::vec rij = sqrt(sum(xs % xs, 1));
+      arma::vec H = arma::normcdf(sqrt(nc) * (yexa - yexa[i]) / rij);
+      H.replace(arma::datum::nan, 0);
+      if (sum(H) != 0) 
+	out += gw(i) * W(i) * (X.row(i) - sum(matvec(X, H)) / sum(H));
+    }
   }
   return out.t();
 }
