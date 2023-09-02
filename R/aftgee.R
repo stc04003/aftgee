@@ -185,6 +185,8 @@ aftgee.fit <- function(DF, corstr="independence",
   result <- aftgee.est(log(DF$time), x, DF$status, binitValue$beta, id, corstr,
                        rep(1, nrow(DF)), DF$margin, DF$weights, control)
   ## variance estimation
+  ## Force trace to be false
+  control$trace <- FALSE
   zsamp <- bsamp <- NULL
   if (B > 0) {
     if (!control$parallel) {
@@ -192,7 +194,7 @@ aftgee.fit <- function(DF, corstr="independence",
       bini <- result$beta
       for (i in 1:B){
         Z <- as.vector(rep(rexp(n, 1), time = clsize))
-        zsamp <- cbind(zsamp, Z)
+        zsamp[[i]] <- Z
         if (control$seIni) {
           DF0 <- DF
           DF0$weights <- Z * DF0$weights
@@ -233,6 +235,7 @@ aftgee.fit <- function(DF, corstr="independence",
               coef.res = result$beta,
               var.res = vhat,
               varMargin = result$gamma,
+              coef.trace = result$histBeta,
               gee.vbeta = result$vbeta,
               gee.vbeta.naiv = result$vbeta.naiv,
               gee.vbeta0 = result$vbeta0,
@@ -244,8 +247,8 @@ aftgee.fit <- function(DF, corstr="independence",
               binit = binit,
               conv = result$convergence,
               ini.conv = firstconvergence,
-              bhat = bsamp,
-              zsamp = zsamp,
+              beta.resmp = bsamp,
+              zsmp = zsamp,
               conv.step = result$convStep)
   class(fit) <- "aftgee.fit"
   fit
@@ -275,8 +278,8 @@ aftgee.fit <- function(DF, corstr="independence",
 aftgee.control <- function(maxiter = 50, reltol = 0.001, trace = FALSE,
                            seIni = FALSE, parallel = FALSE,
                            parCl = parallel::detectCores() / 2, gp.pwr = -999) {
-  list(maxiter = maxiter, reltol = reltol, trace = trace, seIni = seIni,
-       parallel = parallel, parCl = parCl, gp.pwr = gp.pwr)
+    list(maxiter = maxiter, reltol = reltol, trace = trace, seIni = seIni,
+         parallel = parallel, parCl = parCl, gp.pwr = gp.pwr)
 }
 
 aftgee.est <- function(y, x, delta, beta, id,
@@ -294,6 +297,8 @@ aftgee.est <- function(y, x, delta, beta, id,
     xmat <- (diag(nrow(x)) - 1 / nrow(x)) %*% xmat
     xmatZ <- (diag(nrow(x)) - 1 / nrow(x)) %*% xmatZ
   }
+  ## save beta
+  histBeta <- NULL
   for (i in 1:control$maxiter) {
     betaprev <- beta
     eres <- NULL
@@ -327,7 +332,10 @@ aftgee.est <- function(y, x, delta, beta, id,
       geefit <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = corstr)
     }
     beta <- geefit$beta
-    if (control$trace) cat("\n beta:", as.numeric(beta), "\n")
+    if (control$trace) {
+        cat("\n beta:", as.numeric(beta), "\n")
+        histBeta[[i]] <- as.numeric(beta)
+    }
     convStep <- i
     if (max(abs(beta - betaprev) / abs(beta)) <= control$reltol) break
   } 
@@ -338,7 +346,8 @@ aftgee.est <- function(y, x, delta, beta, id,
   alpha <- geefit$alpha
   gamma <- geefit$gamma ## eres2
   convergence <- ifelse(i == control$maxiter, 1, 0)
-  out <- list(beta = beta, alpha = alpha, gamma = gamma, iniBeta = iniBeta,
+  out <- list(beta = beta, alpha = alpha, gamma = gamma,
+              histBeta = histBeta, iniBeta = iniBeta,
               ## variance matrix from geefit
               vbeta = geefit$vbeta, vbeta.naiv = geefit$vbeta.naiv,
               vbeta0 = geefit0$vbeta, vbeta.naiv0 = geefit0$vbeta.naiv,

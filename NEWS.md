@@ -1,3 +1,6 @@
+# aftgee_1.2.0
+	* Faster ns estimator for aftsrr()
+	* Returns steps of BJ estimators if aftgee() is called
 # aftgee_1.1.7
   * Fix the print in ini.conv
   * Add S3 method confint()
