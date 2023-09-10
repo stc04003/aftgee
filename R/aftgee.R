@@ -66,7 +66,7 @@
 #' @references Jin, Z. and Lin, D. Y. and Ying, Z. (2006)
 #' On Least-squares Regression with Censored Data. \emph{Biometrika}, \bold{90}, 341--353.
 #'
-#' @importFrom geepack geese geese.fit
+#' @importFrom geepack geese geese.fit geese.control
 #' @export
 #' @keywords aftgee
 #'
@@ -298,7 +298,7 @@ aftgee.est <- function(y, x, delta, beta, id,
     xmatZ <- (diag(nrow(x)) - 1 / nrow(x)) %*% xmatZ
   }
   ## save beta
-  histBeta <- NULL
+  histBeta <- txts <- NULL
   for (i in 1:control$maxiter) {
     betaprev <- beta
     eres <- NULL
@@ -309,7 +309,11 @@ aftgee.est <- function(y, x, delta, beta, id,
       yhat <- delta * y + (1 - delta) * (eres[[1]] + xmat %*% beta)
       yhatZ <- sqrt(Z * weights) * yhat
       ## xmatZ <- sqrt(Z * weights) * xmat
-      geefit <- geese.fit(xmatZ, yhatZ, id, corstr = corstr)
+      if (control$trace)
+          txts <- capture.output(
+              geefit <- geese.fit(xmatZ, yhatZ, id, corstr = corstr, control = geese.control(trace = TRUE)))
+      else 
+          geefit <- geese.fit(xmatZ, yhatZ, id, corstr = corstr)
     }
     if (length(unique(margin)) != 1L) {
       e <- y - xmat %*% beta
@@ -329,12 +333,22 @@ aftgee.est <- function(y, x, delta, beta, id,
       yhatZ <- sqrt(Z * weights) * yhat
       ## xmatZ <- sqrt(Z * weights) * xmat
       er2 <- as.matrix(eres2[margin])
+
+      if (control$trace)
+          txts <- capture.output(
+              geefit <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = corstr, control = geese.control(trace = TRUE)))
+      else         
       geefit <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = corstr)
     }
     beta <- geefit$beta
     if (control$trace) {
         cat("\n beta:", as.numeric(beta), "\n")
-        histBeta[[i]] <- as.numeric(beta)
+        txts <- txts[grepl("beta =", txts)]
+        txts <- sub("beta = ", "", txts)
+        tmp <- lapply(txts, function(x) as.numeric(unlist(strsplit(x, " "))))
+        tmp$last <- as.numeric(beta)
+        names(tmp) <- paste0("Iter.", 1:length(tmp))
+        histBeta[[i]] <- tmp
     }
     convStep <- i
     if (max(abs(beta - betaprev) / abs(beta)) <= control$reltol) break
@@ -346,6 +360,9 @@ aftgee.est <- function(y, x, delta, beta, id,
   alpha <- geefit$alpha
   gamma <- geefit$gamma ## eres2
   convergence <- ifelse(i == control$maxiter, 1, 0)
+
+  if (control$trace)
+      names(histBeta) <- paste0("BJ", 1:length(histBeta))
   out <- list(beta = beta, alpha = alpha, gamma = gamma,
               histBeta = histBeta, iniBeta = iniBeta,
               ## variance matrix from geefit
