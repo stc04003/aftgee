@@ -236,6 +236,7 @@ aftgee.fit <- function(DF, corstr="independence",
               var.res = vhat,
               varMargin = result$gamma,
               coef.trace = result$histBeta,
+              bj.trace = result$histYhat,
               gee.vbeta = result$vbeta,
               gee.vbeta.naiv = result$vbeta.naiv,
               gee.vbeta0 = result$vbeta0,
@@ -298,7 +299,7 @@ aftgee.est <- function(y, x, delta, beta, id,
     xmatZ <- (diag(nrow(x)) - 1 / nrow(x)) %*% xmatZ
   }
   ## save beta
-  histBeta <- txts <- NULL
+  histBeta <- histYhat <- txts <- NULL
   for (i in 1:control$maxiter) {
     betaprev <- beta
     eres <- NULL
@@ -333,9 +334,8 @@ aftgee.est <- function(y, x, delta, beta, id,
       yhatZ <- sqrt(Z * weights) * yhat
       ## xmatZ <- sqrt(Z * weights) * xmat
       er2 <- as.matrix(eres2[margin])
-
       if (control$trace)
-          txts <- capture.output(
+        txts <- capture.output(
               geefit <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = corstr, control = geese.control(trace = TRUE)))
       else         
       geefit <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = corstr)
@@ -349,6 +349,7 @@ aftgee.est <- function(y, x, delta, beta, id,
         tmp$last <- as.numeric(beta)
         names(tmp) <- paste0("Iter.", 1:length(tmp))
         histBeta[[i]] <- tmp
+        histYhat[[i]] <- as.numeric(yhat)
     }
     convStep <- i
     if (max(abs(beta - betaprev) / abs(beta)) <= control$reltol) break
@@ -360,11 +361,11 @@ aftgee.est <- function(y, x, delta, beta, id,
   alpha <- geefit$alpha
   gamma <- geefit$gamma ## eres2
   convergence <- ifelse(i == control$maxiter, 1, 0)
-
   if (control$trace)
       names(histBeta) <- paste0("BJ", 1:length(histBeta))
   out <- list(beta = beta, alpha = alpha, gamma = gamma,
               histBeta = histBeta, iniBeta = iniBeta,
+              histYhat = histYhat,
               ## variance matrix from geefit
               vbeta = geefit$vbeta, vbeta.naiv = geefit$vbeta.naiv,
               vbeta0 = geefit0$vbeta, vbeta.naiv0 = geefit0$vbeta.naiv,
