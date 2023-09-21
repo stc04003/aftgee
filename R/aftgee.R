@@ -336,7 +336,7 @@ aftgee.est <- function(y, x, delta, beta, id,
       er2 <- as.matrix(eres2[margin])
       if (control$trace)
         txts <- capture.output(
-              geefit <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = corstr, control = geese.control(trace = TRUE)))
+            geefit <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = corstr, control = geese.control(trace = TRUE)))
       else         
       geefit <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = corstr)
     }
