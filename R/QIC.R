@@ -12,10 +12,14 @@
 #' @example inst/examples/ex_aftgee_QIC.R
 QIC <- function (object) {
     mu <- log(predict(object)$fit)
-    y <- log(object$y)
+    y <- log(object$data$y)
+    eres1 <- eResC(resid(object), object$data$d, object$data$w)
+    geefit0 <- geese.fit(object$data$x * sqrt(object$data$w),
+                         y * sqrt(object$data$w), object$data$id,
+                         corstr = "independence")
     quasi <- sum(((y - mu)^2) / -2)
-    AIinverse <- ginv(object$gee.vbeta.naiv)
-    Vr <- object$gee.vbeta
+    AIinverse <- ginv(geefit0$vbeta.naiv)
+    Vr <- geefit0$vbeta
     trace <- sum(diag(AIinverse %*% Vr))
     params <- length(object$coef.res)
     kpm <- params + length(object$alpha)
@@ -26,3 +30,5 @@ QIC <- function (object) {
     names(output) <- c("QIC", "QICu", "Quasi Lik", "CIC", "params", "QICC")
     return(output)
 }
+
+

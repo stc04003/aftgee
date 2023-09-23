@@ -67,10 +67,11 @@ vcov.aftgee <- function(object, ...){
 residuals.aftgee <- function(object, ...){
     z <- object
     if (!is.aftgee(z)) stop("Most be aftgee class")
-    if ("(Intercept)" %in% attr(object$coef.res, "names")) z$x <- as.matrix(cbind(1, z$x))
-    else z$x <- as.matrix(z$x)
+    if ("(Intercept)" %in% attr(object$coef.res, "names"))
+        z$data$x <- as.matrix(cbind(1, z$data$x))
+    else z$data$x <- as.matrix(z$data$x)
     ans <- z["call"]
-    out <- log(z$y) - z$x %*% z$coef.res
+    out <- log(z$data$y) - z$data$x %*% z$coef.res
     out
 }
 
@@ -124,14 +125,14 @@ predict.aftsrr <- function(object, newdata = NULL, se.fit = FALSE, type = "lp", 
 predict.aftgee <- function(object, newdata = NULL, se.fit = FALSE, ...){
     z <- object
     out <- NULL
-    if ("(Intercept)" %in% attr(object$coef.res, "names")) z$x <- as.matrix(cbind(1, z$x))
-    else z$x <- as.matrix(z$x)
+    if ("(Intercept)" %in% attr(object$coef.res, "names")) z$data$x <- as.matrix(cbind(1, z$data$x))
+    else z$data$x <- as.matrix(z$data$x)
     if (!is.aftgee(z)) stop("Most be aftgee class")
     ans <- z["call"]
     if (is.null(newdata)) {
-        out$fit <- exp(drop(z$x %*% z$coef.res)) # originally on log scale
+        out$fit <- exp(drop(z$data$x %*% z$coef.res)) # originally on log scale
         if (se.fit == TRUE) {
-            out$se.fit <- sqrt(diag(z$x %*% z$var.res %*% t(z$x)))
+            out$se.fit <- sqrt(diag(z$data$x %*% z$var.res %*% t(z$data$x)))
         }
     }
     if (!is.null(newdata)) {

@@ -1,6 +1,8 @@
 # aftgee_1.2.0
 	* Faster ns estimator for aftsrr()
-	* Returns steps of BJ estimators if aftgee() is called
+	* Faster GEE in aftgee() when margin is all 1
+	* Faster resampling with GEE in aftgee() when margin is all 1
+	* Export gee() when family = gaussian()
 # aftgee_1.1.7
   * Fix the print in ini.conv
   * Add S3 method confint()

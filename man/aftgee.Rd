@@ -12,7 +12,8 @@ aftgee(
   contrasts = NULL,
   weights = NULL,
   margin = NULL,
-  corstr = "independence",
+  corstr = c("independence", "exchangeable", "ar1", "unstructured", "userdefined",
+    "fixed"),
   binit = "srrgehan",
   B = 100,
   control = aftgee.control()
