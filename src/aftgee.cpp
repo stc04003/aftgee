@@ -19,8 +19,10 @@ arma::vec eResC(arma::vec const Time,
   int n = T0.n_elem;
   arma::vec d(n, arma::fill::zeros);
   arma::vec r(n, arma::fill::zeros);
+  arma::uvec ind(Time.n_elem, arma::fill::zeros); 
   for (int i = 0; i < n; i++) {
     arma::uvec ind1 = find(Time == T0[i]);
+    ind(ind1).fill(i);
     d[i] = sum(censor.elem(ind1) % wgt.elem(ind1));
     r(span(0, i)) += sum(wgt.elem(ind1));
   }
@@ -29,10 +31,10 @@ arma::vec eResC(arma::vec const Time,
   T0(n) = T0(n - 1);
   arma::vec tmp = diff(T0) % surv;
   tmp.replace(datum::nan, 0);
+  arma::vec eresT0 = (reverse(cumsum(reverse(tmp)))) / surv + T0(span(0, n - 1));
+  eresT0.replace(datum::nan, max(T0));
   arma::vec eres(Time.n_elem, arma::fill::zeros);
-  arma::uvec ind = sort_index(Time);
-  eres(ind) = (reverse(cumsum(reverse(tmp)))) / surv + T0(span(0, n - 1));
-  eres.replace(datum::nan, max(T0));
+  eres = eresT0(ind);
   return eres;
 }
 
