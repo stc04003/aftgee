@@ -67,6 +67,7 @@
 #' On Least-squares Regression with Censored Data. \emph{Biometrika}, \bold{90}, 341--353.
 #'
 #' @importFrom geepack geese geese.fit geese.control
+#' @importFrom utils capture.output
 #' @export
 #' @keywords aftgee
 #'
