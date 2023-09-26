@@ -11,6 +11,85 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// eResC
+arma::vec eResC(arma::vec const Time, arma::vec const censor, arma::vec const wgt);
+RcppExport SEXP _aftgee_eResC(SEXP TimeSEXP, SEXP censorSEXP, SEXP wgtSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< arma::vec const >::type Time(TimeSEXP);
+    Rcpp::traits::input_parameter< arma::vec const >::type censor(censorSEXP);
+    Rcpp::traits::input_parameter< arma::vec const >::type wgt(wgtSEXP);
+    rcpp_result_gen = Rcpp::wrap(eResC(Time, censor, wgt));
+    return rcpp_result_gen;
+END_RCPP
+}
+// eResC2
+Rcpp::List eResC2(arma::vec const Time, arma::vec const censor, arma::vec const wgt);
+RcppExport SEXP _aftgee_eResC2(SEXP TimeSEXP, SEXP censorSEXP, SEXP wgtSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< arma::vec const >::type Time(TimeSEXP);
+    Rcpp::traits::input_parameter< arma::vec const >::type censor(censorSEXP);
+    Rcpp::traits::input_parameter< arma::vec const >::type wgt(wgtSEXP);
+    rcpp_result_gen = Rcpp::wrap(eResC2(Time, censor, wgt));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gee
+Rcpp::List gee(arma::vec y, arma::mat X, arma::vec b0, arma::vec nt, arma::vec w, std::string corstr, double tol, int maxit);
+RcppExport SEXP _aftgee_gee(SEXP ySEXP, SEXP XSEXP, SEXP b0SEXP, SEXP ntSEXP, SEXP wSEXP, SEXP corstrSEXP, SEXP tolSEXP, SEXP maxitSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type b0(b0SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type nt(ntSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type w(wSEXP);
+    Rcpp::traits::input_parameter< std::string >::type corstr(corstrSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
+    rcpp_result_gen = Rcpp::wrap(gee(y, X, b0, nt, w, corstr, tol, maxit));
+    return rcpp_result_gen;
+END_RCPP
+}
+// est_No_Margin
+Rcpp::List est_No_Margin(arma::vec y, arma::mat X, arma::vec D, arma::vec b0, arma::vec nt, arma::vec w, std::string corstr, double tol, int maxit);
+RcppExport SEXP _aftgee_est_No_Margin(SEXP ySEXP, SEXP XSEXP, SEXP DSEXP, SEXP b0SEXP, SEXP ntSEXP, SEXP wSEXP, SEXP corstrSEXP, SEXP tolSEXP, SEXP maxitSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type D(DSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type b0(b0SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type nt(ntSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type w(wSEXP);
+    Rcpp::traits::input_parameter< std::string >::type corstr(corstrSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
+    rcpp_result_gen = Rcpp::wrap(est_No_Margin(y, X, D, b0, nt, w, corstr, tol, maxit));
+    return rcpp_result_gen;
+END_RCPP
+}
+// resampling_No_Margin
+arma::mat resampling_No_Margin(arma::vec y, arma::mat X, arma::vec D, arma::vec b0, arma::vec nt, arma::vec w, std::string corstr, int B, double tol, int maxit);
+RcppExport SEXP _aftgee_resampling_No_Margin(SEXP ySEXP, SEXP XSEXP, SEXP DSEXP, SEXP b0SEXP, SEXP ntSEXP, SEXP wSEXP, SEXP corstrSEXP, SEXP BSEXP, SEXP tolSEXP, SEXP maxitSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::vec >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type X(XSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type D(DSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type b0(b0SEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type nt(ntSEXP);
+    Rcpp::traits::input_parameter< arma::vec >::type w(wSEXP);
+    Rcpp::traits::input_parameter< std::string >::type corstr(corstrSEXP);
+    Rcpp::traits::input_parameter< int >::type B(BSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
+    rcpp_result_gen = Rcpp::wrap(resampling_No_Margin(y, X, D, b0, nt, w, corstr, B, tol, maxit));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getSuv
 arma::vec getSuv(arma::vec Time, arma::vec censor, arma::vec wgt);
 RcppExport SEXP _aftgee_getSuv(SEXP TimeSEXP, SEXP censorSEXP, SEXP wgtSEXP) {

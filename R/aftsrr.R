@@ -1497,7 +1497,7 @@ getGehan <- function(Y, X, beta, N, delta, clsize, sigma, weights, smooth = FALS
     N <- nrow(X)
     n <- length(clsize)
     a <- vector("double", N)
-    if (smooth) out <- gehan_s_wt(beta, X, Y, W, length(clsize), sigma)
+    if (smooth) out <- gehan_s_wt(beta, X, Y, weights, length(clsize), sigma)
     else out <- gehan_ns_wt(beta, t(X), Y, weights)
     out
 }

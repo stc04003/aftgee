@@ -4,19 +4,19 @@ state and is being actively
 developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![minimal R
 version](https://img.shields.io/badge/R%3E%3D-3.4.0-6666ff.svg)](https://cran.r-project.org/)
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/aftgee)](https://cran.r-project.org/package=aftgee)
-[![packageversion](https://img.shields.io/badge/Package%20version-1.1.6-orange.svg?style=flat-square)](commits/master)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/aftgee)](https://cran.r-project.org/package=aftgee)
+[![packageversion](https://img.shields.io/badge/Package%20version-1.2.0-orange.svg?style=flat-square)](commits/master)
 [![Travis-CI Build
 Status](https://travis-ci.org/stc04003/aftgee.svg?branch=master)](https://travis-ci.org/stc04003/aftgee)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/stc04003/aftgee?branch=master&svg=true)](https://ci.appveyor.com/project/stc04003/aftgee)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2022--05--11-yellowgreen.svg)](/commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2023--09--26-yellowgreen.svg)](/commits/master)
 
------
+------------------------------------------------------------------------
 
 ## **aftgee**
 
------
+------------------------------------------------------------------------
 
 ## aftgee: Accelerated Failure Time with Generalized Estimating Equations
 
@@ -54,10 +54,10 @@ Install and load the package from GitHub using
 
 [Online document](https://www.sychiou.com/aftgee/index.html) includes:
 
-  - Package vignette on [rank-based estimators with
-    `aftsrr()`](https://www.sychiou.com/aftgee/articles/aftsrr.html).
-  - Package vignette on [least-squares estimators with
-    `aftgee()`](https://www.sychiou.com/aftgee/articles/aftgee.html).
+- Package vignette on [rank-based estimators with
+  `aftsrr()`](https://www.sychiou.com/aftgee/articles/aftsrr.html).
+- Package vignette on [least-squares estimators with
+  `aftgee()`](https://www.sychiou.com/aftgee/articles/aftgee.html).
 
 ## Reference
 
