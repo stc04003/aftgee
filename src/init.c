@@ -19,6 +19,7 @@ extern SEXP _aftgee_gehan_s_wt(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _aftgee_gehan_ns_wt(SEXP, SEXP, SEXP, SEXP);
 extern SEXP _aftgee_getSuv(SEXP, SEXP, SEXP);
 extern SEXP _aftgee_eResC(SEXP, SEXP, SEXP);
+extern SEXP _aftgee_eResC2(SEXP, SEXP, SEXP);
 extern SEXP _aftgee_gee(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _aftgee_est_No_Margin(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP _aftgee_resampling_No_Margin(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
@@ -42,6 +43,7 @@ static const R_CallMethodDef CallEntries[] = {
 	{"_aftgee_gehan_ns_wt",           (DL_FUNC) &_aftgee_gehan_ns_wt,          4},
 	{"_aftgee_getSuv",                (DL_FUNC) &_aftgee_getSuv,               3},
 	{"_aftgee_eResC",                 (DL_FUNC) &_aftgee_eResC,                3},
+	{"_aftgee_eResC2",                (DL_FUNC) &_aftgee_eResC2,               3},
 	{"_aftgee_gee",                   (DL_FUNC) &_aftgee_gee,                  8},
 	{"_aftgee_est_No_Margin",         (DL_FUNC) &_aftgee_est_No_Margin,        9},
 	{"_aftgee_resampling_No_Margin",  (DL_FUNC) &_aftgee_resampling_No_Margin, 10},

@@ -79,7 +79,7 @@ aftgee <- function(formula, data, subset, id = NULL, contrasts = NULL,
                    binit = "srrgehan", B = 100,
                    control = aftgee.control()
                    ) {
-    corstr <- match.arg(corstr)
+  corstr <- match.arg(corstr)
   scall <- match.call()
   mnames <- c("", "formula", "data", "weights", "margin", "subset", "na.action", "id")
   cnames <- names(scall)
@@ -128,8 +128,8 @@ aftgee <- function(formula, data, subset, id = NULL, contrasts = NULL,
     out <- aftgee.fit(DF = DF, corstr = corstr, B = B,
                       binit = binit, control = control, yint = yint)
   }
-    out$data <- list(y = DF$time, d = DF$status, w = DF$weights, id = DF$id,
-                           x = as.matrix(DF[,-(1:5)]))
+  out$data <- list(y = DF$time, d = DF$status, w = DF$weights, id = DF$id,
+                   x = as.matrix(DF[,-(1:5)]))
   rownames(out$coefficients) <- names(out$coef.res) <-
     names(out$coef.init) <- colnames(model.matrix(mterms, m, contrasts))
   ## out$intercept <- (sum(x[,1]) == nrow(x))
@@ -196,22 +196,22 @@ aftgee.fit <- function(DF, corstr="independence",
       bsamp <- matrix(NA, nrow = B, ncol = length(result$beta))
       bini <- result$beta
       if (control$seIni) {
-          Z <- as.vector(rep(rexp(n, 1), time = clsize))
-          zsamp[[i]] <- Z
-          for (i in 1:B) {
-              DF0 <- DF
-              DF0$weights <- Z * DF0$weights
-              bini <- rankFit.gehan.is(DF0[,-5], engine, NULL)$beta
-              if (yint) bini <- c(mean(log(DF0$time) - as.matrix(DF0[,-(1:5)]) %*% bini), bini)
-              bsamp[i,] <- aftgee.est(log(DF$time), x, DF$status, bini, id, corstr, Z,
-                                      DF$margin, DF$weights, control)$beta
-          }
+        Z <- as.vector(rep(rexp(n, 1), time = clsize))
+        zsamp[[i]] <- Z
+        for (i in 1:B) {
+          DF0 <- DF
+          DF0$weights <- Z * DF0$weights
+          bini <- rankFit.gehan.is(DF0[,-5], engine, NULL)$beta
+          if (yint) bini <- c(mean(log(DF0$time) - as.matrix(DF0[,-(1:5)]) %*% bini), bini)
+          bsamp[i,] <- aftgee.est(log(DF$time), x, DF$status, bini, id, corstr, Z,
+                                  DF$margin, DF$weights, control)$beta
+        }
       } else {
-          bsamp <- resampling_No_Margin(y = log(DF$time), X = x, D = DF$status, b0 = binitValue$beta,
-                                        nt = tabulate(id), w = DF$weights, corstr = corstr, B = B,
-                                        tol = control$reltol, maxit = control$maxit)
+        bsamp <- resampling_No_Margin(y = log(DF$time), X = x, D = DF$status, b0 = binitValue$beta,
+                                      nt = tabulate(id), w = DF$weights, corstr = corstr, B = B,
+                                      tol = control$reltol, maxit = control$maxit)
       }
-            vhat <- var(bsamp)
+      vhat <- var(bsamp)
     } else {
       cl <- makeCluster(control$parCl)
       clusterExport(cl = cl,
@@ -282,8 +282,8 @@ aftgee.fit <- function(DF, corstr="independence",
 aftgee.control <- function(maxiter = 50, reltol = 0.001, trace = FALSE,
                            seIni = FALSE, parallel = FALSE,
                            parCl = parallel::detectCores() / 2, gp.pwr = -999) {
-    list(maxiter = maxiter, reltol = reltol, trace = trace, seIni = seIni,
-         parallel = parallel, parCl = parCl, gp.pwr = gp.pwr)
+  list(maxiter = maxiter, reltol = reltol, trace = trace, seIni = seIni,
+       parallel = parallel, parCl = parCl, gp.pwr = gp.pwr)
 }
 
 
@@ -295,21 +295,17 @@ aftgee.est <- function(y, x, delta, beta, id,
                        margin = rep(1, length(id)),
                        weights = rep(1, length(y)),
                        control = aftgee.control()) {
-    if (length(unique(margin)) == 1L) {
-        if (!(corstr %in% c("independence", "exchangeable", "ar1")))
-            stop("Invalid corstr when no margins are specified.")
-        fit <- est_No_Margin(y = y, X = x, D = delta, b0 = beta, nt = tabulate(id),
-                             w = Z * weights, corstr = corstr,
-                             tol = control$reltol, maxit = control$maxiter)
-        return(list(beta = fit$b, alpha = fit$alpha, histBeta = fit$hist_b, iniBeta = beta,
-                    convergence = 1 * (fit$iter < control$maxiter),
-                    convStep = fit$iter))
-    }
-    est.margin(y, x, delta, beta, id, corstr = "independence",
-               Z = rep(1, length(y)),
-               margin = rep(1, length(id)),
-               weights = rep(1, length(y)),
-               control = aftgee.control())   
+  if (length(unique(margin)) == 1L) {
+    if (!(corstr %in% c("independence", "exchangeable", "ar1")))
+      stop("Invalid corstr when no margins are specified.")
+    fit <- est_No_Margin(y = y, X = x, D = delta, b0 = beta, nt = tabulate(id),
+                         w = Z * weights, corstr = corstr,
+                         tol = control$reltol, maxit = control$maxiter)
+    return(list(beta = fit$b, alpha = fit$alpha, histBeta = fit$hist_b, iniBeta = beta,
+                convergence = 1 * (fit$iter < control$maxiter),
+                convStep = fit$iter))
+  }
+  est.margin(y, x, delta, beta, id, corstr, Z, margin, weights, control)
 }    
 
 #' This is now only called when margina = 1
@@ -320,92 +316,67 @@ est.margin <- function(y, x, delta, beta, id,
                        margin = rep(1, length(id)),
                        weights = rep(1, length(y)),
                        control = aftgee.control()) {
-    iniBeta <- beta
-    xmat <- as.matrix(x) 
-    nobs <- length(y)
-    xmatZ <- sqrt(Z * weights) * xmat
-    ## If x does not have an intercept term, e.g., a column of 1s, then center xmat and xmatZ
-    if (!any(apply(xmat, 2, function(e) length(unique(e))) == 1)) {
-        xmat <- (diag(nrow(x)) - 1 / nrow(x)) %*% xmat
-        xmatZ <- (diag(nrow(x)) - 1 / nrow(x)) %*% xmatZ
+  iniBeta <- beta
+  xmat <- as.matrix(x) 
+  nobs <- length(y)
+  xmatZ <- sqrt(Z * weights) * xmat
+  ## If x does not have an intercept term, e.g., a column of 1s, then center xmat and xmatZ
+  if (!any(apply(xmat, 2, function(e) length(unique(e))) == 1)) {
+    xmat <- (diag(nrow(x)) - 1 / nrow(x)) %*% xmat
+    xmatZ <- (diag(nrow(x)) - 1 / nrow(x)) %*% xmatZ
+  }
+  histBeta <- txts <- NULL
+  for (i in 1:control$maxiter) {
+    betaprev <- beta
+    eres <- eres2 <- er1 <- er2 <- NULL
+    e <- y - xmat %*% beta
+    for (m in unique(margin)) {
+      temp <- eResC2(e[margin == m], delta[margin == m], Z[margin == m])
+      temp[[2]] <- ifelse(delta[margin == m] == 1, e[margin == m]^2, temp[[2]])
+      eres2[m] <- mean(temp[[2]], na.rm = TRUE)
+      dum <- cumsum(ifelse(margin == m, 1, 0))
+      er1[[m]] <- temp[[1]][ifelse(margin == m, dum, NA)]
+      ## er1 <- rbind(er1, er1temp)
     }
-    histBeta <- txts <- NULL
-    for (i in 1:control$maxiter) {
-        betaprev <- beta
-        eres <- eres2 <- er1 <- er2 <- NULL
-        e <- y - xmat %*% beta
-        for (m in unique(margin)) {
-            temp <- eRes(e[margin == m], delta[margin == m], Z[margin == m])
-            temp[[2]] <- ifelse(delta[margin == m] == 1, e[margin == m]^2, temp[[2]])
-            eres2[m] <- mean(temp[[2]], na.rm = TRUE)
-            dum <- cumsum(ifelse(margin == m, 1, 0))
-            er1[[m]] <- temp[[1]][ifelse(margin == m, dum, NA)]
-            ## er1 <- rbind(er1, er1temp)
-        }
-        er1 <- unlist(er1)
-        er1 <- er1[!is.na(er1)]
-        yhat <- delta * y + (1 - delta) * (er1 + xmat %*% beta)
-        yhatZ <- sqrt(Z * weights) * yhat
-        er2 <- as.matrix(eres2[margin])
-        if (control$trace)
-            txts <- capture.output(
-                geefit <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = corstr, control = geese.control(trace = TRUE)))
-        else         
-            geefit <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = corstr)
-        beta <- geefit$beta
-        if (control$trace) {
-            cat("\n beta:", as.numeric(beta), "\n")
-            txts <- txts[grepl("beta =", txts)]
-            txts <- sub("beta = ", "", txts)
-            tmp <- lapply(txts, function(x) as.numeric(unlist(strsplit(x, " "))))
-            tmp$last <- as.numeric(beta)
-            names(tmp) <- paste0("Iter.", 1:length(tmp))
-            histBeta[[i]] <- tmp
-        }
-        convStep <- i
-        if (max(abs(beta - betaprev) / abs(beta)) <= control$reltol) break
-    } 
-    ## Fitting independence structure at convergence for QIC calculation
-    ## Move these to QIC calls
-    ## if (length(unique(margin)) == 1L) geefit0 <- geese.fit(xmatZ, yhatZ, id, corstr = "independence")
-    ## else geefit0 <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = "independence")
-    beta <- geefit$beta
-    alpha <- geefit$alpha
-    gamma <- geefit$gamma ## eres2
-    convergence <- ifelse(i == control$maxiter, 1, 0)
+    er1 <- unlist(er1)
+    er1 <- er1[!is.na(er1)]
+    yhat <- delta * y + (1 - delta) * (er1 + xmat %*% beta)
+    yhatZ <- sqrt(Z * weights) * yhat
+    er2 <- as.matrix(eres2[margin])
     if (control$trace)
-        names(histBeta) <- paste0("BJ", 1:length(histBeta))
-    out <- list(beta = beta, alpha = alpha, ## gamma = gamma,
-                histBeta = histBeta, iniBeta = iniBeta,
-                ## iteration info.
-                convergence = convergence, convStep = convStep)
-    return(out)
-}
-
-
-eRes <- function(e, delta, z = rep(1, length(e))) {
-    nobs <- length(e)
-    ord <- order(e)
-    ei <- e[ord]
-    deltai <- delta[ord]
-    zi <- z[ord]
-    dummy <- 1:nobs
-    tmp <- survfit(Surv(ei, deltai) ~ 1, weights = zi)
-    Shat <- with(tmp, approx(time, surv, ei))$y
-    edif <- c(diff(ei), 0)  ## diff(ei) gives 1 less terms
-    ehat <- rev(cumsum(rev(edif * Shat)))
-    inpt <- mean(ehat)
-    ehat2 <- rev(cumsum(rev(ei * edif * Shat)))
-    ehat <- ehat/Shat + ei    ## +ei because there was a diff() in edif
-    ehat2 <- 2 * ehat2/Shat + ei^2
-    ehat[is.na(ehat)] <- ei[is.na(ehat)]
-    ehat2[is.na(ehat2)] <- ei[is.na(ehat2)]^2
-    ehat2[which(ehat2 < 0)] <- NaN
-    eres <- ehat
-    eres2 <- ehat2
-    eres[dummy[ord]] <- ehat  ## puting it back to the original order
-    eres2[dummy[ord]] <- ehat2
-    return(list(eres, eres2, inpt))
+      txts <- capture.output(
+        geefit <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE,
+                            corstr = corstr, control = geese.control(trace = TRUE)))
+    else         
+      geefit <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = corstr)
+    beta <- geefit$beta
+    if (control$trace) {
+      cat("\n beta:", as.numeric(beta), "\n")
+      txts <- txts[grepl("beta =", txts)]
+      txts <- sub("beta = ", "", txts)
+      tmp <- lapply(txts, function(x) as.numeric(unlist(strsplit(x, " "))))
+      tmp$last <- as.numeric(beta)
+      names(tmp) <- paste0("Iter.", 1:length(tmp))
+      histBeta[[i]] <- tmp
+    }
+    convStep <- i
+    if (max(abs(beta - betaprev) / abs(beta)) <= control$reltol) break
+  } 
+  ## Fitting independence structure at convergence for QIC calculation
+  ## Move these to QIC calls
+  ## if (length(unique(margin)) == 1L) geefit0 <- geese.fit(xmatZ, yhatZ, id, corstr = "independence")
+  ## else geefit0 <- geese.fit(xmatZ, yhatZ, id, zsca = er2, scale.fix = TRUE, corstr = "independence")
+  beta <- geefit$beta
+  alpha <- geefit$alpha
+  gamma <- geefit$gamma ## eres2
+  convergence <- ifelse(i == control$maxiter, 1, 0)
+  if (control$trace)
+    names(histBeta) <- paste0("BJ", 1:length(histBeta))
+  out <- list(beta = beta, alpha = alpha, ## gamma = gamma,
+              histBeta = histBeta, iniBeta = iniBeta,
+              ## iteration info.
+              convergence = convergence, convStep = convStep)
+  return(out)
 }
 
 min2 <- function(x) min(x[x != min(x)])

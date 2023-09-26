@@ -5,6 +5,10 @@ eResC <- function(Time, censor, wgt) {
     .Call(`_aftgee_eResC`, Time, censor, wgt)
 }
 
+eResC2 <- function(Time, censor, wgt) {
+    .Call(`_aftgee_eResC2`, Time, censor, wgt)
+}
+
 gee <- function(y, X, b0, nt, w, corstr, tol, maxit) {
     .Call(`_aftgee_gee`, y, X, b0, nt, w, corstr, tol, maxit)
 }

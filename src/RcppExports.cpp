@@ -23,6 +23,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// eResC2
+Rcpp::List eResC2(arma::vec const Time, arma::vec const censor, arma::vec const wgt);
+RcppExport SEXP _aftgee_eResC2(SEXP TimeSEXP, SEXP censorSEXP, SEXP wgtSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< arma::vec const >::type Time(TimeSEXP);
+    Rcpp::traits::input_parameter< arma::vec const >::type censor(censorSEXP);
+    Rcpp::traits::input_parameter< arma::vec const >::type wgt(wgtSEXP);
+    rcpp_result_gen = Rcpp::wrap(eResC2(Time, censor, wgt));
+    return rcpp_result_gen;
+END_RCPP
+}
 // gee
 Rcpp::List gee(arma::vec y, arma::mat X, arma::vec b0, arma::vec nt, arma::vec w, std::string corstr, double tol, int maxit);
 RcppExport SEXP _aftgee_gee(SEXP ySEXP, SEXP XSEXP, SEXP b0SEXP, SEXP ntSEXP, SEXP wSEXP, SEXP corstrSEXP, SEXP tolSEXP, SEXP maxitSEXP) {
