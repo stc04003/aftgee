@@ -74,7 +74,8 @@ print.summary.aftsrr <- function(x, ...){
   }
 }
 
-format.perc <- function (probs, digits) 
+#' @noRd
+formatPerc <- function (probs, digits) 
   paste(format(100 * probs, trim = TRUE, scientific = FALSE, digits = digits), "%")
 
 #' @importFrom stats qnorm setNames
@@ -101,7 +102,7 @@ confint.aftsrr <- function(object, parm, level = 0.95, ...) {
   a <- c(a, 1 - a) 
   fac <- qnorm(a)
   ciList <- lapply(ses, function(e) {
-    pct <- format.perc(a, 3)
+    pct <- formatPerc(a, 3)
     ci <- array(NA_real_, dim = c(length(parm), 2L), dimnames = list(parm, pct))
     ci[] <- cf[parm] + e[parm] %o% fac
     ci
@@ -130,7 +131,7 @@ confint.aftgee <- function(object, parm, level = 0.95, ...) {
   a <- (1 - level)/2
   a <- c(a, 1 - a) 
   fac <- qnorm(a)
-  pct <- format.perc(a, 3)
+  pct <- formatPerc(a, 3)
   ci <- array(NA_real_, dim = c(length(parm), 2L), dimnames = list(parm, pct))
   ci[] <- cf[parm] + ses[parm] %o% fac
   ci
