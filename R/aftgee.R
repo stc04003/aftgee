@@ -120,7 +120,7 @@ aftgee <- function(formula, data, subset, id = NULL, contrasts = NULL,
     cat("There is no censoring in the data, ordinary least squares approach is fitted via geese.\n")
     out$geese <- geese(as.formula(paste("log(time) ~ ", formula)[2]),
                        weights = weights, id = id, data = DF, corstr = corstr)
-    out$coef.init <- out$coef.res <- out$geese$beta
+    out$coef.init <- out$coef.res <- as.numeric(out$geese$beta)
     out$coefficients <- cbind(out$coef.init, out$coef.res)
     out$var.res <- out$geese$vbeta
   }
@@ -239,7 +239,7 @@ aftgee.fit <- function(DF, corstr="independence",
   ini.sd <- c(binitValue$sd)
   ini.sdMat <- c(binitValue$sdMat)
   fit <- list(coefficients = cbind(ini.beta, result$beta),
-              coef.res = result$beta,
+              coef.res = as.numeric(result$beta),
               var.res = vhat,
               varMargin = result$gamma,
               coef.trace = result$histBeta,
