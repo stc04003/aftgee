@@ -196,9 +196,9 @@ aftgee.fit <- function(DF, corstr="independence",
       bsamp <- matrix(NA, nrow = B, ncol = length(result$beta))
       bini <- result$beta
       if (control$seIni) {
-        Z <- as.vector(rep(rexp(n, 1), time = clsize))
-        zsamp[[i]] <- Z
         for (i in 1:B) {
+          Z <- as.vector(rep(rexp(n, 1), time = clsize))
+          zsamp[[i]] <- Z
           DF0 <- DF
           DF0$weights <- Z * DF0$weights
           bini <- rankFit.gehan.is(DF0[,-5], engine, NULL)$beta
@@ -252,7 +252,7 @@ aftgee.fit <- function(DF, corstr="independence",
               conv = result$convergence,
               ini.conv = firstconvergence,
               beta.resmp = bsamp,
-              zsmp = zsamp,
+              zsamp = zsamp,
               conv.step = result$convStep)
   class(fit) <- "aftgee.fit"
   fit

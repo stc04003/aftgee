@@ -236,22 +236,37 @@ Rcpp::List est_No_Margin(arma::vec y,
   return out;
 }
 
+
+arma::vec resamp_wgt(arma::vec nt) {
+	arma::vec out(sum(nt), arma::fill::zeros);
+	int ind = 0;
+	for (int i = 0; i < nt.n_elem; i++) {
+		arma::vec z = -log(randu(1));
+		for (int j = 0; j < nt(i); j++) {
+			out(ind) = z(0);
+			ind++;
+		}
+	}
+	return(out);
+}
+
+
 // for resampling
 // [[Rcpp::export]]
 arma::mat resampling_No_Margin(arma::vec y,
-			       arma::mat X,
-			       arma::vec D,
-			       arma::vec b0,
-			       arma::vec nt,
-			       arma::vec w,
-			       std::string corstr,
-			       int B, 
-			       double tol,
-			       int maxit) {
+															 arma::mat X,
+															 arma::vec D,
+															 arma::vec b0,
+															 arma::vec nt,
+															 arma::vec w,
+															 std::string corstr,
+															 int B, 
+															 double tol,
+															 int maxit) {
   arma::mat out(b0.n_elem, B, arma::fill::zeros);
   for (int b = 0; b < B; b++) {
     arma::vec b1 = b0;
-    arma::vec z = -log(randu(y.n_elem));
+    arma::vec z = resamp_wgt(nt);
     for (int j = 1; j <= maxit; j++) {
       arma::vec e = y - X * b0;
       arma::vec eres = eResC(e, D, w);
