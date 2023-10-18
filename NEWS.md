@@ -1,8 +1,11 @@
 # `aftgee` 1.2.0
-	* Faster ns estimator for `aftsrr()`
-	* Faster GEE in `aftgee()` when `margin` is all 1
-	* Faster resampling with GEE in `aftgee()` when `margin` is all 1
-	* Export `gee()` when `family = gaussian()`
+  * Resampling weights generated at cluster level
+  * Coefficients in vector format 
+# `aftgee` 1.2.0
+  * Faster ns estimator for `aftsrr()`
+  * Faster GEE in `aftgee()` when `margin` is all 1
+  * Faster resampling with GEE in `aftgee()` when `margin` is all 1
+  * Export `gee()` when `family = gaussian()`
   * Fix the print in ini.conv
   * Add S3 method confint()
 # `aftgee` 1.1.6
