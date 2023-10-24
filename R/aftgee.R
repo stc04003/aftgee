@@ -207,10 +207,13 @@ aftgee.fit <- function(DF, corstr="independence",
                                   DF$margin, DF$weights, control)$beta
         }
       } else {
-        bsamp <- resampling_No_Margin(y = log(DF$time), X = x, D = DF$status, b0 = binitValue$beta,
+        bsamp <- resampling_No_Margin(y = log(DF$time), X = x, D = DF$status, b0 = bini,
+                                      ## b0 = binitValue$beta,
                                       nt = tabulate(id), w = DF$weights, corstr = corstr, B = B,
                                       tol = control$reltol, maxit = control$maxit)
       }
+      ## resampling is less stable when sample size is small
+      bsamp <- bsamp[rowSums(bsamp * bsamp) < 5 * sum(bini * bini),]      
       vhat <- var(bsamp)
     } else {
       cl <- makeCluster(control$parCl)

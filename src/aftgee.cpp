@@ -269,7 +269,7 @@ arma::mat resampling_No_Margin(arma::vec y,
     arma::vec z = resamp_wgt(nt);
     for (int j = 1; j <= maxit; j++) {
       arma::vec e = y - X * b0;
-      arma::vec eres = eResC(e, D, w);
+      arma::vec eres = eResC(e, D, z % w);
       arma::vec Ey = D % y + (1 - D) % (eres + X * b0);
       Rcpp::List fit = gee(Ey, X, b0, nt, z % w, corstr, tol, maxit);
       arma::vec b1 = fit(0);
