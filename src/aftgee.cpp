@@ -128,13 +128,13 @@ double get_alpha_delta(arma::vec mu,
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::List gee(arma::vec y,
-	       arma::mat X,
-	       arma::vec b0,
-	       arma::vec nt,
-	       arma::vec w,
-	       std::string corstr,
-	       double tol,
-	       int maxit){
+							 arma::mat X,
+							 arma::vec b0,
+							 arma::vec nt,
+							 arma::vec w,
+							 std::string corstr,
+							 double tol,
+							 int maxit){
   Rcpp::List out(7);
   int N = nt.n_elem;
   int nx = X.n_cols;
@@ -152,7 +152,7 @@ Rcpp::List gee(arma::vec y,
     arma::vec ym = y - mu;
     arma::mat bigD = matvec(X, sqrt(w));
     arma::vec ymw = ym % sqrt(w);
-    if (max(nt) > 1) {
+    if (max(nt) > 1 && corstr != "independence") {
       ahatD = get_alpha_delta(ym, nt, index, w, ahat, corstr);
       ahat += ahatD;
     }
@@ -162,16 +162,16 @@ Rcpp::List gee(arma::vec y,
       int k = nt(i);
       arma::mat Rhat(k, k, arma::fill::eye);
       if (corstr == "exchangeable" && k > 1) {
-	Rhat = Rhat * (1 - ahat) + ahat;
+				Rhat = Rhat * (1 - ahat) + ahat;
       }
       if (corstr == "ar1" && k > 1) {
-	arma::vec tmp(k - 1, arma::fill::value(ahat));
-	arma::mat Rhat2(k, k, arma::fill::zeros);
-	tmp = cumprod(tmp);
-	for (int i = 0; i < k - 1; i++) {
-	  Rhat2.submat(i + 1, i, k - 1, i) = tmp(span(0, k - i - 2));
-	}
-	Rhat = Rhat + Rhat2 + Rhat2.t();
+				arma::vec tmp(k - 1, arma::fill::value(ahat));
+				arma::mat Rhat2(k, k, arma::fill::zeros);
+				tmp = cumprod(tmp);
+				for (int i = 0; i < k - 1; i++) {
+					Rhat2.submat(i + 1, i, k - 1, i) = tmp(span(0, k - i - 2));
+				}
+				Rhat = Rhat + Rhat2 + Rhat2.t();
       }
       // Rcpp::Rcout << "ahat: " << ahat << endl;
       arma::vec ym2 = ym(span(index(i), index(i) + nt(i) - 1));
@@ -204,14 +204,14 @@ Rcpp::List gee(arma::vec y,
 // Replacing aftgee.est() when all margin = 1
 // [[Rcpp::export(rng = false)]]
 Rcpp::List est_No_Margin(arma::vec y,
-			 arma::mat X,
-			 arma::vec D,
-			 arma::vec b0,
-			 arma::vec nt,
-			 arma::vec w,
-			 std::string corstr,
-			 double tol,
-			 int maxit) {
+												 arma::mat X,
+												 arma::vec D,
+												 arma::vec b0,
+												 arma::vec nt,
+												 arma::vec w,
+												 std::string corstr,
+												 double tol,
+												 int maxit) {
   Rcpp::List out(5);
   arma::vec iter_gee(maxit, arma::fill::zeros);
   Rcpp::List histBeta(maxit);
@@ -222,13 +222,13 @@ Rcpp::List est_No_Margin(arma::vec y,
     arma::vec Ey = D % y + (1 - D) % (eres + X * b0);
     Rcpp::List fit = gee(Ey, X, b0, nt, w, corstr, tol, maxit);
     arma::vec b1 = fit(0);
-    if(max(abs(b1 - b0) / abs(b1)) < tol) break;
-    b0 = b1;
-    out(0) = b1;
+		out(0) = b1;
     out(1) = j;
     iter_gee(j - 1) = fit(5);
     histBeta(j - 1) = b1; 
     out(2) =  fit(6);
+		if(max(abs(b1 - b0) / abs(b1)) < tol) break;
+    b0 = b1;
   }
   out(3) = nonzeros(iter_gee);
   out(4) = histBeta;

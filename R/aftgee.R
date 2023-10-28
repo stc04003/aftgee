@@ -304,6 +304,7 @@ aftgee.est <- function(y, x, delta, beta, id,
     fit <- est_No_Margin(y = y, X = x, D = delta, b0 = beta, nt = tabulate(id),
                          w = Z * weights, corstr = corstr,
                          tol = control$reltol, maxit = control$maxiter)
+    fit$hist_b <- lapply(fit$hist_b[!sapply(fit$hist_b, is.null)], drop)    
     return(list(beta = fit$b, alpha = fit$alpha, histBeta = fit$hist_b, iniBeta = beta,
                 convergence = 1 * (fit$iter < control$maxiter),
                 convStep = fit$iter))
