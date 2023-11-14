@@ -340,10 +340,10 @@ est.margin <- function(y, x, delta, beta, id,
       eres2[m] <- mean(temp[[2]], na.rm = TRUE)
       dum <- cumsum(ifelse(margin == m, 1, 0))
       er1[[m]] <- temp[[1]][ifelse(margin == m, dum, NA)]
-      ## er1 <- rbind(er1, er1temp)
     }
-    er1 <- unlist(er1)
+    er1 <- c(do.call(rbind, er1))
     er1 <- er1[!is.na(er1)]
+    ## sapply(1:length(y), function(i) er1[[margin[i]]][i])
     yhat <- delta * y + (1 - delta) * (er1 + xmat %*% beta)
     yhatZ <- sqrt(Z * weights) * yhat
     er2 <- as.matrix(eres2[margin])
