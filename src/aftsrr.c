@@ -5,7 +5,7 @@
 // Compute residual error differences
 double get_rikjl(double *X, double *sigma,
 		 int *N, int *p, int ik_idx, int jl_idx) {
-  double *xdif = Calloc(*p, double);
+  double *xdif = R_Calloc(*p, double);
   double rikjl = 0.0;
   int m = 0, q = 0;
   for (m = 0; m < *p; m++) {
@@ -18,7 +18,7 @@ double get_rikjl(double *X, double *sigma,
     }
   }
   rikjl = sqrt(rikjl);
-  Free(xdif);
+  R_Free(xdif);
   return(rikjl);
 }
 
@@ -28,7 +28,7 @@ void gehan_s_obj(double *beta, double *Y, double *X, double *delta,
 	  int *p, int *N, double *weights, double *gehanweights, double *ln) {
   int i, j, k, l, ik_idx = 0, jl_idx;
   double rikjl, edif, z, H, h, sqrtn = sqrt(*n);
-  double *e = Calloc(*N, double);
+  double *e = R_Calloc(*N, double);
   for (i = 0; i < *N; i++) {
     e[i] = 0.0;
     for (j = 0; j < *p; j++) {
@@ -59,7 +59,7 @@ void gehan_s_obj(double *beta, double *Y, double *X, double *delta,
       ik_idx++;
     }
   }
-  Free(e);
+  R_Free(e);
   /* *ln /= (*n * (*n - 1)); */
 }
 
@@ -76,8 +76,8 @@ void abargehanfunC(double *beta, double *Y, double *X,
 		  //output
 		  double *abar) {
   int i, j, k, l, ik_idx = 0, jl_idx, r, s, xdif_idx;
-  double *e = Calloc(*N, double), *xdif = Calloc(*p, double),
-    *nu1 = Calloc(*p, double), *nu2 = Calloc(*p, double), *nu3 = Calloc(*p, double);
+  double *e = R_Calloc(*N, double), *xdif = R_Calloc(*p, double),
+    *nu1 = R_Calloc(*p, double), *nu2 = R_Calloc(*p, double), *nu3 = R_Calloc(*p, double);
   double rikjl, edif, h, z, sqrtn = sqrt(*n), coef;
 
   /* compute the e vector */
@@ -128,11 +128,11 @@ void abargehanfunC(double *beta, double *Y, double *X,
     } // end for k
   } // end for i
 
-  Free(xdif);
-  Free(e);
-  Free(nu1);
-  Free(nu2);
-  Free(nu3);
+  R_Free(xdif);
+  R_Free(e);
+  R_Free(nu1);
+  R_Free(nu2);
+  R_Free(nu3);
   /* for (r = 0; r < (*p * *p); r++) { */
   /*   abar[r] /= (*n * (*n - 1)); */
   /* } */
@@ -148,8 +148,8 @@ void abarlogfunC(double *beta, double *Y, double *X, double *delta, int *clsize,
 		/* output */
 	     double *abar) {
   int i, j, k, l, ik_idx = 0, jl_idx, r, s, xdif_idx, xdif_idx2;
-  double *e = Calloc(*N, double), *xdif = Calloc(*p, double),
-    *nu1 = Calloc(*p * *p, double), *nu2 = Calloc(*p, double), *nu3 = Calloc(*p, double);
+  double *e = R_Calloc(*N, double), *xdif = R_Calloc(*p, double),
+    *nu1 = R_Calloc(*p * *p, double), *nu2 = R_Calloc(*p, double), *nu3 = R_Calloc(*p, double);
   double rikjl, edif, H, h, z, sqrtn = sqrt(*n), coef, de;
   /* compute the e vector */
   for (i = 0; i < *N; i++) {
@@ -214,11 +214,11 @@ void abarlogfunC(double *beta, double *Y, double *X, double *delta, int *clsize,
       ik_idx++;
     } // end for k
   } // end for i
-  Free(xdif);
-  Free(e);
-  Free(nu1);
-  Free(nu2);
-  Free(nu3);
+  R_Free(xdif);
+  R_Free(e);
+  R_Free(nu1);
+  R_Free(nu2);
+  R_Free(nu3);
   /* for (r = 0; r < (*p * *p); r++) { */
   /*   abar[r] /= (*n * (*n - 1)); */
   /* } */
@@ -237,7 +237,7 @@ void omegafun(double *beta,
 	      //output
 	      double *omega) {
   int i, k, j, l, m, r, s, ik_idx = 0, jl_idx, rs_idx, emk = 0, ind = 0, omega_idx;
-  double *xdif = Calloc(*p, double), *e = Calloc(*N, double), *ksi = Calloc(*p * *N, double);
+  double *xdif = R_Calloc(*p, double), *e = R_Calloc(*N, double), *ksi = R_Calloc(*p * *N, double);
   // compute e
   for (i = 0; i < *N; i++) {
     e[i] = 0.0;
@@ -303,9 +303,9 @@ void omegafun(double *beta,
   /* for (r = 0; r < *p * *p; r++) { */
   /* omega[r] /= *n; */
   /* } */
-  Free(e);
-  Free(xdif);
-  Free(ksi);
+  R_Free(e);
+  R_Free(xdif);
+  R_Free(ksi);
 }
 
 
@@ -317,7 +317,7 @@ void abarpwfunC(double *beta, double *Y, double *X, double *delta,
 	       //output
 	       double *abar) {
   int i, j, k, l, ik_idx = 0, jl_idx, r, s, xdif_idx, xdif_idx2;
-  double *e = Calloc(*N, double), *nu = Calloc(*N * *p, double);
+  double *e = R_Calloc(*N, double), *nu = R_Calloc(*N * *p, double);
   double rikjl, edif, H, z, sqrtn = sqrt(*n), de;
   /* compute the e vector */
   for (i = 0; i < *N; i++) {
@@ -368,8 +368,8 @@ void abarpwfunC(double *beta, double *Y, double *X, double *delta,
       ik_idx++;
     } // end for k
   } // end for i
-  Free(e);
-  Free(nu);
+  R_Free(e);
+  R_Free(nu);
   /* for (r = 0; r < (*p * *p); r++) { */
   /*   abar[r] /= (*n * (*n - 1)); */
   /* } */
@@ -385,7 +385,7 @@ void getnsgehan (double *beta, double *Y, double *X, int *clsize,
 		/* output */
 	     double *de) {
   int i, j, k, l, ik_idx = 0, jl_idx;
-  double *e = Calloc(*N, double);
+  double *e = R_Calloc(*N, double);
   double edif;
   /* compute the e vector */
   for (i = 0; i < *N; i++) {
@@ -413,7 +413,7 @@ void getnsgehan (double *beta, double *Y, double *X, int *clsize,
       ik_idx++;
     } // end for k
   } // end for i
-  Free(e);
+  R_Free(e);
   /* for (r = 0; r < (*p * *p); r++) { */
   /*   abar[r] /= (*n * (*n - 1)); */
   /* } */
@@ -428,7 +428,7 @@ void getgehan (double *beta, double *Y, double *X, int *clsize,
 		/* output */
 	     double *de) {
   int i, j, k, l, ik_idx = 0, jl_idx;
-  double *e = Calloc(*N, double);
+  double *e = R_Calloc(*N, double);
   double rikjl, edif, H, z, sqrtn = sqrt(*n);
   /* compute the e vector */
   for (i = 0; i < *N; i++) {
@@ -457,7 +457,7 @@ void getgehan (double *beta, double *Y, double *X, int *clsize,
       ik_idx++;
     } // end for k
   } // end for i
-  Free(e);
+  R_Free(e);
   /* for (r = 0; r < (*p * *p); r++) { */
   /*   abar[r] /= (*n * (*n - 1)); */
   /* } */
@@ -468,7 +468,7 @@ void matAfun(double *X, double *sigma, double *delta,
 	  int *clsize, int *n, int *p, int *N, 
 	  double *matA) {
   int i, j, k, ikId = 0, jlId, l, r, m, q;
-  double *xdif = Calloc(*p, double);
+  double *xdif = R_Calloc(*p, double);
   double rikjl = 0.0;
   for (i = 0; i < *n; i++) {
     for (k = 0; k < clsize[i]; k++) {
@@ -497,7 +497,7 @@ void matAfun(double *X, double *sigma, double *delta,
       ikId++;
     } // end k 
   } // end i
-  Free(xdif);
+  R_Free(xdif);
 }
 
 
@@ -508,10 +508,10 @@ void ulblk(double*beta, double *Y, double *X, double *delta, double *a, double *
 	   //output 
 	   double *out) {
   int i, j, r;
-  double *e = Calloc(*n, double); 
-  double *ei = Calloc(*n, double); 
-  double *ea = Calloc(*n, double); 
-  double *nu = Calloc(*p, double); 
+  double *e = R_Calloc(*n, double); 
+  double *ei = R_Calloc(*n, double); 
+  double *ea = R_Calloc(*n, double); 
+  double *nu = R_Calloc(*p, double); 
   double de;
 
   for (i = 0; i < *n; i++) {
@@ -542,10 +542,10 @@ void ulblk(double*beta, double *Y, double *X, double *delta, double *a, double *
       }
     } // end delta
   } // end i
-  Free(e);
-  Free(ea);
-  Free(ei);
-  Free(nu);
+  R_Free(e);
+  R_Free(ea);
+  R_Free(ei);
+  R_Free(nu);
 }
 
 
@@ -554,9 +554,9 @@ void ulblk2(double*beta, double *Y, double *X, double *delta, double *lbw,
 	   //output 
 	   double *out) {
   int i, j, r;
-  double *e = Calloc(*n, double); 
-  double *ei = Calloc(*n, double); 
-  double *nu = Calloc(*p, double); 
+  double *e = R_Calloc(*n, double); 
+  double *ei = R_Calloc(*n, double); 
+  double *nu = R_Calloc(*p, double); 
   double de;
   for (i = 0; i < *n; i++) {
     e[i] = 0.0;
@@ -585,18 +585,18 @@ void ulblk2(double*beta, double *Y, double *X, double *delta, double *lbw,
       }
     } // end delta
   } // end i
-  Free(e);
-  Free(ei);
-  Free(nu);
+  R_Free(e);
+  R_Free(ei);
+  R_Free(nu);
 }
 
 void ulbge(double*beta, double *Y, double *X, double *delta, double *a, int *n, int *p, 
 	   //output 
 	   double *out) {
   int i, j, r;
-  double *e = Calloc(*n, double); 
-  double *ei = Calloc(*n, double); 
-  double *ea = Calloc(*n, double); 
+  double *e = R_Calloc(*n, double); 
+  double *ei = R_Calloc(*n, double); 
+  double *ea = R_Calloc(*n, double); 
 
   for (i = 0; i < *n; i++) {
     e[i] = 0.0;
@@ -618,9 +618,9 @@ void ulbge(double*beta, double *Y, double *X, double *delta, double *a, int *n, 
       }
     }
   }
-  Free(e);
-  Free(ea);
-  Free(ei);
+  R_Free(e);
+  R_Free(ea);
+  R_Free(ei);
 }
 
 void ulbge2(double*beta, double *Y, double *X, double *delta, double *lbw, 
@@ -628,8 +628,8 @@ void ulbge2(double*beta, double *Y, double *X, double *delta, double *lbw,
 	   //output 
 	   double *out) {
   int i, j, r;
-  double *e = Calloc(*n, double); 
-  double *ei = Calloc(*n, double); 
+  double *e = R_Calloc(*n, double); 
+  double *ei = R_Calloc(*n, double); 
 
   for (i = 0; i < *n; i++) {
     e[i] = 0.0;
@@ -650,8 +650,8 @@ void ulbge2(double*beta, double *Y, double *X, double *delta, double *lbw,
       }
     }
   }
-  Free(e);
-  Free(ei);
+  R_Free(e);
+  R_Free(ei);
 }
 
 void ulbsge(double*beta, double *Y, double *X, 
@@ -659,9 +659,9 @@ void ulbsge(double*beta, double *Y, double *X,
 	   //output 
 	   double *out) {
   int i, j, r;
-  double *e = Calloc(*n, double); 
-  double *ei = Calloc(*n, double); 
-  double *ea = Calloc(*n, double); 
+  double *e = R_Calloc(*n, double); 
+  double *ei = R_Calloc(*n, double); 
+  double *ea = R_Calloc(*n, double); 
   double z1, z2, H1, H2, rikjl;
   for (i = 0; i < *n; i++) {
     e[i] = 0.0;
@@ -688,9 +688,9 @@ void ulbsge(double*beta, double *Y, double *X,
       }
     }
   }
-  Free(e);
-  Free(ea);
-  Free(ei);
+  R_Free(e);
+  R_Free(ea);
+  R_Free(ei);
 }
 
 
@@ -700,8 +700,8 @@ void uuge(double*beta, double *Y, double *X, double *delta, double *lbw, double 
 	   double *out) {
   int i, j, r;
   double z, H, rikjl;
-  double *e = Calloc(*n, double); 
-  double *ei = Calloc(*n, double); 
+  double *e = R_Calloc(*n, double); 
+  double *ei = R_Calloc(*n, double); 
 
   for (i = 0; i < *n; i++) {
     e[i] = 0.0;
@@ -726,6 +726,6 @@ void uuge(double*beta, double *Y, double *X, double *delta, double *lbw, double 
     }
     
   }
-  Free(e);
-  Free(ei);
+  R_Free(e);
+  R_Free(ei);
 }
