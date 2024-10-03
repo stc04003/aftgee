@@ -1,3 +1,5 @@
+# `aftgee` 1.2.1
+  * checks ok with STRICT_R_HEADERS=1
 # `aftgee` 1.2.0
   * Resampling weights generated at cluster level
   * Coefficients in vector format 
